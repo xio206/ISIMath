@@ -810,12 +810,12 @@
                 // Redibujar gráfico si la tarjeta es visible
                 const chartCard = document.getElementById('chartsCard');
                 if(!chartCard.classList.contains('hidden')) {
-                     const data = getCurrentData();
-                     if (data && data.length >= 2) {
-                         drawCharts(data);
-                     } else {
-                         drawEmptyChart(isDark);
-                     }
+                    const data = getCurrentData();
+                    if (data && data.length >= 2) {
+                        drawCharts(data);
+                    } else {
+                        drawEmptyChart(isDark);
+                    }
                 } else {
                     drawEmptyChart(isDark);
                 }
