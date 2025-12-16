@@ -1,0 +1,5 @@
+title: ISIMath
+description: Calculadora multifuncional
+theme: jekyll-theme-primer
+plugins:
+  - jekyll-seo-tag
