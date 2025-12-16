@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sección de Contenido Estática</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables de color para fácil manejo (tomadas del diseño ISIMath) */
+        :root {
+            /* Colores para el modo claro */
+            --light-bg-primary: #f0f8ff; /* Azul muy claro, casi blanco */
+            --light-bg-secondary: #e0f2f7; /* Azul claro */
+            --light-text-primary: #1a2b3c; /* Azul oscuro casi negro */
+            --light-text-secondary: #4a6b8c; /* Azul medio oscuro */
+            --light-accent-blue: #007bff; /* Azul brillante para acentos */
+            --light-border-color: #a7d9f0; /* Azul claro para bordes */
+            --light-card-bg: #ffffff; /* Blanco para tarjetas */
+            --light-shadow-color: rgba(0, 0, 0, 0.1); /* Sombra ligera */
+            --light-link-hover: #0056b3; /* Azul más oscuro para hover de enlaces */
+            --light-footer-bg: #1a2b3c; /* Azul oscuro para el footer */
+            --light-footer-text: #e0f2f7; /* Azul claro para texto del footer */
+            --light-skill-design-bg: #87ceeb; /* Azul cielo para diseño */
+            --light-skill-logic-bg: #4682b4; /* Azul acero para lógica */
+
+            /* Variables específicas para esta sección, adaptadas al tema azul */
+            --section-bg: var(--light-bg-secondary); /* Fondo de la sección, similar al header */
+            --section-text: var(--light-text-primary); /* Color de texto principal */
+            --section-description-text: var(--light-text-secondary); /* Color de texto secundario */
+            --button-border-color: var(--light-accent-blue); /* Borde de los botones */
+            --button-text-color: var(--light-accent-blue); /* Texto de los botones */
+            --button-hover-bg: var(--light-accent-blue); /* Fondo de los botones al hover */
+            --button-hover-text: #ffffff; /* Texto de los botones al hover */
+            --future-projects-button-bg: var(--light-accent-blue); /* Fondo del botón de proyectos futuros */
+            --future-projects-button-text: #ffffff; /* Texto del botón de proyectos futuros */
+            --future-projects-button-hover-bg: var(--light-link-hover); /* Fondo del botón de proyectos futuros al hover */
+            --section-shadow: rgba(0, 0, 0, 0.0); /* Sombra transparente por defecto */
+            --section-hover-shadow: rgba(0, 0, 0, 0.2); /* Sombra al interactuar (si se aplica) */
+            --transition-duration: 0.3s;
+            --transition-easing: ease-in-out;
+        }
+
+        /* Estilos para el modo oscuro (adaptados de ISIMath) */
+        body.dark {
+            --light-bg-primary: #1a2b3c; /* Azul oscuro */
+            --light-bg-secondary: #2c3e50; /* Azul grisáceo oscuro */
+            --light-text-primary: #e0f2f7; /* Azul claro */
+            --light-text-secondary: #a7d9f0; /* Azul claro para texto secundario */
+            --light-accent-blue: #66b3ff; /* Azul más claro para acentos */
+            --light-border-color: #3e5a73; /* Azul oscuro para bordes */
+            --light-card-bg: #2c3e50; /* Azul grisáceo oscuro para tarjetas */
+            --light-shadow-color: rgba(0, 0, 0, 0.3); /* Sombra más oscura */
+            --light-link-hover: #87ceeb; /* Azul más claro para hover de enlaces */
+            --light-footer-bg: #0d1a26; /* Azul muy oscuro para el footer */
+            --light-footer-text: #a7d9f0; /* Azul claro para texto del footer */
+            --light-skill-design-bg: #4682b4; /* Azul acero para diseño */
+            --light-skill-logic-bg: #87ceeb; /* Azul cielo para lógica */
+
+            /* Adaptar variables de sección para modo oscuro */
+            --section-bg: var(--light-bg-secondary);
+            --section-text: var(--light-text-primary);
+            --section-description-text: var(--light-text-secondary);
+            --button-border-color: var(--light-accent-blue);
+            --button-text-color: var(--light-accent-blue);
+            --button-hover-bg: var(--light-accent-blue);
+            --button-hover-text: var(--light-text-primary);
+            --future-projects-button-bg: var(--light-accent-blue);
+            --future-projects-button-text: var(--light-text-primary);
+            --future-projects-button-hover-bg: var(--light-link-hover);
+            --section-shadow: rgba(0, 0, 0, 0.0);
+            --section-hover-shadow: rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif; /* Usando la fuente Inter */
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg-primary); /* Fondo principal del body */
+            color: var(--light-text-primary); /* Color de texto principal del body */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Para centrar verticalmente en la página */
+            transition: background-color var(--transition-duration) var(--transition-easing),
+                        color var(--transition-duration) var(--transition-easing);
+        }
+
+        .content-section {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            max-width: 800px;
+            margin: auto;
+            background-color: var(--section-bg); /* Fondo de la sección */
+            border-radius: 15px; /* Bordes redondeados consistentes */
+            box-shadow: 0 0 0 var(--section-shadow); /* Sombra transparente por defecto, sin borde visual */
+            transition: background-color var(--transition-duration) var(--transition-easing),
+                        box-shadow var(--transition-duration) var(--transition-easing);
+        }
+
+        .content-section__title {
+            font-size: clamp(2rem, 5vw, 2.8rem); /* Ajuste de tamaño de fuente responsivo */
+            font-weight: 700; /* Más negrita para títulos */
+            margin-bottom: 1rem;
+            color: var(--section-text);
+        }
+
+        .content-section__description {
+            font-size: clamp(1rem, 3vw, 1.1rem); /* Ajuste de tamaño de fuente responsivo */
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            color: var(--section-description-text);
+        }
+
+        .content-section__buttons {
+            display: flex;
+            flex-direction: column; /* Los botones se apilan uno debajo del otro */
+            justify-content: center;
+            gap: 1rem; /* Espacio vertical entre los botones */
+            align-items: center; /* Centra los botones horizontalmente */
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            width: fit-content;
+            min-width: 200px; /* Ancho mínimo para que se vean bien */
+            padding: 0.8rem 2.5rem; /* Aumentado el padding horizontal */
+            border-radius: 25px; /* Bordes redondeados tipo píldora */
+            font-size: 1.1rem; /* Tamaño de fuente ligeramente más grande */
+            font-weight: 600; /* Semi-negrita */
+            text-decoration: none;
+            transition: background-color var(--transition-duration) var(--transition-easing),
+                        color var(--transition-duration) var(--transition-easing),
+                        border-color var(--transition-duration) var(--transition-easing),
+                        transform var(--transition-duration) var(--transition-easing),
+                        box-shadow var(--transition-duration) var(--transition-easing);
+            box-shadow: 0 2px 4px var(--section-shadow); /* Sombra inicial transparente */
+            text-align: center;
+        }
+
+        /* Estilo para ambos botones (primario y secundario) */
+        .btn--primary,
+        .btn--secondary {
+            background-color: transparent;
+            color: var(--button-text-color);
+            border: 2px solid var(--button-border-color);
+        }
+
+        .btn--primary:hover,
+        .btn--secondary:hover {
+            background-color: var(--button-hover-bg);
+            color: var(--button-hover-text);
+            border-color: var(--button-hover-bg);
+            transform: translateY(-3px); /* Efecto de "levantar" */
+            box-shadow: 0 6px 12px var(--section-hover-shadow); /* Sombra más pronunciada al hover */
+        }
+
+        .future-projects {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 1rem;
+            font-weight: 500; /* Peso de fuente para el texto */
+            color: var(--section-description-text);
+        }
+
+        .future-projects__button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px; /* Tamaño del botón circular */
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--future-projects-button-bg);
+            color: var(--future-projects-button-text); /* Color del texto/icono de la flecha */
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem; /* Tamaño de la flecha */
+            transition: background-color var(--transition-duration) var(--transition-easing),
+                        transform var(--transition-duration) var(--transition-easing),
+                        box-shadow var(--transition-duration) var(--transition-easing);
+            cursor: pointer;
+            box-shadow: 0 2px 4px var(--section-shadow); /* Sombra inicial transparente */
+        }
+
+        .future-projects__button:hover {
+            background-color: var(--future-projects-button-hover-bg);
+            transform: translateX(5px); /* Desplazamiento a la derecha */
+            box-shadow: 0 6px 12px var(--section-hover-shadow); /* Sombra más pronunciada al hover */
+        }
+
+        /* Responsive para pantallas muy pequeñas */
+        @media (max-width: 480px) {
+            .content-section {
+                padding: 2rem 1rem;
+            }
+            .btn {
+                min-width: unset; /* Eliminar ancho mínimo en móviles */
+                width: 90%; /* Ocupar casi todo el ancho disponible */
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="content-section">
+        <h2 class="content-section__title">
+            ISIMath
+        </h2>
+        <p class="content-section__description">
+            Domina lo esencial: funciones y matrices, dos herramientas que te abrirán las puertas a un nuevo nivel de comprensión matemática.
+Aprende, practica y descubre cómo estos conceptos pueden transformar la forma en que interpretas el mundo. ¡EMPECEMOS!
+        </p>
+        <div class="content-section__buttons">
+            <a href="/public/app/funcionesApp.html" class="btn btn--primary">FUNCIONES</a>
+            <a href="/public/app/matricesApp.html" class="btn btn--secondary">MATRICES</a>
+        </div>
+        <div class="future-projects">
+            <span>PROYECTOS A FUTURO</span>
+            <a href="proyectosfuturos.html" class="future-projects__button">&gt;</a>
+        </div>
+    </section>
+
+    <script>
+        // Script para mantener el tema (modo claro/oscuro)
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verifica si hay una preferencia de tema guardada en localStorage
+            const savedTheme = localStorage.getItem('theme');
+
+            // Si hay un tema guardado y es 'dark', aplica la clase 'dark' al body
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+            } else {
+                // Si no hay tema guardado o es 'light', asegúrate de que no tenga la clase 'dark'
+                document.body.classList.remove('dark');
+            }
+        });
+    </script>
+</body>
+</html>

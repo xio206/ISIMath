@@ -1,0 +1,2383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Intervalos de Confianza</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Variables de Color --- */
+        :root {
+            /* Colores modo claro */
+            --bg-light: #f8fafc;
+            --surface-light: #ffffff;
+            --text-light: #1e293b;
+            --primary-light: #3b82f6; /* Azul */
+            --primary-light-hover: #2563eb; /* Azul más oscuro */
+            --secondary-light: #10b981; /* Verde */
+            --secondary-light-hover: #0d9f76; /* Verde más oscuro */
+            --accent-light: #8b5cf6; /* Púrpura para estadística */
+            --accent-light-hover: #7c3aed;
+            --border-light: #e2e8f0;
+            --error-light: #ef4444; /* Rojo para texto de error */
+            --success-light: #10b981; /* Verde para éxito */
+            --text-muted-light: #64748b;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            
+            /* Colores modo oscuro */
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --text-dark: #e2e8f0;
+            --primary-dark: #60a5fa; /* Azul más claro para oscuro */
+            --primary-dark-hover: #93c5fd; /* Azul aún más claro */
+            --secondary-dark: #10b981; /* Verde */
+            --secondary-dark-hover: #34d399; /* Verde más claro */
+            --accent-dark: #a78bfa; /* Púrpura para estadística */
+            --accent-dark-hover: #c4b5fd;
+            --border-dark: #334155;
+            --error-dark: #f87171; /* Rojo para texto de error */
+            --success-dark: #34d399; /* Verde para éxito */
+            --text-muted-dark: #94a3b8;
+            --shadow-sm-dark: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md-dark: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-lg-dark: 0 10px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- Estilos Base --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        body.dark {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        /* --- Layout Principal --- */
+        .app-container {
+            display: grid;
+            grid-template-columns: minmax(300px, 400px) 1fr;
+            gap: 2rem;
+            min-height: 100vh;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .app-container {
+                padding: 1rem;
+                gap: 1.5rem;
+            }
+        }
+
+        /* --- Panel de Entrada --- */
+        .input-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        @media (max-width: 1024px) {
+            .input-panel {
+                position: static;
+            }
+        }
+
+        .panel-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .panel-card {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+            box-shadow: var(--shadow-md-dark);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .panel-title {
+            color: var(--primary-dark);
+        }
+
+        .panel-title svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* --- Formulario --- */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        body.dark .form-label {
+            color: var(--text-dark);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background-color: var(--surface-light);
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        body.dark .input-field {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        body.dark .input-field:focus {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        }
+
+        .select-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background-color: var(--surface-light);
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        body.dark .select-field {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .select-field:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        body.dark .select-field:focus {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        }
+
+        /* --- Botones --- */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-light);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            width: 100%;
+            gap: 0.5rem;
+        }
+
+        body.dark .btn {
+            background-color: var(--primary-dark);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-light-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        body.dark .btn:hover {
+            background-color: var(--primary-dark-hover);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-light);
+        }
+
+        body.dark .btn-secondary {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-light-hover);
+        }
+
+        body.dark .btn-secondary:hover {
+            background-color: var(--secondary-dark-hover);
+        }
+
+        .btn-accent {
+            background-color: var(--accent-light);
+        }
+
+        body.dark .btn-accent {
+            background-color: var(--accent-dark);
+        }
+
+        .btn-accent:hover {
+            background-color: var(--accent-light-hover);
+        }
+
+        body.dark .btn-accent:hover {
+            background-color: var(--accent-dark-hover);
+        }
+
+        /* --- Panel de Resultados --- */
+        .output-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* --- Resultado --- */
+        .result-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .result-card {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .result-title {
+            color: var(--primary-dark);
+        }
+
+        .result-content {
+            padding: 1.5rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            margin-top: 1rem;
+        }
+
+        body.dark .result-content {
+            background-color: var(--bg-dark);
+            border-color: var(--border-dark);
+        }
+
+        .interval-display {
+            text-align: center;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background-color: var(--surface-light);
+            border-radius: 8px;
+            border: 2px solid var(--accent-light);
+        }
+
+        body.dark .interval-display {
+            background-color: var(--surface-dark);
+            border-color: var(--accent-dark);
+        }
+
+        .interval-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-light);
+            margin: 0.5rem 0;
+        }
+
+        body.dark .interval-value {
+            color: var(--accent-dark);
+        }
+
+        .interval-formula {
+            font-size: 1.1rem;
+            color: var(--text-muted-light);
+            margin: 1rem 0;
+        }
+
+        body.dark .interval-formula {
+            color: var(--text-muted-dark);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .result-item {
+            padding: 1rem;
+            background-color: var(--surface-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark .result-item {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .result-item-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted-light);
+            margin-bottom: 0.25rem;
+        }
+
+        body.dark .result-item-title {
+            color: var(--text-muted-dark);
+        }
+
+        .result-item-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+        }
+
+        body.dark .result-item-value {
+            color: var(--primary-dark);
+        }
+
+        /* --- Gráfica --- */
+        .graph-container {
+            width: 100%;
+            height: 400px;
+            background-color: var(--surface-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        body.dark .graph-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        /* --- Pasos --- */
+        .steps-container {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .steps-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .steps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .step-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-light);
+            transition: all 0.3s ease;
+        }
+
+        body.dark .step-item {
+            background-color: var(--bg-dark);
+            border-left-color: var(--primary-dark);
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .step-title {
+            color: var(--primary-dark);
+        }
+
+        .step-title svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .step-content {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .step-math {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background-color: var(--surface-light);
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            text-align: center;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.1rem;
+        }
+
+        body.dark .step-math {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .math-container {
+            display: block;
+            margin: 0.5rem 0;
+            text-align: center;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.1rem;
+        }
+
+        .math-text {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.1rem;
+            color: var(--text-light);
+        }
+
+        body.dark .math-text {
+            color: var(--text-dark);
+        }
+
+        /* --- Mensajes de error --- */
+        .error-message {
+            color: white;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            padding: 0.75rem;
+            background-color: #A00000;
+            border-radius: 6px;
+            border: 1px solid #700000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .error-message {
+            color: white;
+            background-color: #8B0000;
+            border-color: #6A0000;
+        }
+
+        .error-message svg {
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* --- Toggle de tema --- */
+        .theme-toggle {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--surface-light);
+            color: var(--text-light);
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.dark .theme-toggle {
+            background-color: var(--surface-dark);
+            color: var(--text-dark);
+            box-shadow: var(--shadow-lg-dark);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- Estado oculto --- */
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- Iconos SVG --- */
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        /* --- Animaciones --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        /* --- Radio buttons personalizados --- */
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .radio-input {
+            display: none;
+        }
+
+        .radio-custom {
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid var(--border-light);
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        body.dark .radio-custom {
+            border-color: var(--border-dark);
+        }
+
+        .radio-input:checked + .radio-custom {
+            border-color: var(--primary-light);
+            background-color: var(--primary-light);
+        }
+
+        body.dark .radio-input:checked + .radio-custom {
+            border-color: var(--primary-dark);
+            background-color: var(--primary-dark);
+        }
+
+        .radio-input:checked + .radio-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0.625rem;
+            height: 0.625rem;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .radio-label {
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        body.dark .radio-label {
+            color: var(--text-dark);
+        }
+
+        /* --- Estilos para texto matemático --- */
+        .math-inline {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+            font-size: 1.05em;
+        }
+
+        .math-display {
+            display: block;
+            text-align: center;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.1rem;
+            background-color: var(--surface-light);
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark .math-display {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .math-sup {
+            vertical-align: super;
+            font-size: 0.8em;
+        }
+
+        .math-sub {
+            vertical-align: sub;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="input-panel">
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="4" y1="21" x2="4" y2="14"></line>
+                        <line x1="4" y1="10" x2="4" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12" y2="3"></line>
+                        <line x1="20" y1="21" x2="20" y2="16"></line>
+                        <line x1="20" y1="12" x2="20" y2="3"></line>
+                        <line x1="1" y1="14" x2="7" y2="14"></line>
+                        <line x1="9" y1="8" x2="15" y2="8"></line>
+                        <line x1="17" y1="16" x2="23" y2="16"></line>
+                    </svg>
+                    Datos del Intervalo de Confianza
+                </h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Tipo de intervalo:</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="interval-type" value="mean" class="radio-input" checked>
+                            <span class="radio-custom"></span>
+                            <span class="radio-label">Media poblacional (μ)</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="interval-type" value="proportion" class="radio-input">
+                            <span class="radio-custom"></span>
+                            <span class="radio-label">Proporción (p)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="mean-inputs" class="input-group">
+                    <div class="form-group">
+                        <label for="sample-mean" class="form-label">Media muestral (x̄):</label>
+                        <input type="number" id="sample-mean" class="input-field" placeholder="Ej: 100.5" step="any">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="std-dev" class="form-label">Desviación estándar (σ o s):</label>
+                        <input type="number" id="std-dev" class="input-field" placeholder="Ej: 15.2" step="any" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sample-size" class="form-label">Tamaño de muestra (n):</label>
+                        <input type="number" id="sample-size" class="input-field" placeholder="Ej: 50" step="1" min="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Conocimiento de σ:</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="sigma-known" value="known" class="radio-input">
+                                <span class="radio-custom"></span>
+                                <span class="radio-label">σ conocida</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="sigma-known" value="unknown" class="radio-input" checked>
+                                <span class="radio-custom"></span>
+                                <span class="radio-label">σ desconocida</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="proportion-inputs" class="input-group hidden">
+                    <div class="form-group">
+                        <label for="sample-proportion" class="form-label">Proporción muestral (p̂):</label>
+                        <input type="number" id="sample-proportion" class="input-field" placeholder="Ej: 0.65" step="any" min="0" max="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="proportion-sample-size" class="form-label">Tamaño de muestra (n):</label>
+                        <input type="number" id="proportion-sample-size" class="input-field" placeholder="Ej: 200" step="1" min="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confidence-level" class="form-label">Nivel de confianza:</label>
+                    <select id="confidence-level" class="select-field">
+                        <option value="0.90">90% (α = 0.10)</option>
+                        <option value="0.95" selected>95% (α = 0.05)</option>
+                        <option value="0.99">99% (α = 0.01)</option>
+                        <option value="custom">Personalizado...</option>
+                    </select>
+                </div>
+
+                <div id="custom-confidence" class="form-group hidden">
+                    <label for="custom-level" class="form-label">Confianza personalizada (%):</label>
+                    <input type="number" id="custom-level" class="input-field" placeholder="Ej: 92.5" step="0.1" min="0.1" max="99.9">
+                </div>
+
+                <div id="interval-error" class="error-message hidden">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span id="error-text"></span>
+                </div>
+
+                <button id="calculate-btn" class="btn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
+                    </svg>
+                    Calcular Intervalo
+                </button>
+
+                <div class="btn-group">
+                    <button id="clear-btn" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6L6 18"></path>
+                            <path d="M6 6L18 18"></path>
+                        </svg>
+                        Limpiar
+                    </button>
+                    <button id="theory-btn" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Ir a la Teoría
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Instrucciones
+                </h2>
+                <ul style="padding-left: 1.25rem; color: var(--text-muted-light);">
+                    <li style="margin-bottom: 0.5rem;">Seleccione el tipo de intervalo (media o proporción).</li>
+                    <li style="margin-bottom: 0.5rem;">Ingrese los datos muestrales correspondientes.</li>
+                    <li style="margin-bottom: 0.5rem;">Especifique si conoce la desviación poblacional (σ) para intervalos de media.</li>
+                    <li style="margin-bottom: 0.5rem;">Seleccione o ingrese el nivel de confianza deseado.</li>
+                    <li style="margin-bottom: 0.5rem;">Presione "Calcular Intervalo" para obtener resultados.</li>
+                    <li style="margin-bottom: 0.5rem;">Use "Limpiar" para reiniciar todos los campos.</li>
+                    <li style="margin-bottom: 0.5rem;">"Ir a la Teoría" lo llevará a recursos sobre intervalos de confianza.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="output-panel">
+            <div id="result-card" class="result-card hidden fade-in">
+                <h2 class="result-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Resultado del Intervalo de Confianza
+                </h2>
+                <div class="result-content">
+                    <div id="interval-type-display" class="interval-formula"></div>
+                    <div class="interval-display">
+                        <div>Intervalo de Confianza</div>
+                        <div id="interval-result" class="interval-value"></div>
+                        <div id="interval-interpretation"></div>
+                    </div>
+                    <div class="results-grid" id="results-grid"></div>
+                </div>
+            </div>
+
+            <div id="graph-card" class="result-card fade-in">
+                <h2 class="result-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    Visualización Gráfica
+                </h2>
+                <div id="graph-container" class="graph-container">
+                    <div id="plot" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+
+            <div id="steps-card" class="steps-container hidden fade-in">
+                <div class="steps-header">
+                    <h2 class="result-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        Pasos de Cálculo
+                    </h2>
+                    <button id="toggle-steps-btn" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                        Mostrar detalle
+                    </button>
+                </div>
+                <div id="steps-content" class="hidden">
+                    <div id="steps-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="theme-toggle" class="theme-toggle">
+        <svg id="theme-icon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referencias a elementos del DOM
+            const intervalTypeRadios = document.querySelectorAll('input[name="interval-type"]');
+            const meanInputs = document.getElementById('mean-inputs');
+            const proportionInputs = document.getElementById('proportion-inputs');
+            const sampleMeanInput = document.getElementById('sample-mean');
+            const stdDevInput = document.getElementById('std-dev');
+            const sampleSizeInput = document.getElementById('sample-size');
+            const sigmaKnownRadios = document.querySelectorAll('input[name="sigma-known"]');
+            const sampleProportionInput = document.getElementById('sample-proportion');
+            const proportionSampleSizeInput = document.getElementById('proportion-sample-size');
+            const confidenceLevelSelect = document.getElementById('confidence-level');
+            const customConfidenceDiv = document.getElementById('custom-confidence');
+            const customLevelInput = document.getElementById('custom-level');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const theoryBtn = document.getElementById('theory-btn');
+            const resultCard = document.getElementById('result-card');
+            const errorDiv = document.getElementById('interval-error');
+            const errorText = document.getElementById('error-text');
+            const stepsCard = document.getElementById('steps-card');
+            const stepsList = document.getElementById('steps-list');
+            const toggleStepsBtn = document.getElementById('toggle-steps-btn');
+            const stepsContent = document.getElementById('steps-content');
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const intervalTypeDisplay = document.getElementById('interval-type-display');
+            const intervalResult = document.getElementById('interval-result');
+            const intervalInterpretation = document.getElementById('interval-interpretation');
+            const resultsGrid = document.getElementById('results-grid');
+
+            // Variables para almacenar resultados
+            let calculationSteps = [];
+            let currentIntervalType = 'mean';
+            let confidenceLevel = 0.95;
+
+            // ==================== TABLAS DE VALORES CRÍTICOS ====================
+            
+            // Función para calcular el valor z crítico usando las tablas proporcionadas
+            const zCritical = (confidence) => {
+                const alpha = 1 - confidence;
+                const p = 1 - alpha / 2; // Probabilidad acumulada para cola derecha
+                
+                // Tabla Z simplificada pero precisa para los valores comunes
+                const zTable = {
+                    0.5000: 0.000, 0.5040: 0.013, 0.5080: 0.025, 0.5120: 0.038, 0.5160: 0.050,
+                    0.5199: 0.063, 0.5239: 0.075, 0.5279: 0.088, 0.5319: 0.100, 0.5359: 0.113,
+                    0.5398: 0.126, 0.5438: 0.138, 0.5478: 0.151, 0.5517: 0.164, 0.5557: 0.176,
+                    0.5596: 0.189, 0.5636: 0.202, 0.5675: 0.215, 0.5714: 0.228, 0.5753: 0.240,
+                    0.5793: 0.253, 0.5832: 0.266, 0.5871: 0.279, 0.5910: 0.292, 0.5948: 0.305,
+                    0.5987: 0.319, 0.6026: 0.332, 0.6064: 0.345, 0.6103: 0.359, 0.6141: 0.372,
+                    0.6179: 0.386, 0.6217: 0.400, 0.6255: 0.413, 0.6293: 0.427, 0.6331: 0.441,
+                    0.6368: 0.455, 0.6406: 0.469, 0.6443: 0.484, 0.6480: 0.498, 0.6517: 0.513,
+                    0.6554: 0.527, 0.6591: 0.542, 0.6628: 0.557, 0.6664: 0.572, 0.6700: 0.587,
+                    0.6736: 0.603, 0.6772: 0.618, 0.6808: 0.634, 0.6844: 0.650, 0.6879: 0.666,
+                    0.6915: 0.682, 0.6950: 0.698, 0.6985: 0.715, 0.7019: 0.732, 0.7054: 0.749,
+                    0.7088: 0.766, 0.7123: 0.784, 0.7157: 0.802, 0.7190: 0.820, 0.7224: 0.838,
+                    0.7257: 0.856, 0.7291: 0.875, 0.7324: 0.894, 0.7357: 0.913, 0.7389: 0.933,
+                    0.7422: 0.952, 0.7454: 0.972, 0.7486: 0.992, 0.7517: 1.015, 0.7549: 1.037,
+                    0.7580: 1.060, 0.7611: 1.083, 0.7642: 1.106, 0.7673: 1.130, 0.7704: 1.155,
+                    0.7734: 1.180, 0.7764: 1.205, 0.7794: 1.231, 0.7823: 1.258, 0.7852: 1.285,
+                    0.7881: 1.313, 0.7910: 1.341, 0.7939: 1.370, 0.7967: 1.400, 0.7995: 1.431,
+                    0.8023: 1.462, 0.8051: 1.495, 0.8078: 1.528, 0.8106: 1.562, 0.8133: 1.598,
+                    0.8159: 1.634, 0.8186: 1.671, 0.8212: 1.710, 0.8238: 1.749, 0.8264: 1.790,
+                    0.8289: 1.832, 0.8315: 1.876, 0.8340: 1.921, 0.8365: 1.967, 0.8389: 2.015,
+                    0.8413: 2.065, 0.8438: 2.117, 0.8461: 2.170, 0.8485: 2.226, 0.8508: 2.283,
+                    0.8531: 2.343, 0.8554: 2.405, 0.8577: 2.470, 0.8599: 2.537, 0.8621: 2.607,
+                    0.8643: 2.680, 0.8665: 2.756, 0.8686: 2.835, 0.8708: 2.918, 0.8729: 3.005,
+                    0.8749: 3.097, 0.8770: 3.194, 0.8790: 3.295, 0.8810: 3.402, 0.8830: 3.516,
+                    0.8849: 3.636, 0.8869: 3.764, 0.8888: 3.901, 0.8907: 4.048, 0.8925: 4.206,
+                    0.8944: 4.376, 0.8962: 4.562, 0.8980: 4.764, 0.8997: 4.986, 0.9015: 5.231,
+                    0.9032: 5.503, 0.9049: 5.807, 0.9066: 6.151, 0.9082: 6.545, 0.9099: 7.003,
+                    0.9115: 7.549, 0.9131: 8.219, 0.9147: 9.077, 0.9162: 10.240, 0.9177: 11.970,
+                    0.9192: 14.894, 0.9207: 22.366, 0.9222: 39.308, 0.9236: 49.213, 0.9251: 59.264,
+                    0.9265: 69.536, 0.9279: 80.119, 0.9292: 91.122, 0.9306: 102.688, 0.9319: 115.003,
+                    0.9332: 128.320, 0.9345: 142.996, 0.9357: 159.531, 0.9370: 178.699, 0.9382: 201.841,
+                    0.9394: 231.643, 0.9406: 272.460, 0.9418: 333.786, 0.9429: 442.294, 0.9441: 697.356,
+                    0.9452: 1884.304, 0.9463: 15074.430, 0.9500: 1.645, 0.9750: 1.960, 0.9900: 2.326,
+                    0.9950: 2.576, 0.9990: 3.090, 0.9995: 3.291, 0.9999: 3.719
+                };
+                
+                // Valores comunes para referencia rápida
+                const commonValues = {
+                    0.90: 1.645,
+                    0.95: 1.960,
+                    0.975: 1.960,
+                    0.98: 2.326,
+                    0.99: 2.576,
+                    0.995: 2.807,
+                    0.999: 3.291
+                };
+                
+                // Verificar si es un valor común
+                if (commonValues[confidence]) {
+                    return commonValues[confidence];
+                }
+                
+                // Buscar el valor más cercano en la tabla
+                const probabilities = Object.keys(zTable).map(Number).sort((a, b) => a - b);
+                let closestProb = probabilities[0];
+                let minDiff = Math.abs(closestProb - p);
+                
+                for (const prob of probabilities) {
+                    const diff = Math.abs(prob - p);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        closestProb = prob;
+                    }
+                }
+                
+                return zTable[closestProb];
+            };
+
+            // Función para calcular el valor t crítico usando las tablas proporcionadas del PDF
+            const tCritical = (confidence, df) => {
+                // Redondear grados de libertad
+                const roundedDF = Math.round(df);
+                
+                // Tabla t-Student completa del PDF
+                const tTable = {
+                    // df: {probabilidad: valor}
+                    1: {
+                        0.005: 63.657, 0.01: 31.821, 0.025: 12.706, 0.05: 6.314, 0.075: 4.165,
+                        0.10: 3.078, 0.15: 1.963, 0.20: 1.376, 0.25: 1.000, 0.30: 0.727,
+                        0.40: 0.325, 0.45: 0.158, 0.55: 0.158, 0.60: 0.325, 0.65: 0.510,
+                        0.70: 0.727, 0.75: 1.000, 0.80: 1.376, 0.85: 1.963, 0.875: 2.414,
+                        0.90: 3.078, 0.925: 4.165, 0.95: 6.314, 0.975: 12.706, 0.99: 31.821,
+                        0.995: 63.657
+                    },
+                    2: {
+                        0.005: 9.925, 0.01: 6.965, 0.025: 4.303, 0.05: 2.920, 0.075: 2.282,
+                        0.10: 1.886, 0.15: 1.386, 0.20: 1.061, 0.25: 0.816, 0.30: 0.617,
+                        0.40: 0.289, 0.45: 0.142, 0.55: 0.142, 0.60: 0.289, 0.65: 0.445,
+                        0.70: 0.617, 0.75: 0.816, 0.80: 1.061, 0.85: 1.386, 0.875: 1.604,
+                        0.90: 1.886, 0.925: 2.282, 0.95: 2.920, 0.975: 4.303, 0.99: 6.965,
+                        0.995: 9.925
+                    },
+                    3: {
+                        0.005: 5.841, 0.01: 4.541, 0.025: 3.182, 0.05: 2.353, 0.075: 1.924,
+                        0.10: 1.638, 0.15: 1.250, 0.20: 0.978, 0.25: 0.765, 0.30: 0.584,
+                        0.40: 0.277, 0.45: 0.137, 0.55: 0.137, 0.60: 0.277, 0.65: 0.424,
+                        0.70: 0.584, 0.75: 0.765, 0.80: 0.978, 0.85: 1.250, 0.875: 1.423,
+                        0.90: 1.638, 0.925: 1.924, 0.95: 2.353, 0.975: 3.182, 0.99: 4.541,
+                        0.995: 5.841
+                    },
+                    4: {
+                        0.005: 4.604, 0.01: 3.747, 0.025: 2.776, 0.05: 2.132, 0.075: 1.778,
+                        0.10: 1.533, 0.15: 1.190, 0.20: 0.941, 0.25: 0.741, 0.30: 0.569,
+                        0.40: 0.271, 0.45: 0.134, 0.55: 0.134, 0.60: 0.271, 0.65: 0.414,
+                        0.70: 0.569, 0.75: 0.741, 0.80: 0.941, 0.85: 1.190, 0.875: 1.344,
+                        0.90: 1.533, 0.925: 1.778, 0.95: 2.132, 0.975: 2.776, 0.99: 3.747,
+                        0.995: 4.604
+                    },
+                    5: {
+                        0.005: 4.032, 0.01: 3.365, 0.025: 2.571, 0.05: 2.015, 0.075: 1.699,
+                        0.10: 1.476, 0.15: 1.156, 0.20: 0.920, 0.25: 0.727, 0.30: 0.559,
+                        0.40: 0.267, 0.45: 0.132, 0.55: 0.132, 0.60: 0.267, 0.65: 0.408,
+                        0.70: 0.559, 0.75: 0.727, 0.80: 0.920, 0.85: 1.156, 0.875: 1.301,
+                        0.90: 1.476, 0.925: 1.699, 0.95: 2.015, 0.975: 2.571, 0.99: 3.365,
+                        0.995: 4.032
+                    },
+                    6: {
+                        0.005: 3.707, 0.01: 3.143, 0.025: 2.447, 0.05: 1.943, 0.075: 1.650,
+                        0.10: 1.440, 0.15: 1.134, 0.20: 0.906, 0.25: 0.718, 0.30: 0.553,
+                        0.40: 0.265, 0.45: 0.131, 0.55: 0.131, 0.60: 0.265, 0.65: 0.404,
+                        0.70: 0.553, 0.75: 0.718, 0.80: 0.906, 0.85: 1.134, 0.875: 1.273,
+                        0.90: 1.440, 0.925: 1.650, 0.95: 1.943, 0.975: 2.447, 0.99: 3.143,
+                        0.995: 3.707
+                    },
+                    7: {
+                        0.005: 3.499, 0.01: 2.998, 0.025: 2.365, 0.05: 1.895, 0.075: 1.617,
+                        0.10: 1.415, 0.15: 1.119, 0.20: 0.896, 0.25: 0.711, 0.30: 0.549,
+                        0.40: 0.263, 0.45: 0.130, 0.55: 0.130, 0.60: 0.263, 0.65: 0.402,
+                        0.70: 0.549, 0.75: 0.711, 0.80: 0.896, 0.85: 1.119, 0.875: 1.254,
+                        0.90: 1.415, 0.925: 1.617, 0.95: 1.895, 0.975: 2.365, 0.99: 2.998,
+                        0.995: 3.499
+                    },
+                    8: {
+                        0.005: 3.355, 0.01: 2.896, 0.025: 2.306, 0.05: 1.860, 0.075: 1.592,
+                        0.10: 1.397, 0.15: 1.108, 0.20: 0.889, 0.25: 0.706, 0.30: 0.546,
+                        0.40: 0.262, 0.45: 0.130, 0.55: 0.130, 0.60: 0.262, 0.65: 0.399,
+                        0.70: 0.546, 0.75: 0.706, 0.80: 0.889, 0.85: 1.108, 0.875: 1.240,
+                        0.90: 1.397, 0.925: 1.592, 0.95: 1.860, 0.975: 2.306, 0.99: 2.896,
+                        0.995: 3.355
+                    },
+                    9: {
+                        0.005: 3.250, 0.01: 2.821, 0.025: 2.262, 0.05: 1.833, 0.075: 1.574,
+                        0.10: 1.383, 0.15: 1.100, 0.20: 0.883, 0.25: 0.703, 0.30: 0.543,
+                        0.40: 0.261, 0.45: 0.129, 0.55: 0.129, 0.60: 0.261, 0.65: 0.398,
+                        0.70: 0.543, 0.75: 0.703, 0.80: 0.883, 0.85: 1.100, 0.875: 1.230,
+                        0.90: 1.383, 0.925: 1.574, 0.95: 1.833, 0.975: 2.262, 0.99: 2.821,
+                        0.995: 3.250
+                    },
+                    10: {
+                        0.005: 3.169, 0.01: 2.764, 0.025: 2.228, 0.05: 1.812, 0.075: 1.559,
+                        0.10: 1.372, 0.15: 1.093, 0.20: 0.879, 0.25: 0.700, 0.30: 0.542,
+                        0.40: 0.260, 0.45: 0.129, 0.55: 0.129, 0.60: 0.260, 0.65: 0.397,
+                        0.70: 0.542, 0.75: 0.700, 0.80: 0.879, 0.85: 1.093, 0.875: 1.221,
+                        0.90: 1.372, 0.925: 1.559, 0.95: 1.812, 0.975: 2.228, 0.99: 2.764,
+                        0.995: 3.169
+                    },
+                    11: {
+                        0.005: 3.106, 0.01: 2.718, 0.025: 2.201, 0.05: 1.796, 0.075: 1.548,
+                        0.10: 1.363, 0.15: 1.088, 0.20: 0.876, 0.25: 0.697, 0.30: 0.540,
+                        0.40: 0.260, 0.45: 0.129, 0.55: 0.129, 0.60: 0.260, 0.65: 0.396,
+                        0.70: 0.540, 0.75: 0.697, 0.80: 0.876, 0.85: 1.088, 0.875: 1.214,
+                        0.90: 1.363, 0.925: 1.548, 0.95: 1.796, 0.975: 2.201, 0.99: 2.718,
+                        0.995: 3.106
+                    },
+                    12: {
+                        0.005: 3.055, 0.01: 2.681, 0.025: 2.179, 0.05: 1.782, 0.075: 1.538,
+                        0.10: 1.356, 0.15: 1.083, 0.20: 0.873, 0.25: 0.695, 0.30: 0.539,
+                        0.40: 0.259, 0.45: 0.128, 0.55: 0.128, 0.60: 0.259, 0.65: 0.395,
+                        0.70: 0.539, 0.75: 0.695, 0.80: 0.873, 0.85: 1.083, 0.875: 1.209,
+                        0.90: 1.356, 0.925: 1.538, 0.95: 1.782, 0.975: 2.179, 0.99: 2.681,
+                        0.995: 3.055
+                    },
+                    13: {
+                        0.005: 3.012, 0.01: 2.650, 0.025: 2.160, 0.05: 1.771, 0.075: 1.530,
+                        0.10: 1.350, 0.15: 1.079, 0.20: 0.870, 0.25: 0.694, 0.30: 0.538,
+                        0.40: 0.259, 0.45: 0.128, 0.55: 0.128, 0.60: 0.259, 0.65: 0.394,
+                        0.70: 0.538, 0.75: 0.694, 0.80: 0.870, 0.85: 1.079, 0.875: 1.204,
+                        0.90: 1.350, 0.925: 1.530, 0.95: 1.771, 0.975: 2.160, 0.99: 2.650,
+                        0.995: 3.012
+                    },
+                    14: {
+                        0.005: 2.977, 0.01: 2.624, 0.025: 2.145, 0.05: 1.761, 0.075: 1.523,
+                        0.10: 1.345, 0.15: 1.076, 0.20: 0.868, 0.25: 0.692, 0.30: 0.537,
+                        0.40: 0.258, 0.45: 0.128, 0.55: 0.128, 0.60: 0.258, 0.65: 0.393,
+                        0.70: 0.537, 0.75: 0.692, 0.80: 0.868, 0.85: 1.076, 0.875: 1.200,
+                        0.90: 1.345, 0.925: 1.523, 0.95: 1.761, 0.975: 2.145, 0.99: 2.624,
+                        0.995: 2.977
+                    },
+                    15: {
+                        0.005: 2.947, 0.01: 2.602, 0.025: 2.131, 0.05: 1.753, 0.075: 1.517,
+                        0.10: 1.341, 0.15: 1.074, 0.20: 0.866, 0.25: 0.691, 0.30: 0.536,
+                        0.40: 0.258, 0.45: 0.128, 0.55: 0.128, 0.60: 0.258, 0.65: 0.393,
+                        0.70: 0.536, 0.75: 0.691, 0.80: 0.866, 0.85: 1.074, 0.875: 1.197,
+                        0.90: 1.341, 0.925: 1.517, 0.95: 1.753, 0.975: 2.131, 0.99: 2.602,
+                        0.995: 2.947
+                    },
+                    16: {
+                        0.005: 2.921, 0.01: 2.583, 0.025: 2.120, 0.05: 1.746, 0.075: 1.512,
+                        0.10: 1.337, 0.15: 1.071, 0.20: 0.865, 0.25: 0.690, 0.30: 0.535,
+                        0.40: 0.258, 0.45: 0.128, 0.55: 0.128, 0.60: 0.258, 0.65: 0.392,
+                        0.70: 0.535, 0.75: 0.690, 0.80: 0.865, 0.85: 1.071, 0.875: 1.194,
+                        0.90: 1.337, 0.925: 1.512, 0.95: 1.746, 0.975: 2.120, 0.99: 2.583,
+                        0.995: 2.921
+                    },
+                    17: {
+                        0.005: 2.898, 0.01: 2.567, 0.025: 2.110, 0.05: 1.740, 0.075: 1.508,
+                        0.10: 1.333, 0.15: 1.069, 0.20: 0.863, 0.25: 0.689, 0.30: 0.534,
+                        0.40: 0.257, 0.45: 0.128, 0.55: 0.128, 0.60: 0.257, 0.65: 0.392,
+                        0.70: 0.534, 0.75: 0.689, 0.80: 0.863, 0.85: 1.069, 0.875: 1.191,
+                        0.90: 1.333, 0.925: 1.508, 0.95: 1.740, 0.975: 2.110, 0.99: 2.567,
+                        0.995: 2.898
+                    },
+                    18: {
+                        0.005: 2.878, 0.01: 2.552, 0.025: 2.101, 0.05: 1.734, 0.075: 1.504,
+                        0.10: 1.330, 0.15: 1.067, 0.20: 0.862, 0.25: 0.688, 0.30: 0.534,
+                        0.40: 0.257, 0.45: 0.127, 0.55: 0.127, 0.60: 0.257, 0.65: 0.392,
+                        0.70: 0.534, 0.75: 0.688, 0.80: 0.862, 0.85: 1.067, 0.875: 1.189,
+                        0.90: 1.330, 0.925: 1.504, 0.95: 1.734, 0.975: 2.101, 0.99: 2.552,
+                        0.995: 2.878
+                    },
+                    19: {
+                        0.005: 2.861, 0.01: 2.539, 0.025: 2.093, 0.05: 1.729, 0.075: 1.500,
+                        0.10: 1.328, 0.15: 1.066, 0.20: 0.861, 0.25: 0.688, 0.30: 0.533,
+                        0.40: 0.257, 0.45: 0.127, 0.55: 0.127, 0.60: 0.257, 0.65: 0.391,
+                        0.70: 0.533, 0.75: 0.688, 0.80: 0.861, 0.85: 1.066, 0.875: 1.187,
+                        0.90: 1.328, 0.925: 1.500, 0.95: 1.729, 0.975: 2.093, 0.99: 2.539,
+                        0.995: 2.861
+                    },
+                    20: {
+                        0.005: 2.845, 0.01: 2.528, 0.025: 2.086, 0.05: 1.725, 0.075: 1.497,
+                        0.10: 1.325, 0.15: 1.064, 0.20: 0.860, 0.25: 0.687, 0.30: 0.533,
+                        0.40: 0.257, 0.45: 0.127, 0.55: 0.127, 0.60: 0.257, 0.65: 0.391,
+                        0.70: 0.533, 0.75: 0.687, 0.80: 0.860, 0.85: 1.064, 0.875: 1.185,
+                        0.90: 1.325, 0.925: 1.497, 0.95: 1.725, 0.975: 2.086, 0.99: 2.528,
+                        0.995: 2.845
+                    },
+                    21: {
+                        0.005: 2.831, 0.01: 2.518, 0.025: 2.080, 0.05: 1.721, 0.075: 1.494,
+                        0.10: 1.323, 0.15: 1.063, 0.20: 0.859, 0.25: 0.686, 0.30: 0.532,
+                        0.40: 0.257, 0.45: 0.127, 0.55: 0.127, 0.60: 0.257, 0.65: 0.391,
+                        0.70: 0.532, 0.75: 0.686, 0.80: 0.859, 0.85: 1.063, 0.875: 1.183,
+                        0.90: 1.323, 0.925: 1.494, 0.95: 1.721, 0.975: 2.080, 0.99: 2.518,
+                        0.995: 2.831
+                    },
+                    22: {
+                        0.005: 2.819, 0.01: 2.508, 0.025: 2.074, 0.05: 1.717, 0.075: 1.492,
+                        0.10: 1.321, 0.15: 1.061, 0.20: 0.858, 0.25: 0.686, 0.30: 0.532,
+                        0.40: 0.256, 0.45: 0.127, 0.55: 0.127, 0.60: 0.256, 0.65: 0.390,
+                        0.70: 0.532, 0.75: 0.686, 0.80: 0.858, 0.85: 1.061, 0.875: 1.182,
+                        0.90: 1.321, 0.925: 1.492, 0.95: 1.717, 0.975: 2.074, 0.99: 2.508,
+                        0.995: 2.819
+                    },
+                    23: {
+                        0.005: 2.807, 0.01: 2.500, 0.025: 2.069, 0.05: 1.714, 0.075: 1.489,
+                        0.10: 1.319, 0.15: 1.060, 0.20: 0.858, 0.25: 0.685, 0.30: 0.532,
+                        0.40: 0.256, 0.45: 0.127, 0.55: 0.127, 0.60: 0.256, 0.65: 0.390,
+                        0.70: 0.532, 0.75: 0.685, 0.80: 0.858, 0.85: 1.060, 0.875: 1.180,
+                        0.90: 1.319, 0.925: 1.489, 0.95: 1.714, 0.975: 2.069, 0.99: 2.500,
+                        0.995: 2.807
+                    },
+                    24: {
+                        0.005: 2.797, 0.01: 2.492, 0.025: 2.064, 0.05: 1.711, 0.075: 1.487,
+                        0.10: 1.318, 0.15: 1.059, 0.20: 0.857, 0.25: 0.685, 0.30: 0.531,
+                        0.40: 0.256, 0.45: 0.127, 0.55: 0.127, 0.60: 0.256, 0.65: 0.390,
+                        0.70: 0.531, 0.75: 0.685, 0.80: 0.857, 0.85: 1.059, 0.875: 1.179,
+                        0.90: 1.318, 0.925: 1.487, 0.95: 1.711, 0.975: 2.064, 0.99: 2.492,
+                        0.995: 2.797
+                    },
+                    25: {
+                        0.005: 2.787, 0.01: 2.485, 0.025: 2.060, 0.05: 1.708, 0.075: 1.485,
+                        0.10: 1.316, 0.15: 1.058, 0.20: 0.856, 0.25: 0.684, 0.30: 0.531,
+                        0.40: 0.256, 0.45: 0.127, 0.55: 0.127, 0.60: 0.256, 0.65: 0.390,
+                        0.70: 0.531, 0.75: 0.684, 0.80: 0.856, 0.85: 1.058, 0.875: 1.178,
+                        0.90: 1.316, 0.925: 1.485, 0.95: 1.708, 0.975: 2.060, 0.99: 2.485,
+                        0.995: 2.787
+                    },
+                    26: {
+                        0.005: 2.779, 0.01: 2.479, 0.025: 2.056, 0.05: 1.706, 0.075: 1.483,
+                        0.10: 1.315, 0.15: 1.058, 0.20: 0.856, 0.25: 0.684, 0.30: 0.531,
+                        0.40: 0.256, 0.45: 0.127, 0.55: 0.127, 0.60: 0.256, 0.65: 0.390,
+                        0.70: 0.531, 0.75: 0.684, 0.80: 0.856, 0.85: 1.058, 0.875: 1.177,
+                        0.90: 1.315, 0.925: 1.483, 0.95: 1.706, 0.975: 2.056, 0.99: 2.479,
+                        0.995: 2.779
+                    },
+                    27: {
+                        0.005: 2.771, 0.01: 2.473, 0.025: 2.052, 0.05: 1.703, 0.075: 1.482,
+                        0.10: 1.314, 0.15: 1.057, 0.20: 0.855, 0.25: 0.684, 0.30: 0.531,
+                        0.40: 0.256, 0.45: 0.127, 0.55: 0.127, 0.60: 0.256, 0.65: 0.389,
+                        0.70: 0.531, 0.75: 0.684, 0.80: 0.855, 0.85: 1.057, 0.875: 1.176,
+                        0.90: 1.314, 0.925: 1.482, 0.95: 1.703, 0.975: 2.052, 0.99: 2.473,
+                        0.995: 2.771
+                    },
+                    28: {
+                        0.005: 2.763, 0.01: 2.467, 0.025: 2.048, 0.05: 1.701, 0.075: 1.480,
+                        0.10: 1.313, 0.15: 1.056, 0.20: 0.855, 0.25: 0.683, 0.30: 0.530,
+                        0.40: 0.256, 0.45: 0.127, 0.55: 0.127, 0.60: 0.256, 0.65: 0.389,
+                        0.70: 0.530, 0.75: 0.683, 0.80: 0.855, 0.85: 1.056, 0.875: 1.175,
+                        0.90: 1.313, 0.925: 1.480, 0.95: 1.701, 0.975: 2.048, 0.99: 2.467,
+                        0.995: 2.763
+                    },
+                    29: {
+                        0.005: 2.756, 0.01: 2.462, 0.025: 2.045, 0.05: 1.699, 0.075: 1.479,
+                        0.10: 1.311, 0.15: 1.055, 0.20: 0.854, 0.25: 0.683, 0.30: 0.530,
+                        0.40: 0.256, 0.45: 0.127, 0.55: 0.127, 0.60: 0.256, 0.65: 0.389,
+                        0.70: 0.530, 0.75: 0.683, 0.80: 0.854, 0.85: 1.055, 0.875: 1.174,
+                        0.90: 1.311, 0.925: 1.479, 0.95: 1.699, 0.975: 2.045, 0.99: 2.462,
+                        0.995: 2.756
+                    },
+                    30: {
+                        0.005: 2.750, 0.01: 2.457, 0.025: 2.042, 0.05: 1.697, 0.075: 1.477,
+                        0.10: 1.310, 0.15: 1.055, 0.20: 0.854, 0.25: 0.683, 0.30: 0.530,
+                        0.40: 0.256, 0.45: 0.127, 0.55: 0.127, 0.60: 0.256, 0.65: 0.389,
+                        0.70: 0.530, 0.75: 0.683, 0.80: 0.854, 0.85: 1.055, 0.875: 1.173,
+                        0.90: 1.310, 0.925: 1.477, 0.95: 1.697, 0.975: 2.042, 0.99: 2.457,
+                        0.995: 2.750
+                    }
+                };
+
+                // Para grados de libertad mayores a 30, usar interpolación con valores de la tabla extendida
+                const highDFTable = {
+                    31: 2.744, 32: 2.738, 33: 2.733, 34: 2.728, 35: 2.724,
+                    36: 2.719, 37: 2.715, 38: 2.712, 39: 2.708, 40: 2.704,
+                    41: 2.701, 42: 2.698, 43: 2.695, 44: 2.692, 45: 2.690,
+                    46: 2.687, 47: 2.685, 48: 2.682, 49: 2.680, 50: 2.678,
+                    60: 2.660, 70: 2.648, 80: 2.639, 90: 2.632, 100: 2.626,
+                    110: 2.621, 120: 2.617, 130: 2.614, 140: 2.611, 150: 2.609,
+                    160: 2.607, 170: 2.605, 180: 2.603, 190: 2.602, 200: 2.601
+                };
+
+                // Determinar la probabilidad para buscar (1 - α/2)
+                const alpha = 1 - confidence;
+                const p = 1 - alpha / 2;
+
+                // Buscar en la tabla principal para df ≤ 30
+                if (roundedDF <= 30 && tTable[roundedDF]) {
+                    // Encontrar la probabilidad más cercana en la tabla
+                    const probabilities = Object.keys(tTable[roundedDF]).map(Number).sort((a, b) => a - b);
+                    let closestProb = probabilities[0];
+                    let minDiff = Math.abs(closestProb - p);
+                    
+                    for (const prob of probabilities) {
+                        const diff = Math.abs(prob - p);
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            closestProb = prob;
+                        }
+                    }
+                    
+                    return tTable[roundedDF][closestProb];
+                }
+                
+                // Para df > 30, usar interpolación con la tabla extendida
+                if (roundedDF <= 200) {
+                    const dfs = Object.keys(highDFTable).map(Number).sort((a, b) => a - b);
+                    
+                    // Encontrar los grados de libertad más cercanos
+                    let lowerDF = dfs[0];
+                    let upperDF = dfs[dfs.length - 1];
+                    
+                    for (const dfKey of dfs) {
+                        if (dfKey <= roundedDF) lowerDF = dfKey;
+                        if (dfKey >= roundedDF) {
+                            upperDF = dfKey;
+                            break;
+                        }
+                    }
+                    
+                    // Si encontramos el valor exacto
+                    if (lowerDF === upperDF) {
+                        return highDFTable[lowerDF];
+                    }
+                    
+                    // Interpolación lineal
+                    const lowerVal = highDFTable[lowerDF];
+                    const upperVal = highDFTable[upperDF];
+                    const interpolated = lowerVal + (roundedDF - lowerDF) * (upperVal - lowerVal) / (upperDF - lowerDF);
+                    
+                    return interpolated;
+                }
+                
+                // Para df > 200, aproximar con distribución normal
+                return zCritical(confidence);
+            };
+
+            // Función para obtener el valor crítico correcto
+            const getCriticalValue = (confidence, df, sigmaKnown) => {
+                if (currentIntervalType === 'proportion') {
+                    const z = zCritical(confidence);
+                    return { value: z, type: 'z', notation: `z_{1-α/2}` };
+                }
+                
+                if (sigmaKnown === 'known') {
+                    const z = zCritical(confidence);
+                    return { value: z, type: 'z', notation: `z_{1-α/2}` };
+                } else {
+                    const t = tCritical(confidence, df);
+                    return { value: t, type: 't', notation: `t_{1-α/2, ${df}}` };
+                }
+            };
+
+            // ==================== MANEJO DE LA INTERFAZ ====================
+
+            // Manejar cambio de tipo de intervalo
+            intervalTypeRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    currentIntervalType = e.target.value;
+                    
+                    if (currentIntervalType === 'mean') {
+                        meanInputs.classList.remove('hidden');
+                        proportionInputs.classList.add('hidden');
+                    } else {
+                        meanInputs.classList.add('hidden');
+                        proportionInputs.classList.remove('hidden');
+                    }
+                    
+                    // Ocultar resultados anteriores
+                    resultCard.classList.add('hidden');
+                    stepsCard.classList.add('hidden');
+                });
+            });
+
+            // Manejar nivel de confianza personalizado
+            confidenceLevelSelect.addEventListener('change', () => {
+                if (confidenceLevelSelect.value === 'custom') {
+                    customConfidenceDiv.classList.remove('hidden');
+                } else {
+                    customConfidenceDiv.classList.add('hidden');
+                    confidenceLevel = parseFloat(confidenceLevelSelect.value);
+                }
+            });
+
+            // ==================== CÁLCULOS DE INTERVALOS ====================
+
+            // Función para calcular intervalo de confianza para la media
+            const calculateMeanInterval = (xBar, sigma, n, sigmaKnown, confidence) => {
+                calculationSteps = [];
+                const alpha = 1 - confidence;
+                const alphaHalf = alpha / 2;
+                const confidencePercent = (confidence * 100).toFixed(1);
+                
+                // Paso 1: Datos proporcionados
+                const step1Content = document.createElement('div');
+                step1Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Se tienen los siguientes datos muestrales:</div>
+                `;
+                
+                const data1 = document.createElement('div');
+                data1.className = 'step-math';
+                data1.innerHTML = `
+                    x̄ = ${xBar}<br>
+                    ${sigmaKnown === 'known' ? 'σ' : 's'} = ${sigma}<br>
+                    n = ${n}
+                `;
+                step1Content.appendChild(data1);
+                
+                calculationSteps.push({
+                    title: "Datos proporcionados",
+                    content: step1Content,
+                    rule: "Entrada de datos muestrales"
+                });
+                
+                // Paso 2: Nivel de confianza
+                const step2Content = document.createElement('div');
+                step2Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Nivel de confianza: ${confidencePercent}%</div>
+                `;
+                
+                const alphaCalc = document.createElement('div');
+                alphaCalc.className = 'step-math';
+                alphaCalc.innerHTML = `
+                    1 - α = ${confidence}<br>
+                    α = 1 - ${confidence} = ${alpha.toFixed(4)}<br>
+                    α/2 = ${alphaHalf.toFixed(4)}
+                `;
+                step2Content.appendChild(alphaCalc);
+                
+                calculationSteps.push({
+                    title: "Definición del nivel de confianza",
+                    content: step2Content,
+                    rule: "Cálculo de α y α/2"
+                });
+                
+                // Paso 3: Fórmula general
+                const step3Content = document.createElement('div');
+                step3Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Fórmula para el intervalo de confianza de la media:</div>
+                `;
+                
+                const formulaDiv = document.createElement('div');
+                formulaDiv.className = 'step-math';
+                if (sigmaKnown === 'known') {
+                    formulaDiv.innerHTML = `x̄ ± z<sub>1-α/2</sub> · (σ/√n)`;
+                } else {
+                    formulaDiv.innerHTML = `x̄ ± t<sub>1-α/2, n-1</sub> · (s/√n)`;
+                }
+                step3Content.appendChild(formulaDiv);
+                
+                calculationSteps.push({
+                    title: "Fórmula general",
+                    content: step3Content,
+                    rule: "Fórmula del intervalo de confianza"
+                });
+                
+                // Paso 4: Valor crítico
+                const df = n - 1;
+                const critical = getCriticalValue(confidence, df, sigmaKnown);
+                const step4Content = document.createElement('div');
+                
+                if (critical.type === 'z') {
+                    step4Content.innerHTML = `
+                        <div style="margin-bottom: 0.5rem;">Para σ conocida, se usa la distribución normal:</div>
+                    `;
+                    const zDiv = document.createElement('div');
+                    zDiv.className = 'step-math';
+                    zDiv.innerHTML = `z<sub>1-α/2</sub> = z<sub>${(1 - alphaHalf).toFixed(4)}</sub> = ${critical.value.toFixed(4)}`;
+                    step4Content.appendChild(zDiv);
+                } else {
+                    step4Content.innerHTML = `
+                        <div style="margin-bottom: 0.5rem;">Para σ desconocida, se usa la distribución t de Student:</div>
+                        <div style="margin-bottom: 0.5rem;">Grados de libertad: df = n - 1 = ${n} - 1 = ${df}</div>
+                    `;
+                    const tDiv = document.createElement('div');
+                    tDiv.className = 'step-math';
+                    tDiv.innerHTML = `t<sub>1-α/2, df</sub> = t<sub>${(1 - alphaHalf).toFixed(4)}, ${df}</sub> = ${critical.value.toFixed(4)}`;
+                    step4Content.appendChild(tDiv);
+                }
+                calculationSteps.push({
+                    title: "Valor crítico",
+                    content: step4Content,
+                    rule: critical.type === 'z' ? "z₁₋α/₂ de la distribución normal" : "t₁₋α/₂, n₋₁ de la distribución t"
+                });
+                
+                // Paso 5: Error estándar
+                const standardError = sigma / Math.sqrt(n);
+                const step5Content = document.createElement('div');
+                step5Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Cálculo del error estándar:</div>
+                `;
+                
+                const seDiv = document.createElement('div');
+                seDiv.className = 'step-math';
+                seDiv.innerHTML = `
+                    ${sigmaKnown === 'known' ? 'σ' : 's'}<sub>x̄</sub> = ${sigma}/√${n}<br>
+                    = ${sigma}/${Math.sqrt(n).toFixed(4)}<br>
+                    = ${standardError.toFixed(4)}
+                `;
+                step5Content.appendChild(seDiv);
+                
+                calculationSteps.push({
+                    title: "Error estándar",
+                    content: step5Content,
+                    rule: "Cálculo del error estándar de la media"
+                });
+                
+                // Paso 6: Margen de error
+                const marginOfError = critical.value * standardError;
+                const step6Content = document.createElement('div');
+                step6Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Cálculo del margen de error:</div>
+                `;
+                
+                const meDiv = document.createElement('div');
+                meDiv.className = 'step-math';
+                meDiv.innerHTML = `
+                    E = ${critical.type === 'z' ? 'z' : 't'}<sub>1-α/2</sub> · ${sigmaKnown === 'known' ? 'σ' : 's'}<sub>x̄</sub><br>
+                    = ${critical.value.toFixed(4)} × ${standardError.toFixed(4)}<br>
+                    = ${marginOfError.toFixed(4)}
+                `;
+                step6Content.appendChild(meDiv);
+                
+                calculationSteps.push({
+                    title: "Margen de error",
+                    content: step6Content,
+                    rule: "Cálculo del margen de error"
+                });
+                
+                // Paso 7: Límites del intervalo
+                const lowerBound = xBar - marginOfError;
+                const upperBound = xBar + marginOfError;
+                const step7Content = document.createElement('div');
+                step7Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Cálculo de los límites del intervalo:</div>
+                `;
+                
+                const limitsDiv = document.createElement('div');
+                limitsDiv.className = 'step-math';
+                limitsDiv.innerHTML = `
+                    Límite inferior = x̄ - E = ${xBar} - ${marginOfError.toFixed(4)} = ${lowerBound.toFixed(4)}<br>
+                    Límite superior = x̄ + E = ${xBar} + ${marginOfError.toFixed(4)} = ${upperBound.toFixed(4)}
+                `;
+                step7Content.appendChild(limitsDiv);
+                
+                calculationSteps.push({
+                    title: "Límites del intervalo",
+                    content: step7Content,
+                    rule: "Cálculo de los límites de confianza"
+                });
+                
+                // Paso 8: Intervalo final
+                const step8Content = document.createElement('div');
+                step8Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Intervalo de confianza al ${confidencePercent}%:</div>
+                `;
+                
+                const intervalDiv = document.createElement('div');
+                intervalDiv.className = 'step-math';
+                intervalDiv.style.fontSize = '1.2rem';
+                intervalDiv.style.fontWeight = 'bold';
+                intervalDiv.innerHTML = `${lowerBound.toFixed(4)} ≤ μ ≤ ${upperBound.toFixed(4)}`;
+                step8Content.appendChild(intervalDiv);
+                
+                step8Content.innerHTML += `
+                    <div style="margin-top: 0.5rem;">Interpretación: Con un ${confidencePercent}% de confianza, podemos afirmar que la media poblacional μ se encuentra entre ${lowerBound.toFixed(4)} y ${upperBound.toFixed(4)}.</div>
+                `;
+                
+                calculationSteps.push({
+                    title: "Resultado final",
+                    content: step8Content,
+                    rule: "Intervalo de confianza calculado"
+                });
+                
+                return {
+                    lower: lowerBound,
+                    upper: upperBound,
+                    marginOfError: marginOfError,
+                    standardError: standardError,
+                    criticalValue: critical.value,
+                    criticalType: critical.type,
+                    df: df
+                };
+            };
+
+            // Función para calcular intervalo de confianza para la proporción
+            const calculateProportionInterval = (pHat, n, confidence) => {
+                calculationSteps = [];
+                const alpha = 1 - confidence;
+                const alphaHalf = alpha / 2;
+                const confidencePercent = (confidence * 100).toFixed(1);
+                
+                // Paso 1: Datos proporcionados
+                const step1Content = document.createElement('div');
+                step1Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Se tienen los siguientes datos muestrales:</div>
+                `;
+                
+                const data1 = document.createElement('div');
+                data1.className = 'step-math';
+                data1.innerHTML = `
+                    p̂ = ${pHat}<br>
+                    n = ${n}
+                `;
+                step1Content.appendChild(data1);
+                
+                step1Content.innerHTML += `
+                    <div style="margin-bottom: 0.5rem;">Verificación de condiciones:</div>
+                `;
+                
+                const conditionsDiv = document.createElement('div');
+                conditionsDiv.className = 'step-math';
+                const nphat = n * pHat;
+                const nqhat = n * (1 - pHat);
+                conditionsDiv.innerHTML = `
+                    n·p̂ = ${n} × ${pHat} = ${nphat.toFixed(2)}<br>
+                    n·(1-p̂) = ${n} × ${(1 - pHat).toFixed(4)} = ${nqhat.toFixed(2)}
+                `;
+                step1Content.appendChild(conditionsDiv);
+                
+                if (nphat >= 5 && nqhat >= 5) {
+                    step1Content.innerHTML += `
+                        <div style="margin-top: 0.5rem; color: var(--success-light);">✓ Se cumple la condición de aproximación normal</div>
+                    `;
+                } else {
+                    step1Content.innerHTML += `
+                        <div style="margin-top: 0.5rem; color: var(--error-light);">⚠ Advertencia: Las condiciones para aproximación normal podrían no cumplirse</div>
+                    `;
+                }
+                
+                calculationSteps.push({
+                    title: "Datos proporcionados",
+                    content: step1Content,
+                    rule: "Entrada de datos muestrales y verificación de condiciones"
+                });
+                
+                // Paso 2: Nivel de confianza
+                const step2Content = document.createElement('div');
+                step2Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Nivel de confianza: ${confidencePercent}%</div>
+                `;
+                
+                const alphaCalc = document.createElement('div');
+                alphaCalc.className = 'step-math';
+                alphaCalc.innerHTML = `
+                    1 - α = ${confidence}<br>
+                    α = 1 - ${confidence} = ${alpha.toFixed(4)}<br>
+                    α/2 = ${alphaHalf.toFixed(4)}
+                `;
+                step2Content.appendChild(alphaCalc);
+                
+                calculationSteps.push({
+                    title: "Definición del nivel de confianza",
+                    content: step2Content,
+                    rule: "Cálculo de α y α/2"
+                });
+                
+                // Paso 3: Fórmula general
+                const step3Content = document.createElement('div');
+                step3Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Fórmula para el intervalo de confianza de la proporción:</div>
+                `;
+                
+                const formulaDiv = document.createElement('div');
+                formulaDiv.className = 'step-math';
+                formulaDiv.innerHTML = `p̂ ± z<sub>1-α/2</sub> · √[p̂(1-p̂)/n]`;
+                step3Content.appendChild(formulaDiv);
+                
+                calculationSteps.push({
+                    title: "Fórmula general",
+                    content: step3Content,
+                    rule: "Fórmula del intervalo de confianza para proporciones"
+                });
+                
+                // Paso 4: Valor crítico z
+                const critical = getCriticalValue(confidence, null, 'known');
+                const step4Content = document.createElement('div');
+                step4Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Valor crítico de la distribución normal:</div>
+                `;
+                
+                const zDiv = document.createElement('div');
+                zDiv.className = 'step-math';
+                zDiv.innerHTML = `z<sub>1-α/2</sub> = z<sub>${(1 - alphaHalf).toFixed(4)}</sub> = ${critical.value.toFixed(4)}`;
+                step4Content.appendChild(zDiv);
+                
+                calculationSteps.push({
+                    title: "Valor crítico z",
+                    content: step4Content,
+                    rule: "z₁₋α/₂ de la distribución normal"
+                });
+                
+                // Paso 5: Error estándar
+                const standardError = Math.sqrt((pHat * (1 - pHat)) / n);
+                const step5Content = document.createElement('div');
+                step5Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Cálculo del error estándar de la proporción:</div>
+                `;
+                
+                const seDiv = document.createElement('div');
+                seDiv.className = 'step-math';
+                seDiv.innerHTML = `
+                    σ<sub>p̂</sub> = √[p̂(1-p̂)/n] = √[${pHat} × ${(1 - pHat).toFixed(4)} / ${n}]<br>
+                    = √[${(pHat * (1 - pHat)).toFixed(4)} / ${n}]<br>
+                    = √${((pHat * (1 - pHat)) / n).toFixed(4)}<br>
+                    = ${standardError.toFixed(4)}
+                `;
+                step5Content.appendChild(seDiv);
+                
+                calculationSteps.push({
+                    title: "Error estándar",
+                    content: step5Content,
+                    rule: "Cálculo del error estándar de la proporción"
+                });
+                
+                // Paso 6: Margen de error
+                const marginOfError = critical.value * standardError;
+                const step6Content = document.createElement('div');
+                step6Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Cálculo del margen de error:</div>
+                `;
+                
+                const meDiv = document.createElement('div');
+                meDiv.className = 'step-math';
+                meDiv.innerHTML = `
+                    E = z<sub>1-α/2</sub> · σ<sub>p̂</sub><br>
+                    = ${critical.value.toFixed(4)} × ${standardError.toFixed(4)}<br>
+                    = ${marginOfError.toFixed(4)}
+                `;
+                step6Content.appendChild(meDiv);
+                
+                calculationSteps.push({
+                    title: "Margen de error",
+                    content: step6Content,
+                    rule: "Cálculo del margen de error"
+                });
+                
+                // Paso 7: Límites del intervalo
+                let lowerBound = pHat - marginOfError;
+                let upperBound = pHat + marginOfError;
+                
+                // Asegurar que los límites estén entre 0 y 1
+                if (lowerBound < 0) lowerBound = 0;
+                if (upperBound > 1) upperBound = 1;
+                
+                const step7Content = document.createElement('div');
+                step7Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Cálculo de los límites del intervalo:</div>
+                `;
+                
+                const limitsDiv = document.createElement('div');
+                limitsDiv.className = 'step-math';
+                limitsDiv.innerHTML = `
+                    Límite inferior = p̂ - E = ${pHat} - ${marginOfError.toFixed(4)} = ${lowerBound.toFixed(4)}<br>
+                    Límite superior = p̂ + E = ${pHat} + ${marginOfError.toFixed(4)} = ${upperBound.toFixed(4)}
+                `;
+                step7Content.appendChild(limitsDiv);
+                
+                calculationSteps.push({
+                    title: "Límites del intervalo",
+                    content: step7Content,
+                    rule: "Cálculo de los límites de confianza"
+                });
+                
+                // Paso 8: Intervalo final
+                const step8Content = document.createElement('div');
+                step8Content.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Intervalo de confianza al ${confidencePercent}%:</div>
+                `;
+                
+                const intervalDiv = document.createElement('div');
+                intervalDiv.className = 'step-math';
+                intervalDiv.style.fontSize = '1.2rem';
+                intervalDiv.style.fontWeight = 'bold';
+                intervalDiv.innerHTML = `${lowerBound.toFixed(4)} ≤ p ≤ ${upperBound.toFixed(4)}`;
+                step8Content.appendChild(intervalDiv);
+                
+                step8Content.innerHTML += `
+                    <div style="margin-top: 0.5rem;">Interpretación: Con un ${confidencePercent}% de confianza, podemos afirmar que la proporción poblacional p se encuentra entre ${lowerBound.toFixed(4)} y ${upperBound.toFixed(4)}.</div>
+                `;
+                
+                calculationSteps.push({
+                    title: "Resultado final",
+                    content: step8Content,
+                    rule: "Intervalo de confianza calculado"
+                });
+                
+                return {
+                    lower: lowerBound,
+                    upper: upperBound,
+                    marginOfError: marginOfError,
+                    standardError: standardError,
+                    criticalValue: critical.value,
+                    criticalType: 'z',
+                    df: null
+                };
+            };
+
+            // ==================== VISUALIZACIÓN DE RESULTADOS ====================
+
+            // Función para mostrar pasos
+            const displaySteps = () => {
+                stepsList.innerHTML = '';
+                calculationSteps.forEach((step, index) => {
+                    const stepDiv = document.createElement('div');
+                    stepDiv.className = 'step-item fade-in';
+                    stepDiv.style.animationDelay = `${index * 0.1}s`;
+                    
+                    const titleDiv = document.createElement('div');
+                    titleDiv.className = 'step-title';
+                    titleDiv.innerHTML = `
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 8v4l3 3"></path>
+                        </svg>
+                        Paso ${index + 1}: ${step.title}
+                    `;
+                    
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'step-content';
+                    contentDiv.appendChild(step.content);
+                    
+                    const ruleDiv = document.createElement('div');
+                    ruleDiv.className = 'step-rule';
+                    ruleDiv.textContent = step.rule;
+                    
+                    stepDiv.appendChild(titleDiv);
+                    stepDiv.appendChild(contentDiv);
+                    stepDiv.appendChild(ruleDiv);
+                    
+                    stepsList.appendChild(stepDiv);
+                });
+            };
+
+            // Función para dibujar la gráfica
+            const drawGraph = (intervalData, type) => {
+                const isDarkMode = document.body.classList.contains('dark');
+                const bgColor = isDarkMode ? '#1E293B' : '#FFFFFF';
+                const gridColor = isDarkMode ? '#334155' : '#E2E8F0';
+                const textColor = isDarkMode ? '#E2E8F0' : '#1E293B';
+                const confidenceColor = isDarkMode ? '#8B5CF6' : '#7C3AED';
+                const alphaColor = isDarkMode ? '#F87171' : '#EF4444';
+                
+                if (!intervalData) {
+                    // Dibujar gráfica vacía inicial - distribución normal
+                    const xValues = [];
+                    const yValues = [];
+                    
+                    for (let x = -4; x <= 4; x += 0.1) {
+                        xValues.push(x);
+                        yValues.push(Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI));
+                    }
+                    
+                    const trace = {
+                        x: xValues,
+                        y: yValues,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'Distribución Normal',
+                        line: {
+                            color: confidenceColor,
+                            width: 2
+                        },
+                        fill: 'tozeroy',
+                        fillcolor: isDarkMode ? 'rgba(139, 92, 246, 0.1)' : 'rgba(124, 58, 237, 0.1)'
+                    };
+                    
+                    const layout = {
+                        title: {
+                            text: 'Distribución Normal Estándar',
+                            font: {
+                                size: 16,
+                                color: textColor
+                            }
+                        },
+                        xaxis: {
+                            title: 'z',
+                            range: [-4, 4],
+                            zeroline: true,
+                            zerolinecolor: textColor,
+                            zerolinewidth: 1,
+                            gridcolor: gridColor,
+                            color: textColor
+                        },
+                        yaxis: {
+                            title: 'Densidad de probabilidad',
+                            zeroline: false,
+                            gridcolor: gridColor,
+                            color: textColor
+                        },
+                        plot_bgcolor: bgColor,
+                        paper_bgcolor: bgColor,
+                        font: {
+                            family: 'Inter, Arial, sans-serif',
+                            size: 12,
+                            color: textColor
+                        },
+                        margin: {
+                            l: 50,
+                            r: 50,
+                            t: 50,
+                            b: 50
+                        },
+                        showlegend: false
+                    };
+                    
+                    Plotly.newPlot('plot', [trace], layout, {
+                        responsive: true,
+                        displayModeBar: true,
+                        displaylogo: false
+                    });
+                    return;
+                }
+                
+                // Dibujar gráfica con intervalo de confianza
+                const criticalValue = intervalData.criticalValue;
+                const alpha = 1 - confidenceLevel;
+                
+                const xValues = [];
+                const yValues = [];
+                const xCenter = [];
+                const yCenter = [];
+                const xLeft = [];
+                const yLeft = [];
+                const xRight = [];
+                const yRight = [];
+                
+                for (let x = -4; x <= 4; x += 0.1) {
+                    xValues.push(x);
+                    const y = Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
+                    yValues.push(y);
+                    
+                    if (x < -criticalValue) {
+                        xLeft.push(x);
+                        yLeft.push(y);
+                    } else if (x > criticalValue) {
+                        xRight.push(x);
+                        yRight.push(y);
+                    } else {
+                        xCenter.push(x);
+                        yCenter.push(y);
+                    }
+                }
+                
+                const traces = [
+                    {
+                        x: xValues,
+                        y: yValues,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'Distribución Normal',
+                        line: {
+                            color: textColor,
+                            width: 1
+                        }
+                    },
+                    {
+                        x: xCenter,
+                        y: yCenter,
+                        type: 'scatter',
+                        mode: 'lines',
+                        fill: 'tozeroy',
+                        fillcolor: isDarkMode ? 'rgba(139, 92, 246, 0.3)' : 'rgba(124, 58, 237, 0.3)',
+                        name: `Confianza ${(confidenceLevel * 100).toFixed(1)}%`,
+                        line: {
+                            width: 0
+                        },
+                        showlegend: true
+                    },
+                    {
+                        x: xLeft,
+                        y: yLeft,
+                        type: 'scatter',
+                        mode: 'lines',
+                        fill: 'tozeroy',
+                        fillcolor: isDarkMode ? 'rgba(248, 113, 113, 0.3)' : 'rgba(239, 68, 68, 0.3)',
+                        name: `α/2 = ${(alpha/2).toFixed(3)}`,
+                        line: {
+                            width: 0
+                        },
+                        showlegend: true
+                    },
+                    {
+                        x: xRight,
+                        y: yRight,
+                        type: 'scatter',
+                        mode: 'lines',
+                        fill: 'tozeroy',
+                        fillcolor: isDarkMode ? 'rgba(248, 113, 113, 0.3)' : 'rgba(239, 68, 68, 0.3)',
+                        name: `α/2 = ${(alpha/2).toFixed(3)}`,
+                        line: {
+                            width: 0
+                        },
+                        showlegend: false
+                    }
+                ];
+                
+                // Añadir líneas verticales para los valores críticos
+                const criticalLineY = Math.exp(-0.5 * criticalValue * criticalValue) / Math.sqrt(2 * Math.PI);
+                
+                traces.push({
+                    x: [-criticalValue, -criticalValue],
+                    y: [0, criticalLineY],
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: `z = -${criticalValue.toFixed(2)}`,
+                    line: {
+                        color: alphaColor,
+                        width: 2,
+                        dash: 'dash'
+                    },
+                    showlegend: true
+                });
+                
+                traces.push({
+                    x: [criticalValue, criticalValue],
+                    y: [0, criticalLineY],
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: `z = ${criticalValue.toFixed(2)}`,
+                    line: {
+                        color: alphaColor,
+                        width: 2,
+                        dash: 'dash'
+                    },
+                    showlegend: false
+                });
+                
+                const layout = {
+                    title: {
+                        text: `Distribución Normal - Intervalo de Confianza ${(confidenceLevel * 100).toFixed(1)}%`,
+                        font: {
+                            size: 16,
+                            color: textColor
+                        }
+                    },
+                    xaxis: {
+                        title: 'z',
+                        range: [-4, 4],
+                        zeroline: true,
+                        zerolinecolor: textColor,
+                        zerolinewidth: 1,
+                        gridcolor: gridColor,
+                        color: textColor
+                    },
+                    yaxis: {
+                        title: 'Densidad de probabilidad',
+                        zeroline: false,
+                        gridcolor: gridColor,
+                        color: textColor
+                    },
+                    plot_bgcolor: bgColor,
+                    paper_bgcolor: bgColor,
+                    font: {
+                        family: 'Inter, Arial, sans-serif',
+                        size: 12,
+                        color: textColor
+                    },
+                    legend: {
+                        x: 0.02,
+                        y: 0.98,
+                        bgcolor: isDarkMode ? 'rgba(30,41,59,0.8)' : 'rgba(255,255,255,0.8)',
+                        bordercolor: isDarkMode ? '#334155' : '#E2E8F0',
+                        borderwidth: 1,
+                        font: {
+                            color: textColor
+                        }
+                    },
+                    margin: {
+                        l: 50,
+                        r: 50,
+                        t: 50,
+                        b: 50
+                    }
+                };
+                
+                Plotly.newPlot('plot', traces, layout, {
+                    responsive: true,
+                    displayModeBar: true,
+                    displaylogo: false
+                });
+            };
+
+            // Función para mostrar resultados
+            const displayResults = (intervalData) => {
+                // Mostrar tipo de intervalo
+                let typeText = '';
+                
+                if (currentIntervalType === 'mean') {
+                    const sigmaKnown = document.querySelector('input[name="sigma-known"]:checked').value;
+                    typeText = `Intervalo de confianza para la media poblacional (μ)`;
+                    intervalTypeDisplay.innerHTML = `
+                        <div><strong>${typeText}</strong></div>
+                        <div style="margin-top: 0.5rem; font-family: 'Times New Roman', Times, serif; font-size: 1.1rem;">
+                            x̄ ± ${sigmaKnown === 'known' ? 'z<sub>1-α/2</sub>' : 't<sub>1-α/2, n-1</sub>'} · ${sigmaKnown === 'known' ? 'σ' : 's'}/√n
+                        </div>
+                    `;
+                } else {
+                    typeText = `Intervalo de confianza para la proporción poblacional (p)`;
+                    intervalTypeDisplay.innerHTML = `
+                        <div><strong>${typeText}</strong></div>
+                        <div style="margin-top: 0.5rem; font-family: 'Times New Roman', Times, serif; font-size: 1.1rem;">
+                            p̂ ± z<sub>1-α/2</sub> · √[p̂(1-p̂)/n]
+                        </div>
+                    `;
+                }
+                
+                // Mostrar intervalo
+                const confidencePercent = (confidenceLevel * 100).toFixed(1);
+                if (currentIntervalType === 'mean') {
+                    intervalResult.innerHTML = `
+                        <div style="font-family: 'Times New Roman', Times, serif; font-size: 1.5rem;">
+                            ${intervalData.lower.toFixed(4)} ≤ μ ≤ ${intervalData.upper.toFixed(4)}
+                        </div>
+                    `;
+                } else {
+                    intervalResult.innerHTML = `
+                        <div style="font-family: 'Times New Roman', Times, serif; font-size: 1.5rem;">
+                            ${intervalData.lower.toFixed(4)} ≤ p ≤ ${intervalData.upper.toFixed(4)}
+                        </div>
+                    `;
+                }
+                
+                // Mostrar interpretación
+                const param = currentIntervalType === 'mean' ? 'media poblacional (μ)' : 'proporción poblacional (p)';
+                intervalInterpretation.innerHTML = `
+                    Con un ${confidencePercent}% de confianza, podemos afirmar que el verdadero valor de la ${param} 
+                    se encuentra entre ${intervalData.lower.toFixed(4)} y ${intervalData.upper.toFixed(4)}.
+                `;
+                
+                // Mostrar resultados detallados
+                resultsGrid.innerHTML = '';
+                
+                const resultItems = [
+                    { title: 'Límite inferior', value: intervalData.lower.toFixed(4) },
+                    { title: 'Límite superior', value: intervalData.upper.toFixed(4) },
+                    { title: 'Margen de error', value: intervalData.marginOfError.toFixed(4) },
+                    { title: 'Error estándar', value: intervalData.standardError.toFixed(4) },
+                    { title: `Valor crítico ${intervalData.criticalType}`, value: intervalData.criticalValue.toFixed(4) },
+                    { title: 'Nivel de confianza', value: `${confidencePercent}%` }
+                ];
+                
+                if (intervalData.df !== null) {
+                    resultItems.push({ title: 'Grados de libertad', value: intervalData.df });
+                }
+                
+                resultItems.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'result-item';
+                    div.innerHTML = `
+                        <div class="result-item-title">${item.title}</div>
+                        <div class="result-item-value">${item.value}</div>
+                    `;
+                    resultsGrid.appendChild(div);
+                });
+            };
+
+            // ==================== FUNCIONES PRINCIPALES ====================
+
+            // Función principal para calcular el intervalo
+            const calculateInterval = () => {
+                // Ocultar resultados anteriores
+                resultCard.classList.add('hidden');
+                errorDiv.classList.add('hidden');
+                stepsCard.classList.add('hidden');
+                
+                // Obtener nivel de confianza
+                if (confidenceLevelSelect.value === 'custom') {
+                    const customValue = parseFloat(customLevelInput.value);
+                    if (isNaN(customValue) || customValue <= 0 || customValue >= 100) {
+                        errorText.textContent = 'El nivel de confianza personalizado debe estar entre 0.1% y 99.9%';
+                        errorDiv.classList.remove('hidden');
+                        return;
+                    }
+                    confidenceLevel = customValue / 100;
+                } else {
+                    confidenceLevel = parseFloat(confidenceLevelSelect.value);
+                }
+                
+                try {
+                    let intervalData;
+                    
+                    if (currentIntervalType === 'mean') {
+                        // Validar entrada para media
+                        const xBar = parseFloat(sampleMeanInput.value);
+                        const sigma = parseFloat(stdDevInput.value);
+                        const n = parseInt(sampleSizeInput.value);
+                        const sigmaKnown = document.querySelector('input[name="sigma-known"]:checked').value;
+                        
+                        if (isNaN(xBar) || isNaN(sigma) || isNaN(n)) {
+                            errorText.textContent = 'Por favor ingrese valores válidos para todos los campos';
+                            errorDiv.classList.remove('hidden');
+                            return;
+                        }
+                        
+                        if (sigma <= 0) {
+                            errorText.textContent = 'La desviación estándar debe ser mayor que 0';
+                            errorDiv.classList.remove('hidden');
+                            return;
+                        }
+                        
+                        if (n <= 1) {
+                            errorText.textContent = 'El tamaño de muestra debe ser mayor que 1';
+                            errorDiv.classList.remove('hidden');
+                            return;
+                        }
+                        
+                        intervalData = calculateMeanInterval(xBar, sigma, n, sigmaKnown, confidenceLevel);
+                        
+                    } else {
+                        // Validar entrada para proporción
+                        const pHat = parseFloat(sampleProportionInput.value);
+                        const n = parseInt(proportionSampleSizeInput.value);
+                        
+                        if (isNaN(pHat) || isNaN(n)) {
+                            errorText.textContent = 'Por favor ingrese valores válidos para todos los campos';
+                            errorDiv.classList.remove('hidden');
+                            return;
+                        }
+                        
+                        if (pHat < 0 || pHat > 1) {
+                            errorText.textContent = 'La proporción muestral debe estar entre 0 y 1';
+                            errorDiv.classList.remove('hidden');
+                            return;
+                        }
+                        
+                        if (n <= 0) {
+                            errorText.textContent = 'El tamaño de muestra debe ser mayor que 0';
+                            errorDiv.classList.remove('hidden');
+                            return;
+                        }
+                        
+                        intervalData = calculateProportionInterval(pHat, n, confidenceLevel);
+                    }
+                    
+                    // Mostrar resultados
+                    displayResults(intervalData);
+                    resultCard.classList.remove('hidden');
+                    
+                    // Mostrar pasos
+                    stepsCard.classList.remove('hidden');
+                    displaySteps();
+                    
+                    // Dibujar gráfica
+                    drawGraph(intervalData, currentIntervalType);
+                    
+                } catch (error) {
+                    errorText.textContent = error.message;
+                    errorDiv.classList.remove('hidden');
+                    // Dibujar gráfica vacía
+                    drawGraph(null, currentIntervalType);
+                }
+            };
+
+            // Función para limpiar la interfaz
+            const clearInterface = () => {
+                // Limpiar inputs
+                sampleMeanInput.value = '';
+                stdDevInput.value = '';
+                sampleSizeInput.value = '30';
+                sampleProportionInput.value = '';
+                proportionSampleSizeInput.value = '100';
+                customLevelInput.value = '';
+                confidenceLevelSelect.value = '0.95';
+                customConfidenceDiv.classList.add('hidden');
+                
+                // Restablecer radios
+                document.querySelector('input[name="interval-type"][value="mean"]').checked = true;
+                document.querySelector('input[name="sigma-known"][value="unknown"]').checked = true;
+                meanInputs.classList.remove('hidden');
+                proportionInputs.classList.add('hidden');
+                
+                // Ocultar resultados
+                resultCard.classList.add('hidden');
+                errorDiv.classList.add('hidden');
+                stepsCard.classList.add('hidden');
+                stepsList.innerHTML = '';
+                
+                // Restablecer gráfica
+                drawGraph(null, 'mean');
+            };
+
+            // ==================== EVENT LISTENERS ====================
+
+            calculateBtn.addEventListener('click', calculateInterval);
+            clearBtn.addEventListener('click', clearInterface);
+            
+            theoryBtn.addEventListener('click', () => {
+                window.open('https://es.wikipedia.org/wiki/Intervalo_de_confianza', '_blank');
+            });
+
+            toggleStepsBtn.addEventListener('click', () => {
+                if (stepsContent.classList.contains('hidden')) {
+                    stepsContent.classList.remove('hidden');
+                    toggleStepsBtn.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>Ocultar detalle`;
+                } else {
+                    stepsContent.classList.add('hidden');
+                    toggleStepsBtn.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>Mostrar detalle`;
+                }
+            });
+
+            // ==================== TEMA OSCURO/CLARO ====================
+
+            function setTheme(isDark) {
+                document.body.classList.toggle('dark', isDark);
+                localStorage.setItem('darkMode', isDark);
+                
+                if (isDark) {
+                    themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+                } else {
+                    themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+                }
+                
+                // Actualizar gráfica si existe
+                try {
+                    drawGraph(null, currentIntervalType);
+                } catch (e) {
+                    // Ignorar errores si la gráfica no está inicializada
+                }
+            }
+
+            // Verificar preferencia del sistema o localStorage
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const storedDarkMode = localStorage.getItem('darkMode') === 'true';
+            setTheme(storedDarkMode || (localStorage.getItem('darkMode') === null && prefersDark));
+
+            themeToggle.addEventListener('click', () => {
+                const isDark = !document.body.classList.contains('dark');
+                setTheme(isDark);
+            });
+
+            // ==================== INICIALIZACIÓN ====================
+
+            // Dibujar gráfica inicial
+            drawGraph(null, 'mean');
+            
+            // Ejemplo de datos para probar
+            sampleMeanInput.value = '15.2';
+            stdDevInput.value = '2.5';
+            sampleSizeInput.value = '30';
+        });
+    </script>
+</body>
+</html>

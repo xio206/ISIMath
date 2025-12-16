@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Matemáticas Inteligentes</title>
+    
+    <link rel="shortcut icon" href="/assets/img/bot/monito.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="/styles/index.css">
+    <link rel="stylesheet" href="/styles/landing/landing.css">
+</head>
+<body>
+    
+    <header class="header" id="inicio">
+        <div class="header__icon">
+             <span class="header__icon-title">ISIMath</span>
+        </div>
+        
+        <nav class="header__nav-desktop">
+            <ul class="header__nav-list">
+                <li class="header__nav-item"><a href="#">Inicio</a></li>
+                <li class="header__nav-item"><a href="#tools">Herramientas</a></li>
+                <li class="header__nav-item"><a href="#explain">Explicacion</a></li>
+                <li class="header__nav-item"><a href="#testimony">Testimonios</a></li>
+                <li class="header__nav-item"><a href="#team">Equipo</a></li>
+            </ul>
+        </nav>
+
+        <div class="header__btn">
+            <button class="header__user">
+                <svg class="header__icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M4 22C4 17.5817 7.58172 14 12 14C16.4183 14 20 17.5817 20 22H18C18 18.6863 15.3137 16 12 16C8.68629 16 6 18.6863 6 22H4ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11Z"></path></svg>
+            </button>
+            <button class="header__dark">
+                <svg class="header__icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 7C10 10.866 13.134 14 17 14C18.9584 14 20.729 13.1957 21.9995 11.8995C22 11.933 22 11.9665 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C12.0335 2 12.067 2 12.1005 2.00049C10.8043 3.27098 10 5.04157 10 7ZM4 12C4 16.4183 7.58172 20 12 20C15.0583 20 17.7158 18.2839 19.062 15.7621C18.3945 15.9187 17.7035 16 17 16C12.0294 16 8 11.9706 8 7C8 6.29648 8.08133 5.60547 8.2379 4.938C5.71611 6.28423 4 8.9417 4 12Z"></path></svg>
+            </button>
+        </div>
+    </header>
+<!-- TODO: Recordar q esto es para el modo mobil, para la barra lateral derecha -->
+    <nav class="header__nav-mobil hide">
+        <ul class="header__nav-list">
+            <li class="header__nav-item"><a href="#inicio">Inicio</a></li>
+            <li class="header__nav-item"><a href="#tools">Herramientas</a></li>
+            <li class="header__nav-item"><a href="#explain">Explicacion</a></li>
+            <li class="header__nav-item"><a href="#testimony">Testimonios</a></li>
+            <li class="header__nav-item"><a href="#team">Equipo</a></li>
+        </ul>
+    </nav>
+
+<!-- TODO: Hero -->
+    <div class="hero" id="hero">
+        <img src="assets/img/bot/niños.jpg" alt="hero-img">
+        <h2 class="hero__title">BIENVENIDO A ISIMATH </h2>
+        <h2 class="hero__descrip">Herramienta matemática para solucionar tus problemas de cálculo y matrices.</h2>
+        <a href="/public/appi.html" class="hero__app">
+        PROBAR ISIMATH AHORA</a>
+        <a href="/public/teoria.html" class="hero__more">
+        Conocer mas</a>
+    </div>
+
+<!-- TODO: Vision -->
+
+    <div class="vision">
+        <h2 class="vision__title">Visión</h2>
+        <p class="vision__description">Una buena visión debe ser inspiradora, clara y proyectar el impacto que deseas tener a largo plazo. Aquí tienes algunas opciones, desde una más directa a una más conceptual:</p>
+    </div>
+
+<!-- TODO: Tools -->
+        
+        
+     <div class="container">
+        <h1 style="text-align: center;">HERRAMIENTAS</h1>
+        <section class="tools-section">
+            <div class="horizontal-scroll" id="toolsScroller">
+                 <div class="tool-card">
+            <div class="tool-icon">
+                <i class="fas fa-function"></i>
+            </div>
+            <div class="tool-content">
+                <h3>Derivadas</h3>
+                <p>Encuentra la tasa de cambio instantánea de una función. Utiliza nuestra herramienta para analizar pendientes, puntos máximos y mínimos, y la concavidad de una curva.</p>
+            </div>
+        </div>
+        
+        <div class="tool-card">
+            <div class="tool-icon">
+                <i class="fas fa-calculator"></i>
+            </div>
+            <div class="tool-content">
+                <h3>Integrales Indefinidas</h3>
+                <p>Resuelve la antiderivada de una función para encontrar la familia de funciones cuya derivada es la función original. Un paso fundamental en el cálculo integral.</p>
+            </div>
+        </div>
+        
+        <div class="tool-card">
+            <div class="tool-icon">
+                <i class="fas fa-square-root-alt"></i>
+            </div>
+            <div class="tool-content">
+                <h3>Calculadora</h3>
+                <p>Realiza operaciones aritméticas y algebraicas complejas de forma rápida y precisa. Una herramienta indispensable para verificar tus cálculos paso a paso.</p>
+            </div>
+        </div>
+        
+        <div class="tool-card">
+            <div class="tool-icon">
+                <i class="fas fa-border-all"></i>
+            </div>
+            <div class="tool-content">
+                <h3>Determinantes</h3>
+                <p>Calcula el valor escalar de una matriz cuadrada. Esencial para resolver sistemas de ecuaciones lineales y entender las propiedades de las transformaciones lineales.</p>
+            </div>
+        </div>
+        
+        <div class="tool-card">
+            <div class="tool-icon">
+                <i class="fas fa-exchange-alt"></i>
+            </div>
+            <div class="tool-content">
+                <h3>Inversas</h3>
+                <p>Encuentra la matriz inversa de una matriz dada. Simplifica la resolución de sistemas de ecuaciones matriciales y realiza operaciones avanzadas de álgebra lineal.</p>
+            </div>
+        </div>
+        
+        <div class="tool-card">
+            <div class="tool-icon">
+                <i class="fas fa-redo"></i>
+            </div>
+            <div class="tool-content">
+                <h3>Iterativos</h3>
+                <p>Resuelve sistemas de ecuaciones lineales mediante métodos iterativos como Jacobi o Gauss-Seidel, ideales para matrices grandes y dispersas donde los métodos directos son ineficientes.</p>
+            </div>
+        </div>
+
+        </section>
+    </div>
+
+<!-- TODO: Explicacion -->
+
+    <div class="explain" id="explain">
+        <h2 class="explain__title">Explicacion del Proyecto</h2>
+        <div class="explain__card">
+            <h3 class="explain__card-title">Landing Page</h3>
+            <p class="explain__card-description">Hicimos una landing page para presentar la app, como si seria para vender</p>
+        </div>
+        <div class="explain__card">
+            <h3 class="explain__card-title">Testimonios</h3>
+            <p class="explain__card-description">Personas a la cual se les hizo la encuesta</p>
+        </div>
+        <div class="explain__card">
+            <h3 class="explain__card-title">Team</h3>
+            <p class="explain__card-description">Mostrar el equipo, quienes participaron el logica, quienes en diseño y quienes en ambos</p>
+        </div>
+        <div class="explain__card">
+            <h3 class="explain__card-title">Aplicacion</h3>
+            <p class="explain__card-description">Dividida en 2, una para las funciones y otra para algebra lineal</p>
+        </div>
+
+    </div>
+
+<!-- TODO: Testimonios -->
+    <h2 class="testimony_title">
+        Testimonios
+    </h2>
+<div class="testimony__before" id="testimony">
+    
+    <!-- !ANTES DE CORRECCION -->
+    <!-- ?Carta de testimonio -->
+        <!-- !GRid de 3x3 -->
+        <div class="testimony__card">
+            <img src="/assets/img/Cueva.png" alt="" class="testimony__card-photo">
+            <h3 class="testimony__card-title">Jhony Cueva</h3>
+            <p class="testimony__card-description">Director de Escuela de Ingenieria de Sistemas e Informatica</p>
+            <p class="testimony__card-born">Barranca</p>
+            <p class="testimony__card-date">15/06/2025</p>
+            <div class="testimony__card-stars">
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                
+            </div>
+            <video class="testimony__video" src="/assets/video/cueva.mp4" controls ></video>
+            
+        </div>
+
+        <div class="testimony__card">
+            <img src="/assets/img/Farro.jpg" alt="" class="testimony__card-photo">
+            <h3 class="testimony__card-title">Jeffer Harold Farro Regalado</h3>
+            <p class="testimony__card-description">Docente de Redes y Herramientas Digitales</p>
+            <p class="testimony__card-born">Huacho</p>
+            <p class="testimony__card-date">17/06/2025</p>
+            <div class="testimony__card-stars">
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                
+            </div>
+            <video class="testimony__video" src="/assets/video/farro.mp4" controls ></video>
+
+        </div>
+    </div>
+    <!-- !DESPUES DE CORRECCION -->
+     <h2 class="testimony_title">
+        Encuesta
+    </h2>
+    <div class="testimony__after">
+        <!-- ?Carta de testimonio -->
+        <div class="testimony__card">
+            <img src="/assets/img/Celis.png" alt="" class="testimony__card-photo">
+            <h3 class="testimony__card-title">Celis Rojas Santos Ricardo</h3>
+            <p class="testimony__card-description">Docente de Fisica 2</p>
+            <p class="testimony__card-born">Barranca</p>
+            <p class="testimony__card-date">14/06/2025</p>
+            <div class="testimony__card-stars">
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                
+            </div>
+            <video class="testimony__video" src="/assets/video/Celis.mp4" controls ></video>
+
+        </div>
+
+        <div class="testimony__card">
+            <img src="/assets/img/LaBorda.png" alt="" class="testimony__card-photo">
+            <h3 class="testimony__card-title">Leo La Borda</h3>
+            <p class="testimony__card-description">Director de escuela de ingenieria civil</p>
+            <p class="testimony__card-born">Barranca</p>
+            <p class="testimony__card-date">14/06/2025</p>
+            <div class="testimony__card-stars">
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                <svg class="testimony__star-deactive hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26ZM12.0006 15.968L16.2473 18.3451L15.2988 13.5717L18.8719 10.2674L14.039 9.69434L12.0006 5.27502L9.96214 9.69434L5.12921 10.2674L8.70231 13.5717L7.75383 18.3451L12.0006 15.968Z"></path></svg>
+                
+            </div>
+            <video class="testimony__video" src="/assets/video/LaBorda.mp4" controls ></video>
+
+        </div>
+    </div>
+
+<!-- TODO: Nuestro equipo -->
+<!-- !Animacion de Carrusel, q resalte el elemento principal q estara en medio -->
+    <div class="team" id="team">
+        <div class="team__card">
+            <img src="assets/icons/maxito.jpg" alt="" class="team__card-img">
+            <h3 class="team__card-title">Maxito</h3>
+            <div class="team__card-skills">
+                <div class="skill__logic skill">Lógica</div>
+                <div class="skill__design skill">Diseño</div>
+            </div>
+            <p class="team__card-description">Estructura General del proyecto ISIMath</p>
+        </div>
+
+        <div class="team__card">
+            <img src="assets/icons/guadalupe.jpg" alt="" class="team__card-img">
+            <h3 class="team__card-title">Guadalupe</h3>
+            <div class="team__card-skills">
+                <div class="skill__design skill">Diseño</div>
+                <div class="skill__logic skill">Lógica</div>
+            </div>
+            <p class="team__card-description">Diseño General y enlaces</p>
+        </div>
+
+        <div class="team__card">
+            <img src="assets/icons/jackeliine.jpg" alt="" class="team__card-img">
+            <h3 class="team__card-title">Jaqueline</h3>
+            <div class="team__card-skills">
+                <div class="skill__design skill">design</div>
+                <div class="skill__logic skill">logic</div>
+            </div>
+            <p class="team__card-description">Diseño General y enlaces</p>
+        </div>
+
+        <div class="team__card">
+            <img src="assets/icons/Daniel.jpg" alt="" class="team__card-img">
+            <h3 class="team__card-title">Daniel</h3>
+            <div class="team__card-skills">
+                <div class="skill__logic skill">Lógica</div>
+            </div>
+            <p class="team__card-description">Logica de Integrales Definidas e Indefinidas</p>
+        </div>
+
+        <div class="team__card">
+            <img src="assets/icons/Christ.jpg" alt="" class="team__card-img">
+            <h3 class="team__card-title">Christ</h3>
+            <div class="team__card-skills">
+                <div class="skill__logic skill">Lógica</div>
+            </div>
+            <p class="team__card-description">Maquetacion y Desing Thinking</p>
+        </div>
+
+        <div class="team__card">
+            <img src="assets/icons/Franco.jpg" alt="" class="team__card-img">
+            <h3 class="team__card-title">Franco</h3>
+            <div class="team__card-skills">
+                <div class="skill__logic skill">Lógica</div>
+            </div>
+            <p class="team__card-description">Logica de Limites y Derivadas</p>
+        </div>
+
+        <div class="team__card">
+            <img src="/assets/icons/Anderson.jpg" alt="" class="team__card-img">
+            <h3 class="team__card-title">Anderson</h3>
+            <div class="team__card-skills">
+                <div class="skill__design skill">design</div>
+            </div>
+            <p class="team__card-description">Desing Thinking</p>
+        </div>
+
+        <div class="team__card">
+            <img src="/assets/icons/Xiomara.jpg" alt="" class="team__card-img">
+            <h3 class="team__card-title">Xiomara</h3>
+            <div class="team__card-skills">
+                <div class="skill__design skill">design</div>
+            </div>
+            <p class="team__card-description">Desing Thinking</p>
+        </div>
+
+        <div class="team__card">
+            <img src="assets/icons/Diego.jpg" alt="" class="team__card-img">
+            <h3 class="team__card-title">Diego</h3>
+            <div class="team__card-skills">
+                <div class="skill__design skill">design</div>
+            </div>
+            <p class="team__card-description">Desing Thinking</p>
+        </div>
+
+        <div class="team__card">
+            <img src="assets/icons/Juancito.jpeg" alt="" class="team__card-img">
+            <h3 class="team__card-title">Juan</h3>
+            <div class="team__card-skills">
+                <div class="skill__design skill">design</div>
+            </div>
+            <p class="team__card-description">Desing Thinking</p>
+        </div>
+
+        <div class="team__card">
+            <img src="/assets/icons/Joel.jpeg" alt="" class="team__card-img">
+            <h3 class="team__card-title">Joel</h3>
+            <div class="team__card-skills">
+                <div class="skill__design skill">design</div>
+            </div>
+            <p class="team__card-description">Desing Thinking</p>
+        </div>
+    </div>
+
+<!-- TODO: Footer -->
+    <footer class="footer">
+        <div class="footer__content">
+            <div class="footer__section footer__brand">
+                <div class="header__icon">
+                    <svg class="header__icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4H21V6H3V4ZM3 11H21V13H3V11ZM3 18H21V20H3V18Z"></path></svg>
+                    <span class="header__icon-title">ISIMath</span>
+                </div>
+                <p class="footer__description">
+                    Tu compañero inteligente para resolver problemas de cálculo y matrices.
+                </p>
+            </div>
+
+            <div class="footer__section footer__navigation">
+                <h2>Navegar</h2>
+                <ul>
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="#tools">Herramientas</a></li>
+                    <li><a href="#explain">Explicación</a></li>
+                    <li><a href="#testimony">Testimonios</a></li>
+                    <li><a href="#team">Equipo</a></li>
+                </ul>
+            </div>
+
+            <div class="footer__section footer__social">
+                <h2>Síguenos</h2>
+                <div class="social__icons">
+                    <a href="https://www.facebook.com/share/16hqDwa25Y/" class="icon__social" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 320 512" fill="#1877F2">
+                            <path d="M279.14 288l14.22-92.66h-88.91V134.42c0-25.35 12.42-50.06 52.24-50.06H293V6.26S259.5 0 225.36 0c-73.61 0-121.36 44.38-121.36 124.72V195.3H22.89V288h81.11v224h100.2V288z"/>
+                        </svg>
+                        <span>Facebook</span>
+                    </a>
+                    <a href="https://github.com/JMax-Trujillo/IsiMath" class="icon__social" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.493.998.108-.776.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.807 24 17.322 24 12 24 5.373 18.627 0 12 0z"></path></svg>
+                        <span>Github - App Init</span>
+                    </a>
+                    <a href="https://github.com/JMax-Trujillo/Isimath-v2" class="icon__social" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.493.998.108-.776.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.807 24 17.322 24 12 24 5.373 18.627 0 12 0z"></path></svg>
+                        <span>Github - App Final</span>
+                    </a>
+                    <a href="https://www.portal.unab.edu.pe/" class="icon__social" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM9.5 11h5c.28 0 .5-.22.5-.5s-.22-.5-.5-.5h-5c-.28 0-.5.22-.5.5s.22.5.5.5zm0 2h5c.28 0 .5-.22.5-.5s-.22-.5-.5-.5h-5c-.28 0-.5.22-.5.5s.22.5.5.5z"></path></svg>
+                        <span>UNAB</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer__section footer__contact">
+                <h2>Contacto</h2>
+                <p>Email: jtrujillo241@unab.edu.pe</p>
+                <p>Email: ggutierrez243@unab.edu.pe</p>
+                <p>Email: jespinoza243@unab.edu.pe</p>
+                <p>Email: despinoza243@unab.edu.pe</p>
+                <p>Email: fsoto243@unab.edu.pe</p>
+                <p>Email: xampuero243@unab.edu.pe</p>
+                <p>Email: dhuayhua241@unab.edu.pe</p>
+                <p>Email: ahuaman242@unab.edu.pe</p>
+                <p>Email: jvaldez242@unab.edu.pe</p>
+                <p>Email: jalarcon241@unab.edu.pe</p>
+                <p>Email: jverde241@unab.edu.pe</p>
+            </div>
+        </div>
+    </footer>
+    <script src="styles/landing/landing.js"></script>
+    <script>
+         // Navegación del scroll horizontal
+        const scroller = document.getElementById('toolsScroller');
+        const scrollLeftBtn = document.getElementById('scrollLeft');
+        const scrollRightBtn = document.getElementById('scrollRight');
+
+        function updateScrollButtons() {
+            scrollLeftBtn.disabled = scroller.scrollLeft === 0;
+            scrollRightBtn.disabled = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 10;
+        }
+
+        scroller.addEventListener('scroll', updateScrollButtons);
+        window.addEventListener('resize', updateScrollButtons);
+        updateScrollButtons();
+        
+        scrollLeftBtn.addEventListener('click', () => {
+            scroller.scrollBy({ left: -320, behavior: 'smooth' });
+        });
+
+        scrollRightBtn.addEventListener('click', () => {
+            scroller.scrollBy({ left: 320, behavior: 'smooth' });
+        });
+
+        // Creación de partículas
+        function createParticles() {
+            const container = document.getElementById('particles');
+            container.innerHTML = '';
+            
+            const particleCount = 30;
+            const isDarkMode = body.getAttribute('data-theme') === 'dark';
+            const particleColor = isDarkMode ? 'rgba(100, 255, 218, 0.5)' : 'rgba(43, 108, 176, 0.4)';
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Tamaño aleatorio entre 2px y 6px
+                const size = Math.random() * 4 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.background = particleColor;
+                
+                // Posición aleatoria
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Duración y delay de animación aleatorios
+                const duration = Math.random() * 20 + 10;
+                const delay = Math.random() * 5;
+                particle.style.animation = `float ${duration}s linear ${delay}s infinite`;
+                
+                container.appendChild(particle);
+            }
+        }
+
+        // Inicializar partículas
+        createParticles();
+    </script>
+</body>
+</html> 

@@ -1,0 +1,79 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-size: 62.5%; /* Esta línea ya la tienes, la mantenemos */
+    background-color: var(--landing-primary-light); /* Usamos tu variable para Azul Bondi */
+    color: var(--landing-text-light); /* Para que el texto sea legible sobre el Azul Bondi */
+}
+
+/* Si tienes configurado un modo oscuro y quieres que el fondo también cambie en ese modo */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: var(--landing-bg-dark); /* Usar el fondo oscuro que ya definiste */
+        color: var(--landing-text-dark); /* Color de texto para el modo oscuro */
+    }
+}
+.hide {
+    display: none;
+}
+
+:root {
+    /* Modo Claro */
+    --landing-bg-light: #002d3a; /* Un azul claro suave y etéreo, como el cielo despejado */
+    --landing-surface-light: #B7D9EB; /* Un azul medio claro que contrasta sutilmente con el fondo */
+    --landing-primary-light: #1E90FF; /* Azul intenso (Dodger Blue) para acciones principales */
+    --landing-secondary-light: #2ECC71; /* Verde esmeralda vibrante para elementos secundarios */
+    --landing-text-light: #001F3F; /* Azul marino muy oscuro, casi negro, para máxima legibilidad */
+    --landing-border-light: #28A745; /* Un verde más profundo para bordes destacados */
+    --landing-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra estándar */
+    --landing-error-light: #000000; /* Negro para indicar error, contrasta fuertemente */
+
+    /* Modo Oscuro (se mantiene igual) */
+    --landing-bg-dark: #00001A; /* Azul marino extremadamente oscuro, casi negro */
+    --landing-surface-dark: #001A4C; /* Azul oscuro para superficies, contrasta con el fondo */
+    --landing-primary-dark: #87CEFA; /* Azul cielo claro para acciones principales en oscuro */
+    --landing-secondary-dark: #00FF00; /* Verde neón brillante para elementos secundarios, ¡que resalte! */
+    --landing-text-dark: #FFFFFF; /* Blanco puro para texto en fondo oscuro */
+    --landing-border-dark: #32CD32; /* Verde lima brillante para bordes destacados en oscuro */
+    --landing-shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.4); /* Sombra más pronunciada en oscuro */
+    --landing-error-dark: #3CB371; /* Un verde medio brillante para indicar error, distinto pero dentro de la paleta */
+}
+/* Dentro de tu bloque @media (prefers-color-scheme: dark) */
+@media (prefers-color-scheme: dark) {
+    /* ... otros estilos de modo oscuro ... */
+
+    .testimonial-card { /* ¡REEMPLAZA '.testimonial-card' con la clase real! */
+        background-color: var(--landing-surface-dark); /* Esto usará tu Azul Oscuro */
+        color: var(--landing-text-dark); /* Texto más claro para el modo oscuro */
+        box-shadow: var(--landing-shadow-dark); /* Una sombra diferente para el modo oscuro */
+    }
+}
+/* 
+Azul RAF	        #6a8ca4
+Azul Bondi         	#0095b6
+Azul Tiffany     	#a0e6d0
+Celeste            	#c4ffff
+Azul Claro        	#b2dbe6
+Azul Bebe	        #a2ddf6
+Azul Maya       	#73c9f4
+Azul Capri	        #35c3ff
+Azur	            #1ca0ff
+Azul Francia     	#4e96f0
+Azul Royal	        #4d6edb
+TONALIDADES OSCURAS 
+Índigo	            #2f61aa
+Azul Grisáceo   	#709db6
+Azul Acero       	#5a87a8
+Azul Cobalto    	#004f9f
+Azul de Persia   	#345aa3
+Azul                 	#0000ff
+Azul Medio	        #000fd3
+Azul Oscuro      	#001a80
+Azul Marino	        #001452
+Azul Oxford	        #082539
+Azul de Prusia  	#0b2e4a
+*/

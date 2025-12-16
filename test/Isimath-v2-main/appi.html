@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sección de Contenido Estática sin Borde</title>
+    <style>
+        :root {
+            /* Colores Base */
+            --primary-bg: #4472a5; /* Fondo claro */
+            --text-color: #ffffff; /* Texto oscuro */
+            --accent-color-1: #93adc4; /* Azul para botón primario y secundario */
+            --accent-color-2: #93adc4; /* Mantener por si se quiere diferenciar más adelante */
+            --hover-color-1: #6ca4dd; /* Color de fondo al pasar el ratón para ambos */
+            --hover-color-2: #6ca4dd; /* Mantener por si se quiere diferenciar más adelante */
+            --shadow-light: rgba(0, 0, 0, 0.0); /* Sombra transparente para eliminar el efecto de borde */
+            --shadow-hover: rgba(0, 0, 0, 0.548); /* Sombra más pronunciada al interactuar */
+            --transition-duration: 0.2s;
+            --transition-easing: ease-in-out;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Para centrar verticalmente en la página */
+        }
+
+        .content-section {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            max-width: 800px;
+            margin: auto;
+            border-radius: 8px; /* Mantiene un pequeño borde redondeado */
+            /* box-shadow: 0 2px 4px var(--shadow-light); */ /* Se ha eliminado o hecho transparente */
+            /* Se mantienen estáticos sin transición ni transformación */
+        }
+
+        .content-section__title {
+            font-size: clamp(2rem, 5vw, 2.5rem); /* Ajuste de tamaño de fuente responsivo */
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .content-section__description {
+            font-size: clamp(1rem, 3vw, 1.1rem); /* Ajuste de tamaño de fuente responsivo */
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+        }
+
+        .content-section__buttons {
+            display: flex;
+            flex-direction: column; /* Los botones se apilan uno debajo del otro */
+            justify-content: center;
+            gap: 1rem; /* Espacio vertical entre los botones */
+            align-items: center; /* Centra los botones horizontalmente si no ocupan todo el ancho */
+            margin-bottom: 2rem; /* Espacio entre los botones y el texto inferior */
+        }
+
+        .btn {
+            display: inline-block; /* Ocupará solo el espacio de su contenido */
+            width: fit-content; /* Se ajusta al ancho del contenido */
+            min-width: 180px; /* Ancho mínimo para que no sean demasiado pequeños */
+            padding: 0.8rem 2rem;
+            border-radius: 50px; /* ¡Cambiado a 50px para hacer las esquinas más circulares! */
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color var(--transition-duration) var(--transition-easing),
+                        color var(--transition-duration) var(--transition-easing), /* Añadido transición para el color del texto */
+                        border-color var(--transition-duration) var(--transition-easing), /* Añadido transición para el color del borde */
+                        transform var(--transition-duration) var(--transition-easing),
+                        box-shadow var(--transition-duration) var(--transition-easing);
+            box-shadow: 0 2px 4px var(--shadow-light);
+            text-align: center; /* Asegura que el texto esté centrado dentro del botón */
+        }
+
+        /* Ambos botones ahora tienen el mismo estilo inicial y de hover */
+        .btn--primary,
+        .btn--secondary {
+            background-color: transparent;
+            color: var(--accent-color-1);
+            border: 2px solid var(--accent-color-1);
+        }
+
+        .btn--primary:hover,
+        .btn--secondary:hover {
+            background-color: var(--hover-color-1);
+            color: #ffffff;
+            border-color: var(--hover-color-1); /* Asegura que el borde también cambie */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow-hover);
+        }
+
+        .future-projects {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem; /* Espacio desde el contenedor de botones */
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .future-projects__button {
+            display: inline-flex; /* Usa flex para centrar el ">" */
+            align-items: center;
+            justify-content: center;
+            width: 24px; /* Ancho fijo para el botón */
+            height: 24px; /* Alto fijo para el botón */
+            border-radius: 50%; /* Lo hace redondo */
+            background-color: var(--accent-color-1); /* Color de fondo del botón */
+            color: #000000; /* Color de la flecha */
+            text-decoration: none; /* Quita el subrayado del enlace */
+            font-weight: bold;
+            font-size: 1rem;
+            transition: background-color var(--transition-duration) var(--transition-easing), 
+                        transform var(--transition-duration) var(--transition-easing),
+                        box-shadow var(--transition-duration) var(--transition-easing);
+            cursor: pointer; /* Cambia el cursor a una mano */
+            box-shadow: 0 2px 4px var(--shadow-light); /* Sombra sutil */
+        }
+
+        .future-projects__button:hover {
+            background-color: var(--hover-color-1); /* Color al pasar el ratón */
+            transform: translateX(3px); /* Pequeño desplazamiento a la derecha */
+            box-shadow: 0 4px 8px var(--shadow-hover); /* Sombra más pronunciada al pasar el ratón */
+        }
+
+        /* Responsive para pantallas muy pequeñas */
+        @media (max-width: 480px) {
+            .content-section {
+                padding: 2rem 1rem; /* Reduce el padding en pantallas muy pequeñas */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="content-section">
+        <h2 class="content-section__title">
+            ISIMath
+        </h2>
+        <p class="content-section__description">
+            Esta es una descripción detallada que explica el propósito o el contenido de esta sección. Puedes reemplazar este texto con la información que desees transmitir a tus usuarios. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <div class="content-section__buttons">
+            <a href="funcionesbarra.html" class="btn btn--primary">FUNCIONES</a>
+            <a href="matricesbarra.html" class="btn btn--secondary">MATRICES</a>
+        </div>
+        <div class="future-projects">
+            <span>PROYECTOS A FUTURO</span>
+            <a href="proyectosfuturos.html" class="future-projects__button">&gt;</a>
+        </div>
+    </section>
+
+</body>
+</html>

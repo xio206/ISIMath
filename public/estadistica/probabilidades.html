@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Probabilidades</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Variables de Color --- */
+        :root {
+            /* Colores modo claro */
+            --bg-light: #f8fafc;
+            --surface-light: #ffffff;
+            --text-light: #1e293b;
+            --primary-light: #3b82f6;
+            --primary-light-hover: #2563eb;
+            --secondary-light: #10b981;
+            --secondary-light-hover: #0d9f76;
+            --accent-light: #8b5cf6;
+            --accent-light-hover: #7c3aed;
+            --border-light: #e2e8f0;
+            --error-light: #ef4444;
+            --success-light: #10b981;
+            --text-muted-light: #64748b;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            
+            /* Colores modo oscuro */
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --text-dark: #e2e8f0;
+            --primary-dark: #60a5fa;
+            --primary-dark-hover: #93c5fd;
+            --secondary-dark: #10b981;
+            --secondary-dark-hover: #34d399;
+            --accent-dark: #a78bfa;
+            --accent-dark-hover: #c4b5fd;
+            --border-dark: #334155;
+            --error-dark: #f87171;
+            --success-dark: #34d399;
+            --text-muted-dark: #94a3b8;
+            --shadow-sm-dark: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md-dark: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-lg-dark: 0 10px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- Estilos Base --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+        body.dark { background-color: var(--bg-dark); color: var(--text-dark); }
+
+        /* --- Layout --- */
+        .app-container {
+            display: grid;
+            grid-template-columns: minmax(300px, 400px) 1fr;
+            gap: 2rem;
+            min-height: 100vh;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        @media (max-width: 1024px) { .app-container { grid-template-columns: 1fr; padding: 1.5rem; } }
+        @media (max-width: 640px) { .app-container { padding: 1rem; gap: 1.5rem; } }
+
+        /* --- Paneles --- */
+        .input-panel {
+            display: flex; flex-direction: column; gap: 1.5rem; position: sticky; top: 2rem; height: fit-content;
+        }
+        @media (max-width: 1024px) { .input-panel { position: static; } }
+
+        .panel-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        body.dark .panel-card { background-color: var(--surface-dark); border-color: var(--border-dark); box-shadow: var(--shadow-md-dark); }
+
+        .panel-title {
+            font-size: 1.25rem; font-weight: 600; color: var(--primary-light); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;
+        }
+        body.dark .panel-title { color: var(--primary-dark); }
+        .panel-title svg { width: 1.25rem; height: 1.25rem; }
+
+        /* --- Formulario --- */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-light); }
+        body.dark .form-label { color: var(--text-dark); }
+        
+        .input-group { display: flex; flex-direction: column; gap: 0.75rem; }
+        .input-field {
+            width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: 8px;
+            background-color: var(--surface-light); color: var(--text-light); font-size: 1rem; transition: all 0.2s ease;
+        }
+        body.dark .input-field { background-color: var(--surface-dark); border-color: var(--border-dark); color: var(--text-dark); }
+        .input-field:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        body.dark .input-field:focus { border-color: var(--primary-dark); box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2); }
+
+        /* --- Botones --- */
+        .btn-group-vertical {
+            display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-light);
+        }
+        body.dark .btn-group-vertical { border-top-color: var(--border-dark); }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            background-color: var(--primary-light); color: white; border: none;
+            padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500; cursor: pointer;
+            transition: all 0.2s ease; font-size: 1rem; width: 100%; gap: 0.5rem;
+        }
+        body.dark .btn { background-color: var(--primary-dark); }
+        .btn:hover { background-color: var(--primary-light-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        body.dark .btn:hover { background-color: var(--primary-dark-hover); }
+        .btn:active { transform: translateY(0); }
+
+        .btn-secondary {
+            background-color: var(--secondary-light);
+            color: white;
+            border: none;
+        }
+        body.dark .btn-secondary {
+            background-color: var(--secondary-dark);
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: var(--secondary-light-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        body.dark .btn-secondary:hover {
+            background-color: var(--secondary-dark-hover);
+        }
+
+        /* --- Resultados --- */
+        .output-panel { display: flex; flex-direction: column; gap: 1.5rem; }
+        
+        /* CORRECCIÓN PRINCIPAL: Espaciado entre tarjetas de resultados */
+        #resultsContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* Separa los cuadros de Resultados, Gráfica y Procedimiento */
+        }
+
+        .result-card {
+            background-color: var(--surface-light); border-radius: 12px; border: 1px solid var(--border-light);
+            padding: 1.5rem; transition: all 0.3s ease;
+        }
+        body.dark .result-card { background-color: var(--surface-dark); border-color: var(--border-dark); }
+
+        .result-title {
+            font-size: 1.25rem; font-weight: 600; color: var(--primary-light); margin-bottom: 1rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        body.dark .result-title { color: var(--primary-dark); }
+
+        .interval-display {
+            text-align: center; margin: 1.5rem 0; padding: 1.5rem;
+            background-color: var(--surface-light); border-radius: 8px; border: 2px solid var(--accent-light);
+        }
+        body.dark .interval-display { background-color: var(--surface-dark); border-color: var(--accent-dark); }
+
+        .interval-value { font-size: 2rem; font-weight: 600; color: var(--accent-light); margin: 0.5rem 0; }
+        body.dark .interval-value { color: var(--accent-dark); }
+
+        .graph-container {
+            width: 100%; height: 400px; background-color: var(--surface-light);
+            border-radius: 8px; border: 1px solid var(--border-light); overflow: hidden;
+        }
+        body.dark .graph-container { background-color: var(--surface-dark); border-color: var(--border-dark); }
+
+        /* --- CORRECCIÓN ESPACIADO PROCEDIMIENTO (FÓRMULAS) --- */
+        .steps-container {
+            background-color: var(--surface-light); border-radius: 12px; border: 1px solid var(--border-light);
+            padding: 1.5rem; transition: all 0.3s ease; overflow-x: auto;
+        }
+        body.dark .steps-container { background-color: var(--surface-dark); border-color: var(--border-dark); }
+
+        #stepContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem; /* Separación vertical entre bloques */
+            line-height: 2; /* Altura de línea para texto */
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+        
+        body.dark #stepContainer {
+            color: var(--text-dark);
+        }
+
+        #stepContainer mjx-container {
+            margin: 0.5rem 0 !important;
+            display: block !important; 
+        }
+
+        .error-message {
+            color: white; margin-top: 0.5rem; font-size: 0.875rem; padding: 0.75rem;
+            background-color: #A00000; border-radius: 6px; border: 1px solid #700000;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        body.dark .error-message { background-color: #8B0000; border-color: #6A0000; }
+
+        /* --- Toggle Tema --- */
+        .theme-toggle {
+            position: fixed; bottom: 1.5rem; right: 1.5rem; background-color: var(--surface-light);
+            color: var(--text-light); border: none; border-radius: 50%; width: 48px; height: 48px;
+            cursor: pointer; font-size: 1.2rem; transition: all 0.3s ease; z-index: 100;
+            box-shadow: var(--shadow-lg); display: flex; align-items: center; justify-content: center;
+        }
+        body.dark .theme-toggle { background-color: var(--surface-dark); color: var(--text-dark); box-shadow: var(--shadow-lg-dark); }
+        .theme-toggle:hover { transform: scale(1.05); }
+
+        /* --- Icons & Radios --- */
+        .icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
+        .radio-group { display: flex; gap: 1rem; margin: 0.5rem 0; flex-wrap: wrap; }
+        .radio-option { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+        .radio-input { display: none; }
+        .radio-custom {
+            width: 1.25rem; height: 1.25rem; border: 2px solid var(--border-light); border-radius: 50%;
+            position: relative; transition: all 0.2s ease;
+        }
+        body.dark .radio-custom { border-color: var(--border-dark); }
+        .radio-input:checked + .radio-custom { border-color: var(--primary-light); background-color: var(--primary-light); }
+        body.dark .radio-input:checked + .radio-custom { border-color: var(--primary-dark); background-color: var(--primary-dark); }
+        .radio-input:checked + .radio-custom::after {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 0.625rem; height: 0.625rem; background-color: white; border-radius: 50%;
+        }
+        .radio-label { font-weight: 500; color: var(--text-light); }
+        body.dark .radio-label { color: var(--text-dark); }
+
+        /* --- Utils & Probabilidades --- */
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .event-row {
+            display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.75rem; margin-bottom: 0.75rem;
+            align-items: end; background-color: var(--bg-light); padding: 0.75rem; border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+        body.dark .event-row { background-color: var(--bg-dark); border-color: var(--border-dark); }
+
+        .row-btn {
+            height: 42px; width: 42px; background-color: rgba(239, 68, 68, 0.1); color: var(--error-light);
+            border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
+        }
+        body.dark .row-btn { background-color: rgba(248, 113, 113, 0.1); color: var(--error-dark); border-color: rgba(248, 113, 113, 0.2); }
+        .row-btn:hover { background-color: var(--error-light); color: white; }
+        body.dark .row-btn:hover { background-color: var(--error-dark); }
+
+        .empty-state {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 3rem; color: var(--text-muted-light);
+        }
+        body.dark .empty-state { color: var(--text-muted-dark); }
+        .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="input-panel">
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    Configuración de Probabilidad
+                </h2>
+
+                <div class="form-group">
+                    <label class="form-label">Método de cálculo:</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="main-method" value="laplace" class="radio-input" checked onclick="switchMainTab('laplace')">
+                            <span class="radio-custom"></span>
+                            <span class="radio-label">Regla de Laplace</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="main-method" value="bayes" class="radio-input" onclick="switchMainTab('bayes')">
+                            <span class="radio-custom"></span>
+                            <span class="radio-label">Teorema de Bayes</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="formLaplace" class="fade-in">
+                    <div class="form-group">
+                        <label class="form-label">Casos Favorables:</label>
+                        <input type="number" id="lapFavorable" class="input-field" placeholder="Ej: 1" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Casos Totales:</label>
+                        <input type="number" id="lapTotal" class="input-field" placeholder="Ej: 6" min="1">
+                    </div>
+                    <div id="errorLap" class="error-message hidden"></div>
+                    <button class="btn" onclick="calcLaplace()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 11a9 9 0 0 1 9 9"></path>
+                            <path d="M4 4a16 16 0 0 1 16 16"></path>
+                            <circle cx="5" cy="19" r="1"></circle>
+                        </svg>
+                        Calcular Probabilidad
+                    </button>
+                </div>
+
+                <div id="formBayes" class="fade-in hidden">
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Teorema:</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="bayes-mode" value="simple" class="radio-input" checked onclick="switchBayesMode('simple')">
+                                <span class="radio-custom"></span>
+                                <span class="radio-label">Simple (Binario)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="bayes-mode" value="multi" class="radio-input" onclick="switchBayesMode('multi')">
+                                <span class="radio-custom"></span>
+                                <span class="radio-label">Múltiple (N Causas)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="bayesSimpleInputs">
+                        <div class="form-group">
+                            <label class="form-label">1. Probabilidad Base P(A):</label>
+                            <input type="number" id="bayesPA" class="input-field" placeholder="Ej: 0.01" step="0.001">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="color: var(--success-light);">2. Acierto P(B|A):</label>
+                            <input type="number" id="bayesPBA" class="input-field" placeholder="Ej: 0.99" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="color: var(--error-light);">3. Falsa Alarma P(B|no A):</label>
+                            <input type="number" id="bayesPBnotA" class="input-field" placeholder="Ej: 0.05" step="0.01">
+                        </div>
+                        <button class="btn" onclick="calcBayesSimple()">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                            </svg>
+                            Calcular Bayes Simple
+                        </button>
+                    </div>
+
+                    <div id="bayesMultiInputs" class="hidden">
+                        <div class="form-group">
+                            <label class="form-label">Eventos (Causas):</label>
+                            <p style="font-size:0.85rem; color:var(--text-muted-light); margin-bottom:1rem;">
+                                La suma de P(A) debe ser 1.
+                            </p>
+                            <div id="eventsContainer"></div>
+                            
+                            <button class="btn btn-secondary" onclick="addEventRow()" style="margin-top: 0.5rem; background-color: var(--surface-light); color: var(--text-light); border: 1px solid var(--border-light);">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Agregar Evento
+                            </button>
+                        </div>
+                        <button class="btn" onclick="calcBayesMulti()">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="12" y1="8" x2="12" y2="16"></line>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                            Calcular Bayes General
+                        </button>
+                    </div>
+                    
+                    <div id="errorBayes" class="error-message hidden"></div>
+                </div>
+
+                <div class="btn-group-vertical">
+                    <button class="btn btn-secondary" onclick="clearInputs()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                        </svg>
+                        Limpiar
+                    </button>
+                    <button class="btn btn-secondary" onclick="goToTheory()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        Ir a la teoría
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    </svg>
+                    Instrucciones
+                </h2>
+                <ul style="padding-left: 1.25rem; color: var(--text-muted-light);">
+                    <li style="margin-bottom: 0.5rem;">Seleccione el método: Laplace (básico) o Bayes (condicional).</li>
+                    <li style="margin-bottom: 0.5rem;">Para Laplace: Ingrese casos favorables y totales.</li>
+                    <li style="margin-bottom: 0.5rem;">Para Bayes: Elija entre 2 eventos (simple) o múltiples causas.</li>
+                    <li style="margin-bottom: 0.5rem;">Asegúrese que las probabilidades sumen 1 donde corresponda.</li>
+                    <li style="margin-bottom: 0.5rem;">Use "Limpiar" para reiniciar todos los campos.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="output-panel">
+            
+            <div id="emptyState" class="result-card empty-state fade-in">
+                <div class="empty-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                        <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                    </svg>
+                </div>
+                <h3>Esperando datos</h3>
+                <p>Ingrese los valores en el panel izquierdo y presione calcular para ver el análisis gráfico y matemático.</p>
+            </div>
+
+            <div id="resultsContainer" class="hidden">
+                <div class="result-card fade-in">
+                    <h2 class="result-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Resultado Final
+                    </h2>
+                    <div class="interval-display">
+                        <div id="resultText">Probabilidad calculada</div>
+                        <div id="resultValue" class="interval-value">0%</div>
+                    </div>
+                </div>
+
+                <div class="result-card fade-in">
+                    <h2 class="result-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                            <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                        </svg>
+                        Distribución de Probabilidad
+                    </h2>
+                    <div id="graph-container" class="graph-container">
+                        <div id="chartContainer" style="width: 100%; height: 100%;"></div>
+                    </div>
+                </div>
+
+                <div class="steps-container fade-in">
+                    <h2 class="result-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Procedimiento
+                    </h2>
+                    <div id="stepContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="theme-toggle" class="theme-toggle">
+        <svg id="theme-icon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            </svg>
+    </button>
+
+    <script>
+        // --- VARIABLES GLOBALES ---
+        let eventCount = 0;
+
+        // --- INICIALIZACIÓN ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar filas de Bayes (3 por defecto)
+            addEventRow();
+            addEventRow();
+            addEventRow();
+
+            // Lógica de Tema
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+
+            function setTheme(isDark) {
+                document.body.classList.toggle('dark', isDark);
+                localStorage.setItem('darkMode', isDark);
+                
+                // Actualizar icono
+                if (isDark) {
+                    themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+                } else {
+                    themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+                }
+                
+                // Re-dibujar gráficos si existen para actualizar colores
+                const chartDiv = document.getElementById('chartContainer');
+                if (chartDiv.data && chartDiv.data.length > 0) {
+                    const currentData = chartDiv.data[0];
+                    drawDonut(currentData.values, currentData.labels, currentData.marker.colors);
+                }
+            }
+
+            // Verificar preferencia
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const storedDarkMode = localStorage.getItem('darkMode') === 'true';
+            setTheme(storedDarkMode || (localStorage.getItem('darkMode') === null && prefersDark));
+
+            themeToggle.addEventListener('click', () => {
+                const isDark = !document.body.classList.contains('dark');
+                setTheme(isDark);
+            });
+        });
+
+        // --- NAVEGACIÓN ---
+        function switchMainTab(mode) {
+            document.getElementById('resultsContainer').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('errorLap').classList.add('hidden');
+            document.getElementById('errorBayes').classList.add('hidden');
+
+            if(mode === 'laplace') {
+                document.getElementById('formLaplace').classList.remove('hidden');
+                document.getElementById('formBayes').classList.add('hidden');
+            } else {
+                document.getElementById('formLaplace').classList.add('hidden');
+                document.getElementById('formBayes').classList.remove('hidden');
+            }
+        }
+
+        function switchBayesMode(mode) {
+            document.getElementById('resultsContainer').classList.add('hidden');
+            
+            if (mode === 'simple') {
+                document.getElementById('bayesSimpleInputs').classList.remove('hidden');
+                document.getElementById('bayesMultiInputs').classList.add('hidden');
+            } else {
+                document.getElementById('bayesSimpleInputs').classList.add('hidden');
+                document.getElementById('bayesMultiInputs').classList.remove('hidden');
+            }
+        }
+
+        // --- FUNCIONES MODO MÚLTIPLE ---
+        function addEventRow() {
+            eventCount++;
+            const container = document.getElementById('eventsContainer');
+            const div = document.createElement('div');
+            div.className = 'event-row fade-in';
+            div.id = `row-${eventCount}`;
+            
+            div.innerHTML = `
+                <div class="input-group">
+                    <label class="form-label" style="font-size:0.85rem;">P(A_${eventCount}) (Priori)</label>
+                    <input type="number" class="input-field prob-prior" placeholder="Ej: 0.2" step="0.01" min="0" max="1">
+                </div>
+                <div class="input-group">
+                    <label class="form-label" style="font-size:0.85rem;">P(B|A_${eventCount}) (Cond)</label>
+                    <input type="number" class="input-field prob-cond" placeholder="Ej: 0.5" step="0.01" min="0" max="1">
+                </div>
+                ${eventCount > 3 ? `<div onclick="removeRow(${eventCount})" class="row-btn" title="Eliminar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></div>` : '<div></div>'}
+            `;
+            container.appendChild(div);
+            if(window.MathJax) MathJax.typesetPromise();
+        }
+
+        function removeRow(id) {
+            const row = document.getElementById(`row-${id}`);
+            if(row) row.remove();
+        }
+
+        // --- ACCIONES EXTRA ---
+        function clearInputs() {
+            const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
+            inputs.forEach(input => input.value = '');
+            
+            const container = document.getElementById('eventsContainer');
+            container.innerHTML = '';
+            eventCount = 0;
+            addEventRow();
+            addEventRow();
+            addEventRow();
+
+            document.getElementById('resultsContainer').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('errorLap').classList.add('hidden');
+            document.getElementById('errorBayes').classList.add('hidden');
+            document.getElementById('stepContainer').textContent = '';
+            
+            Plotly.purge('chartContainer');
+        }
+
+        function goToTheory() {
+            window.open('https://es.wikipedia.org/wiki/Probabilidad', '_blank');
+        }
+
+        // --- CÁLCULO LAPLACE ---
+        function calcLaplace() {
+            const fav = parseFloat(document.getElementById('lapFavorable').value);
+            const total = parseFloat(document.getElementById('lapTotal').value);
+            const errorDiv = document.getElementById('errorLap');
+
+            if (isNaN(fav) || isNaN(total) || total <= 0) return showError(errorDiv, "Valores inválidos: Casos totales debe ser un número positivo.");
+            if (fav < 0) return showError(errorDiv, "Casos favorables no pueden ser negativos.");
+            if (fav > total) return showError(errorDiv, "Casos favorables no pueden ser mayor al total de casos.");
+            errorDiv.classList.add('hidden');
+
+            const prob = fav/total;
+            showResults(`${(prob*100).toFixed(2)}%`, `Probabilidad Simple: P(A)`);
+
+            const steps = `
+                $$ P(A) = \\frac{\\text{Casos Favorables}}{\\text{Casos Totales}} $$
+                $$ P(A) = \\frac{${fav}}{${total}} = \\mathbf{${prob.toFixed(4)}} $$
+            `;
+            renderMath(steps);
+            
+            drawDonut([fav, total-fav], ['Casos Favorables', 'Casos Desfavorables'], ['#3b82f6', '#e2e8f0']);
+        }
+
+        // --- CÁLCULO BAYES SIMPLE ---
+        function calcBayesSimple() {
+            const pA = parseFloat(document.getElementById('bayesPA').value);
+            const pBA = parseFloat(document.getElementById('bayesPBA').value);
+            const pBnotA = parseFloat(document.getElementById('bayesPBnotA').value);
+            const errorDiv = document.getElementById('errorBayes');
+
+            if ([pA, pBA, pBnotA].some(v => isNaN(v))) return showError(errorDiv, "Complete todos los campos de probabilidad.");
+            if ([pA, pBA, pBnotA].some(v => v<0 || v>1)) return showError(errorDiv, "Probabilidades deben estar entre 0 y 1.");
+            errorDiv.classList.add('hidden');
+
+            const pNotA = 1 - pA;
+            const num = pBA * pA;
+            const den = num + (pBnotA * pNotA);
+            
+            if (den === 0) return showError(errorDiv, "El denominador de la probabilidad total es cero.");
+
+            const res = num / den;
+
+            showResults(`${(res*100).toFixed(2)}%`, `Probabilidad Posterior P(A|B)`);
+            
+            const steps = `
+                $$ P(A|B) = \\frac{P(B|A) \\cdot P(A)}{P(B|A) \\cdot P(A) + P(B|\\neg A) \\cdot P(\\neg A)} $$
+                \\(P(\\neg A) = 1 - P(A) = 1 - ${pA} = ${pNotA.toFixed(2)} \\)
+                $$ \\text{Numerador (P(A y B))} = P(B|A) \\cdot P(A) = ${pBA} \\cdot ${pA} = ${num.toFixed(4)} $$
+                $$ \\text{Denominador (P(B))} = \\text{Num} + P(B|\\neg A) \\cdot P(\\neg A) $$
+                $$ P(B) = ${num.toFixed(4)} + (${pBnotA} \\cdot ${pNotA.toFixed(2)}) = ${den.toFixed(4)} $$
+                $$ P(A|B) = \\frac{${num.toFixed(4)}}{${den.toFixed(4)}} = \\mathbf{${res.toFixed(4)}} $$
+            `;
+            renderMath(steps);
+            drawDonut([num, (pBnotA * pNotA)], ['Acierto (A)', 'Falsa Alarma (¬A)'], ['#10b981', '#ef4444']);
+        }
+
+        // --- CÁLCULO BAYES MÚLTIPLE ---
+        function calcBayesMulti() {
+            const errorDiv = document.getElementById('errorBayes');
+            const priors = document.querySelectorAll('.prob-prior');
+            const conds = document.querySelectorAll('.prob-cond');
+            
+            let sumPriors = 0;
+            let totalProbB = 0;
+            let numerators = [];
+            let labels = [];
+
+            for(let i=0; i<priors.length; i++) {
+                const pA = parseFloat(priors[i].value);
+                const pBA = parseFloat(conds[i].value);
+
+                if(isNaN(pA) || isNaN(pBA)) continue;
+                
+                if (pA < 0 || pA > 1 || pBA < 0 || pBA > 1) return showError(errorDiv, `Las probabilidades deben estar entre 0 y 1 en la fila ${i+1}.`);
+
+                sumPriors += pA;
+                const term = pA * pBA;
+                numerators.push(term);
+                totalProbB += term;
+                labels.push(`Causa A${i+1}`);
+            }
+
+            if(numerators.length === 0) return showError(errorDiv, "Debe ingresar al menos dos eventos válidos.");
+
+            if(Math.abs(sumPriors - 1) > 0.01) return showError(errorDiv, `La suma de probabilidades base P(A) es ${sumPriors.toFixed(2)}. Debe ser 1.0`);
+            errorDiv.classList.add('hidden');
+
+            if (totalProbB === 0) return showError(errorDiv, "La probabilidad total del evento B es cero.");
+            
+            const posteriors = numerators.map(n => n / totalProbB);
+            
+            showResults(`${(posteriors[0]*100).toFixed(2)}%`, `Probabilidad Posterior P(A1|B)`);
+
+            let sumTerms = [];
+            for(let i=0; i<priors.length; i++) {
+                 const pA = parseFloat(priors[i].value);
+                 const pBA = parseFloat(conds[i].value);
+                 if (!isNaN(pA) && !isNaN(pBA)) {
+                    sumTerms.push(`(${pBA} \\cdot ${pA})`);
+                 }
+            }
+            let sumText = sumTerms.join(' + ');
+
+            let posteriorList = posteriors.map((p, i) => `$$ P(A_{${i+1}}|B) = \\frac{${numerators[i].toFixed(4)}}{${totalProbB.toFixed(4)}} = \\mathbf{${p.toFixed(4)}} $$`).join('');
+
+            const steps = `
+                $$ P(A_k|B) = \\frac{P(B|A_k) \\cdot P(A_k)}{\\sum_{i=1}^{n} P(B|A_i) \\cdot P(A_i)} $$
+                $$ \\text{Denominador (P(B))} = ${sumText} = ${totalProbB.toFixed(4)} $$
+                
+                \\( \\text{Cálculo de las probabilidades posteriores (P(A_i|B))}: \\)
+                
+                ${posteriorList}
+            `;
+            renderMath(steps);
+
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+            drawDonut(numerators, labels, colors);
+        }
+
+        // --- UTILS ---
+        function showResults(val, text) {
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('resultsContainer').classList.remove('hidden');
+            if(val) document.getElementById('resultValue').textContent = val;
+            if(text) document.getElementById('resultText').textContent = text;
+        }
+        
+        function showError(el, msg) { 
+            el.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> ${msg}`;
+            el.classList.remove('hidden'); 
+        }
+        
+        function renderMath(latex) {
+            const stepContainer = document.getElementById('stepContainer');
+            stepContainer.innerHTML = latex;
+            if(window.MathJax) MathJax.typesetPromise();
+        }
+
+        function drawDonut(values, labels, colors) {
+            const isDark = document.body.classList.contains('dark');
+            const bgColor = isDark ? '#1e293b' : '#ffffff';
+            const textColor = isDark ? '#e2e8f0' : '#1e293b';
+
+            const data = [{
+                values: values, labels: labels, type: 'pie', hole: 0.6,
+                marker: { colors: colors }, textinfo: 'percent', textposition: 'auto',
+                hoverinfo: 'label+percent+value',
+            }];
+            
+            const layout = {
+                showlegend: true, 
+                legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.1 },
+                margin: {t:30, b:30, l:30, r:30}, 
+                height: 350,
+                paper_bgcolor: bgColor,
+                plot_bgcolor: bgColor,
+                font: { color: textColor, family: 'Inter' },
+                annotations: [{ 
+                    showarrow: false, 
+                    text: 'Prob.<br>Total', 
+                    font: {size:12, color: textColor} 
+                }]
+            };
+            
+            Plotly.newPlot('chartContainer', data, layout, {responsive: true, displayModeBar: false});
+        }
+    </script>
+</body>
+</html>

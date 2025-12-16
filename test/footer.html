@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Footer Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables de color para fácil manejo (tomadas de tus archivos CSS) */
+        :root {
+            /* Colores para el modo claro */
+            --light-bg-primary: #f0f8ff; /* Azul muy claro, casi blanco */
+            --light-bg-secondary: #e0f2f7; /* Azul claro */
+            --light-text-primary: #1a2b3c; /* Azul oscuro casi negro */
+            --light-text-secondary: #4a6b8c; /* Azul medio oscuro */
+            --light-accent-blue: #007bff; /* Azul brillante para acentos */
+            --light-border-color: #a7d9f0; /* Azul claro para bordes */
+            --light-card-bg: #ffffff; /* Blanco para tarjetas */
+            --light-shadow-color: rgba(0, 0, 0, 0.1); /* Sombra ligera */
+            --light-link-hover: #0056b3; /* Azul más oscuro para hover de enlaces */
+            --light-footer-bg: #1a2b3c; /* Azul oscuro para el footer */
+            --light-footer-text: #e0f2f7; /* Azul claro para texto del footer */
+            --light-skill-design-bg: #87ceeb; /* Azul cielo para diseño */
+            --light-skill-logic-bg: #4682b4; /* Azul acero para lógica */
+            --light-star-active: #ffd700; /* Dorado para estrellas activas */
+            --light-star-deactive: #ccc; /* Gris claro para estrellas inactivas */
+        }
+
+        /* Estilos para el modo oscuro */
+        body.dark {
+            --light-bg-primary: #1a2b3c; /* Azul oscuro */
+            --light-bg-secondary: #003366; /* Azul grisáceo oscuro */
+            --light-text-primary: #e0f2f7; /* Azul claro */
+            --light-text-secondary: #a7d9f0; /* Azul claro para texto secundario */
+            --light-accent-blue: #66b3ff; /* Azul más claro para acentos */
+            --light-border-color: #3e5a73; /* Azul oscuro para bordes */
+            --light-card-bg: #2c3e50; /* Azul grisáceo oscuro para tarjetas */
+            --light-shadow-color: rgba(0, 0, 0, 0.3); /* Sombra más oscura */
+            --light-link-hover: #87ceeb; /* Azul más claro para hover de enlaces */
+            --light-footer-bg: #0d1a26; /* Azul muy oscuro para el footer */
+            --light-footer-text: #a7d9f0; /* Azul claro para texto del footer */
+            --light-skill-design-bg: #4682b4; /* Azul acero para diseño */
+            --light-skill-logic-bg: #87ceeb; /* Azul cielo para lógica */
+            --light-star-active: #ffd700; /* Dorado para estrellas activas */
+            --light-star-deactive: #555; /* Gris oscuro para estrellas inactivas */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            font-size: 62.5%; /* Base para rem */
+            background-color: var(--light-bg-primary);
+            color: var(--light-text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            line-height: 1.6;
+            min-height: 100vh; /* Asegura que el footer esté al final si el contenido es corto */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Contenido principal para empujar el footer hacia abajo */
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--light-text-primary);
+        }
+
+        .dark-mode-toggle {
+            padding: 0.8rem 1.5rem;
+            margin-top: 2rem;
+            background-color: var(--light-accent-blue);
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: var(--light-link-hover);
+            transform: translateY(-3px);
+        }
+
+        /* Estilos para el pie de página */
+        .footer {
+            background-color: var(--light-footer-bg);
+            color: var(--light-footer-text);
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--light-border-color);
+            margin-top: auto; /* Empuja el footer hacia abajo */
+        }
+
+        .footer__content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2.5rem;
+            max-width: 1200px;
+            margin: 0 auto 2rem auto;
+            align-items: start;
+        }
+
+        .footer__section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .footer__section h2 {
+            font-size: 1.6rem;
+            margin-bottom: 1.2rem;
+            color: var(--light-footer-text);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .footer__section h2::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background-color: var(--light-accent-blue);
+            border-radius: 2px;
+        }
+
+        /* Estilos para la sección de marca (ISIMath) */
+        .footer__brand .header__icon {
+            margin-bottom: 1rem;
+        }
+
+        .footer__brand .header__icon-svg {
+            fill: var(--light-footer-text);
+        }
+
+        .footer__brand .header__icon-title {
+            color: var(--light-footer-text);
+            font-size: 1.8rem;
+        }
+
+        .footer__description {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--light-footer-text);
+            max-width: 300px;
+        }
+
+        /* Estilos para la navegación */
+        .footer__navigation ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer__navigation li {
+            margin-bottom: 0.7rem;
+        }
+
+        .footer__navigation a {
+            color: var(--light-footer-text);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.3s ease, transform 0.2s ease;
+            display: inline-block;
+        }
+
+        .footer__navigation a:hover {
+            color: var(--light-accent-blue);
+            transform: translateX(5px);
+        }
+
+        /* Estilos para redes sociales */
+        .social__icons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .icon__social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1.2rem;
+            border: 1px solid var(--light-footer-text);
+            border-radius: 8px;
+            color: var(--light-footer-text);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            gap: 0.5rem;
+        }
+
+        .icon__social svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            fill: var(--light-footer-text);
+            transition: fill 0.3s ease;
+        }
+
+        .icon__social:hover {
+            background-color: var(--light-accent-blue);
+            border-color: var(--light-accent-blue);
+            color: #ffffff;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .icon__social:hover svg {
+            fill: #ffffff;
+        }
+
+        /* Estilos para la sección de contacto */
+        .footer__contact p {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--light-footer-text);
+        }
+
+        /* Estilos para el copyright */
+        .footer__copyright {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Media Queries para responsividad del footer */
+        @media (max-width: 768px) {
+            .footer__content {
+                grid-template-columns: 1fr;
+            }
+
+            .footer__section {
+                margin-bottom: 2rem;
+            }
+
+            .footer__section:last-of-type {
+                margin-bottom: 0;
+            }
+
+            .footer__section h2::after {
+                width: 40px;
+            }
+
+            .social__icons {
+                max-width: 250px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .footer__content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .footer__brand {
+                grid-column: span 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <h1>Contenido Principal de la Página</h1>
+        <p>Este es un ejemplo de cómo se vería el footer en una página completa.</p>
+        <button class="dark-mode-toggle" onclick="toggleDarkMode()">Alternar Modo Oscuro</button>
+    </div>
+
+    <!-- TODO: Footer -->
+    <footer class="footer">
+        <div class="footer__content">
+            <div class="footer__section footer__brand">
+                <div class="header__icon">
+                    <svg class="header__icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4H21V6H3V4ZM3 11H21V13H3V11ZM3 18H21V20H3V18Z"></path></svg>
+                    <span class="header__icon-title">ISIMath</span>
+                </div>
+                <p class="footer__description">
+                    Tu compañero inteligente para resolver problemas de cálculo y matrices.
+                </p>
+            </div>
+
+            <div class="footer__section footer__navigation">
+                <h2>Navegar</h2>
+                <ul>
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#tools">Herramientas</a></li>
+                    <li><a href="#explain">Explicación</a></li>
+                    <li><a href="#testimony">Testimonios</a></li>
+                    <li><a href="#team">Equipo</a></li>
+                </ul>
+            </div>
+
+            <div class="footer__section footer__social">
+                <h2>Síguenos</h2>
+                <div class="social__icons">
+                    <a href="#" class="icon__social">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.126 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.505 1.492-3.89 3.776-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.262c-1.247 0-1.64.77-1.64 1.574V12h2.773l-.443 2.89h-2.33V21.879C18.343 21.126 22 16.991 22 12 22 6.477 17.523 2 12 2z"></path></svg>
+                        <span>Facebook</span>
+                    </a>
+                    <a href="#" class="icon__social">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.493.998.108-.776.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.807 24 17.322 24 12 24 5.373 18.627 0 12 0z"></path></svg>
+                        <span>Github</span>
+                    </a>
+                    <a href="#" class="icon__social">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM9.5 11h5c.28 0 .5-.22.5-.5s-.22-.5-.5-.5h-5c-.28 0-.5.22-.5.5s.22.5.5.5zm0 2h5c.28 0 .5-.22.5-.5s-.22-.5-.5-.5h-5c-.28 0-.5.22-.5.5s.22.5.5.5z"></path></svg>
+                        <span>UNAB</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer__section footer__contact">
+                <h2>Contacto</h2>
+                <p>Email: info@isimath.com</p>
+                <p>Teléfono: +51 987 654 321</p>
+                <p>Dirección: Av. Siempre Viva 742, Lima, Perú</p>
+            </div>
+        </div>
+
+        <div class="footer__copyright">
+            <hr>
+            <span>&copy; 2025 ISIMath. Todos los derechos reservados.</span>
+        </div>
+    </footer>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+        }
+    </script>
+</body>
+</html>

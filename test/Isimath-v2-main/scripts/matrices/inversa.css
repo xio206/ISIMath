@@ -1,0 +1,253 @@
+/* --- Variables de Color y Estilos Base --- */
+
+        /* body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--inversa-bg-light);
+            color: var(--inversa-text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark {
+            background-color: var(--inversa-bg-dark);
+            color: var(--inversa-text-dark);
+        } */
+
+        /* Contenedor principal de la aplicación de inversas */
+        .inversa__main-container {
+            display: flex;
+            flex-direction: column; /* Vertical en móvil */
+            gap: 1.5rem;
+            padding: 1.5rem;
+            max-width: 1200px;
+            margin: 2rem auto;
+            background-color: var(--inversa-surface-light);
+            border-radius: 12px;
+            box-shadow: var(--inversa-shadow);
+            border: 1px solid var(--inversa-border-light);
+        }
+
+        body.dark .inversa__main-container {
+            background-color: var(--inversa-surface-dark);
+            border: 1px solid var(--inversa-border-dark);
+            box-shadow: var(--inversa-shadow-dark);
+        }
+
+        /* Contenedores de entrada y resultado */
+        .inversa__input-section, .inversa__result-section {
+            flex: 1; /* Para que ocupen el espacio disponible */
+            padding: 1.5rem;
+            background-color: var(--inversa-bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--inversa-border-light);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        body.dark .inversa__input-section, body.dark .inversa__result-section {
+            background-color: var(--inversa-bg-dark);
+            border: 1px solid var(--inversa-border-dark);
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.05);
+        }
+
+        .inversa__input-section h3, .inversa__result-section h3 {
+            color: var(--inversa-primary-light);
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        body.dark .inversa__input-section h3, body.dark .inversa__result-section h3 {
+            color: var(--inversa-primary-dark);
+        }
+
+        .inversa__form-group {
+            margin-bottom: 1rem;
+        }
+
+        .inversa__form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--inversa-text-light);
+        }
+        body.dark .inversa__form-group label {
+            color: var(--inversa-text-dark);
+        }
+
+        .inversa__input-text {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid var(--inversa-border-light);
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: var(--inversa-surface-light);
+            color: var(--inversa-text-light);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        body.dark .inversa__input-text {
+            background-color: var(--inversa-surface-dark);
+            color: var(--inversa-text-dark);
+            border: 1px solid var(--inversa-border-dark);
+        }
+        .inversa__input-text:focus {
+            outline: none;
+            border-color: var(--inversa-primary-light);
+            box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.2);
+        }
+        body.dark .inversa__input-text:focus {
+            border-color: var(--inversa-primary-dark);
+            box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.2);
+        }
+
+        .inversa__button {
+            background-color: var(--inversa-primary-light);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            margin-top: 1rem;
+        }
+        body.dark .inversa__button {
+            background-color: var(--inversa-primary-dark);
+        }
+        .inversa__button:hover {
+            background-color: #5A4EBF; /* Un tono más oscuro */
+            transform: translateY(-1px);
+        }
+        body.dark .inversa__button:hover {
+            background-color: #6A5ACD; /* Un tono más oscuro */
+        }
+        .inversa__button:active {
+            transform: translateY(0);
+        }
+
+        .inversa__method-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .inversa__method-buttons .inversa__button {
+            flex-grow: 1;
+            margin-top: 0; /* Override default margin-top */
+        }
+
+        /* Contenedores de métodos específicos */
+        .inversa__method-inputs {
+            border-top: 1px solid var(--inversa-border-light);
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        body.dark .inversa__method-inputs {
+            border-top: 1px solid var(--inversa-border-dark);
+        }
+
+        .inversa__matrix-input-container {
+            display: grid;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .inversa__matrix-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .inversa__matrix-input {
+            width: 50px; /* Tamaño fijo para inputs de matriz */
+            padding: 8px;
+            text-align: center;
+        }
+        /* Remove number input arrows for Chrome, Safari, Edge */
+        .inversa__matrix-input::-webkit-outer-spin-button,
+        .inversa__matrix-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .inversa__result-display {
+            padding: 1rem;
+            background-color: var(--inversa-bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--inversa-border-light);
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--inversa-text-light);
+            text-align: center;
+            overflow-x: auto; /* Para matrices grandes */
+        }
+        body.dark .inversa__result-display {
+            background-color: var(--inversa-bg-dark);
+            border: 1px solid var(--inversa-border-dark);
+            color: var(--inversa-text-dark);
+        }
+
+        .inversa__matrix-table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        .inversa__matrix-table td {
+            border: 1px solid var(--inversa-border-light);
+            padding: 0.5rem;
+            text-align: center;
+            min-width: 40px;
+        }
+        body.dark .inversa__matrix-table td {
+            border: 1px solid var(--inversa-border-dark);
+        }
+
+        .inversa__result-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--inversa-primary-light);
+            margin-top: 1rem;
+        }
+        body.dark .inversa__result-value {
+            color: var(--inversa-primary-dark);
+        }
+
+        .inversa__steps-container {
+            margin-top: 1rem;
+            text-align: left;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--inversa-border-light);
+            border-radius: 8px;
+            padding: 0.8rem;
+            background-color: var(--inversa-surface-light);
+        }
+        body.dark .inversa__steps-container {
+            border: 1px solid var(--inversa-border-dark);
+            background-color: var(--inversa-surface-dark);
+        }
+
+        .inversa__steps-container p {
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .inversa__checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive: Escritorio */
+        @media (min-width: 768px) {
+            .inversa__main-container {
+                flex-direction: row; /* Horizontal en escritorio */
+            }
+        }

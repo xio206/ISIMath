@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Derivadas - Cálculo Diferencial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --midnight-blue: #0f172a;
+            --deep-blue: #1e293b;
+            --navy-blue: #1e3a8a;
+            --electric-blue: #3b82f6;
+            --light-blue: #60a5fa;
+            --pale-blue: #bfdbfe;
+            --dark-gray: #0f172a;
+            --medium-gray: #334155;
+            --light-gray: #94a3b8;
+            --white: #f8fafc;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--midnight-blue);
+            color: var(--white);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .math-display {
+            font-size: 1.1rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            color: var(--pale-blue);
+        }
+        .step-highlight {
+            border-left: 4px solid var(--electric-blue);
+            background-color: rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            padding: 1.2rem 1.2rem 1.2rem 1.5rem;
+            border-radius: 0.5rem;
+        }
+        .step-highlight:hover {
+            background-color: rgba(59, 130, 246, 0.2);
+        }
+        .formula-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+            overflow: hidden;
+            background-color: var(--deep-blue);
+            border: 1px solid var(--medium-gray);
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding: 1.7rem 1.2rem;
+        }
+        .formula-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 12px rgba(2, 6, 23, 0.5);
+            border-color: var(--electric-blue);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+            margin-top: 1.2rem;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .content-container {
+            max-width: 95%;
+            margin: 0 auto;
+            padding: 1.3rem 0.5rem;
+        }
+        .header-section {
+            background: linear-gradient(135deg, var(--navy-blue) 0%, #172554 100%);
+            padding: 3rem 2rem 3.5rem 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            margin-bottom: 2.2rem;
+        }
+        .header-section::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.4rem;
+        }
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        .resource-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid var(--electric-blue);
+            background-color: var(--deep-blue);
+            border: 1px solid var(--medium-gray);
+            border-radius: 0.5rem;
+            margin-bottom: 1.2rem;
+            padding: 1.1rem 1.2rem;
+        }
+        .resource-item:hover {
+            transform: translateX(5px);
+            border-color: var(--light-blue);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .home-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(2, 6, 23, 0.5);
+            background-color: var(--navy-blue);
+            border: 1px solid var(--electric-blue);
+            border-radius: 0.5rem;
+            padding: 0.95rem 2rem;
+        }
+        .home-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(2, 6, 23, 0.7);
+            background-color: var(--electric-blue);
+        }
+        .content-card {
+            background-color: var(--deep-blue);
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+            border: 1px solid var(--medium-gray);
+            border-radius: 0.75rem;
+            padding: 2.2rem 2rem;
+            margin-bottom: 2.2rem;
+        }
+        .tab-button {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            padding: 0.85rem 1.8rem;
+            background: transparent;
+            border: none;
+            font-weight: 500;
+            color: var(--light-gray);
+            border-bottom: 2px solid transparent;
+            margin-right: 0.7rem;
+        }
+        .tab-button.active {
+            color: var(--electric-blue);
+            border-bottom-color: var(--electric-blue);
+        }
+        .title-accent {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.2rem;
+        }
+        .title-accent::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--electric-blue), transparent);
+            border-radius: 3px;
+        }
+        .text-primary {
+            color: var(--white);
+        }
+        .text-secondary {
+            color: var(--light-gray);
+            margin-bottom: 1.1rem;
+        }
+        .bg-light {
+            background-color: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--medium-gray);
+            border-radius: 0.5rem;
+            padding: 1.2rem 1.2rem 1.1rem 1.2rem;
+            margin-bottom: 1.7rem;
+        }
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--midnight-blue);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--navy-blue);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--electric-blue);
+        }
+        /* Links */
+        a {
+            color: var(--light-blue);
+            transition: color 0.2s;
+        }
+        a:hover {
+            color: var(--electric-blue);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="header-content content-container">
+            <h1 class="text-4xl md:text-5xl font-bold font-poppins mb-4 title-accent">DERIVADAS</h1>
+            <div class="max-w-3xl bg-white/5 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+                <p class="text-lg text-white/90 leading-relaxed">
+                    Las derivadas son un concepto fundamental del cálculo diferencial que describen la tasa de cambio instantánea de una función respecto a una variable. Permiten analizar el comportamiento local de funciones, optimizar procesos y modelar fenómenos en diversas ciencias.
+                </p>
+                <div class="mt-4 flex items-center text-white/80">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-electric-blue" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-sm font-medium">Concepto clave en cálculo diferencial</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="content-container py-8">
+        <div class="main-grid">
+            <!-- Left Column - Theory -->
+            <div>
+                <section class="mb-12 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span class="title-accent">Conceptos Fundamentales</span>
+                    </h2>
+                    
+                    <div class="bg-light rounded-lg p-6 mb-6 border border-medium-gray">
+                        <p class="mb-4 text-secondary">La derivada de una función \( f(x) \) en un punto \( x = a \) se define como el límite:</p>
+                        <div class="text-center text-xl font-math my-4 math-display p-4 bg-dark-gray rounded-lg border border-medium-gray">
+                            $$f'(a) = \lim_{h \to 0} \frac{f(a+h) - f(a)}{h}$$
+                        </div>
+                        <p class="text-secondary">Este límite representa la pendiente de la recta tangente a la curva en el punto \( a \).</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+    <!-- Aplicaciones -->
+    <div class="formula-card p-6">
+        <div class="flex items-center mb-3">
+            <svg class="h-5 w-5 mr-2 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span class="font-bold text-lg">Aplicaciones</span>
+        </div>
+        <ul class="space-y-2">
+            <li class="flex items-center text-secondary">
+                <svg class="h-5 w-5 mr-2 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Encontrar pendientes y rectas tangentes
+            </li>
+            <li class="flex items-center text-secondary">
+                <svg class="h-5 w-5 mr-2 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Determinar máximos y mínimos locales
+            </li>
+            <li class="flex items-center text-secondary">
+                <svg class="h-5 w-5 mr-2 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Modelar tasas de cambio en física, economía y biología
+            </li>
+            <li class="flex items-center text-secondary">
+                <svg class="h-5 w-5 mr-2 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Resolver problemas de optimización
+            </li>
+        </ul>
+    </div>
+    <!-- Propiedades Clave -->
+    <div class="formula-card p-6">
+        <div class="flex items-center mb-3">
+            <svg class="h-5 w-5 mr-2 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+            <span class="font-bold text-lg">Propiedades Clave</span>
+        </div>
+        <ul class="space-y-2">
+            <li class="flex items-center text-secondary">
+                <svg class="h-5 w-5 mr-2 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Linealidad de la derivada
+            </li>
+            <li class="flex items-center text-secondary">
+                <svg class="h-5 w-5 mr-2 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Regla del producto
+            </li>
+            <li class="flex items-center text-secondary">
+                <svg class="h-5 w-5 mr-2 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Regla del cociente
+            </li>
+            <li class="flex items-center text-secondary">
+                <svg class="h-5 w-5 mr-2 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Regla de la cadena
+            </li>
+        </ul>
+    </div>
+</div>
+                </section>
+                
+                <!-- Examples Section -->
+                <section class="mb-12 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span class="title-accent">Ejemplos Resueltos</span>
+                    </h2>
+                    
+                    <!-- Example 1 -->
+                    <div class="mb-8 bg-dark-gray rounded-xl overflow-hidden border border-medium-gray">
+                        <div class="flex border-b border-medium-gray">
+                            <button class="tab-button active py-3 px-6 font-medium text-electric-blue border-b-2 border-electric-blue" onclick="openExampleTab('example1', 'tab1')">
+                                Enunciado
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example1', 'tab2')">
+                                Solución
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example1', 'tab3')">
+                                Explicación
+                            </button>
+                        </div>
+                        
+                        <div id="example1-tab1" class="tab-content active p-6">
+                            <p class="mb-4 text-secondary">Calcula la derivada de la función:</p>
+                            <div class="text-center text-xl my-4 p-4 bg-light rounded-lg math-display border border-medium-gray">
+                                $$f(x) = 3x^3 - 5x^2 + 6x - 2$$
+                            </div>
+                            <p class="text-light-gray text-sm">Intenta resolverlo antes de ver la solución.</p>
+                        </div>
+                        
+                        <div id="example1-tab2" class="tab-content p-6">
+                            <div class="step-highlight rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 1: Aplicar la regla de potencia</h4>
+                                <p class="text-secondary">Derivamos término a término usando \(\frac{d}{dx} x^n = n x^{n-1}\):</p>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$f'(x) = 3 \cdot 3x^{2} - 5 \cdot 2x^{1} + 6 \cdot 1x^{0} - 0$$
+                                </div>
+                            </div>
+                            <div class="step-highlight rounded-lg">
+                                <h4 class="font-semibold text-primary mb-2">Paso 2: Simplificar</h4>
+                                <p class="text-secondary">Simplificamos los coeficientes y potencias:</p>
+                                <div class="text-center my-2 font-bold math-display text-electric-blue">
+                                    $$f'(x) = 9x^{2} - 10x + 6$$
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="example1-tab3" class="tab-content p-6">
+                            <div class="bg-light p-4 rounded-lg border border-medium-gray">
+                                <h4 class="font-semibold text-primary mb-2">Explicación</h4>
+                                <p class="mb-3 text-secondary">
+                                    La derivada representa la tasa de cambio instantánea de la función. Aquí, derivamos cada término por separado usando la regla de potencia, y sumamos los resultados para obtener la derivada total.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Example 2 -->
+                    <div class="bg-dark-gray rounded-xl overflow-hidden border border-medium-gray">
+                        <div class="flex border-b border-medium-gray">
+                            <button class="tab-button active py-3 px-6 font-medium text-electric-blue border-b-2 border-electric-blue" onclick="openExampleTab('example2', 'tab1')">
+                                Enunciado
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example2', 'tab2')">
+                                Solución
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example2', 'tab3')">
+                                Explicación
+                            </button>
+                        </div>
+                        
+                        <div id="example2-tab1" class="tab-content active p-6">
+                            <p class="mb-4 text-secondary">Calcula la derivada de la función:</p>
+                            <div class="text-center text-xl my-4 p-4 bg-light rounded-lg math-display border border-medium-gray">
+                                $$g(x) = \frac{x^2 + 1}{x}$$
+                            </div>
+                            <p class="text-light-gray text-sm">Recuerda que puedes usar la regla del cociente o simplificar antes.</p>
+                        </div>
+                        
+                        <div id="example2-tab2" class="tab-content p-6">
+                            <div class="step-highlight rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 1: Simplificar la función</h4>
+                                <p class="text-secondary">Reescribimos la función como:</p>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$g(x) = x + \frac{1}{x} = x + x^{-1}$$
+                                </div>
+                            </div>
+                            <div class="step-highlight rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 2: Derivar término a término</h4>
+                                <p class="text-secondary">Aplicamos la regla de potencia:</p>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$g'(x) = 1 - x^{-2}$$
+                                </div>
+                            </div>
+                            <div class="step-highlight rounded-lg">
+                                <h4 class="font-semibold text-primary mb-2">Paso 3: Expresar la derivada</h4>
+                                <p class="text-secondary">Podemos escribir la derivada como:</p>
+                                <div class="text-center my-2 font-bold math-display text-electric-blue">
+                                    $$g'(x) = 1 - \frac{1}{x^2}$$
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="example2-tab3" class="tab-content p-6">
+                            <div class="bg-light p-4 rounded-lg border border-medium-gray">
+                                <h4 class="font-semibold text-primary mb-2">Explicación</h4>
+                                <p class="mb-3 text-secondary">
+                                    Simplificar la función antes de derivar facilita el cálculo. La regla de potencia aplicada a exponentes negativos permite derivar términos como \( x^{-1} \) fácilmente.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Right Column - Formulas and Resources -->
+            <div>
+                <!-- Key Formulas -->
+                <section class="mb-8 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        <span class="title-accent">Fórmulas Esenciales</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Derivada de una constante</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$\frac{d}{dx} c = 0$$</div>
+                            <p class="text-sm text-light-gray">Donde \( c \) es una constante.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Regla de potencia</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$\frac{d}{dx} x^n = n x^{n-1}$$</div>
+                            <p class="text-sm text-light-gray">Para cualquier número real \( n \).</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Regla de la suma</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$\frac{d}{dx} [f(x) + g(x)] = f'(x) + g'(x)$$</div>
+                            <p class="text-sm text-light-gray">La derivada de una suma es la suma de las derivadas.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Regla del producto</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$\frac{d}{dx} [f(x) g(x)] = f'(x) g(x) + f(x) g'(x)$$</div>
+                            <p class="text-sm text-light-gray">Derivada del producto de dos funciones.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Regla del cociente</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$\frac{d}{dx} \left[\frac{f(x)}{g(x)}\right] = \frac{f'(x) g(x) - f(x) g'(x)}{[g(x)]^2}$$</div>
+                            <p class="text-sm text-light-gray">Derivada del cociente de dos funciones.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Regla de la cadena</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$\frac{d}{dx} f(g(x)) = f'(g(x)) \cdot g'(x)$$</div>
+                            <p class="text-sm text-light-gray">Derivada de funciones compuestas.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Additional Resources -->
+                <section class="content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        <span class="title-accent">Recursos Adicionales</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">PDF: Ejercicios Resueltos</h3>
+                                <p class="text-sm text-light-gray mt-1">Descarga ejercicios prácticos con soluciones detalladas</p>
+                            </div>
+                        </a>
+                        
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">Calculadora de Derivadas</h3>
+                                <p class="text-sm text-light-gray mt-1">Herramienta interactiva para calcular derivadas paso a paso</p>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <!-- Home Button -->
+        <div class="flex justify-center mt-12 mb-8">
+            <a href="/public/teoria.html" class="home-button text-white font-medium py-3 px-8 rounded-lg transition duration-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                Volver a Inicio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        
+        // Función para manejar pestañas de ejemplos
+        function openExampleTab(exampleId, tabId) {
+            const tabs = ['tab1', 'tab2', 'tab3'];
+            tabs.forEach(tab => {
+                const content = document.getElementById(`${exampleId}-${tab}`);
+                if(content) content.classList.remove('active');
+            });
+            const activeContent = document.getElementById(`${exampleId}-${tabId}`);
+            if(activeContent) activeContent.classList.add('active');
+
+            const buttons = document.querySelectorAll(`button[onclick^="openExampleTab('${exampleId}'"]`);
+            buttons.forEach(btn => {
+                btn.classList.remove('active', 'text-electric-blue', 'border-electric-blue');
+                btn.classList.add('text-light-gray');
+            });
+
+            const activeButtons = document.querySelectorAll(`button[onclick="openExampleTab('${exampleId}', '${tabId}')"]`);
+            activeButtons.forEach(btn => {
+                btn.classList.add('active', 'text-electric-blue', 'border-electric-blue');
+                btn.classList.remove('text-light-gray');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            openExampleTab('example1', 'tab1');
+            openExampleTab('example2', 'tab1');
+
+            if (typeof MathJax !== 'undefined') {
+                MathJax.typesetPromise();
+            }
+        });
+    </script>
+</body>
+</html>

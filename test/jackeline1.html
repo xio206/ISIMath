@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Matrices - Álgebra Lineal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --midnight-blue: #0f172a;
+            --deep-blue: #1e293b;
+            --navy-blue: #1e3a8a;
+            --electric-blue: #3b82f6;
+            --light-blue: #60a5fa;
+            --pale-blue: #bfdbfe;
+            --dark-gray: #0f172a;
+            --medium-gray: #334155;
+            --light-gray: #94a3b8;
+            --white: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--midnight-blue);
+            color: var(--white);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .math-display {
+            font-size: 1.1rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            color: var(--pale-blue);
+        }
+        
+        .step-highlight {
+            border-left: 4px solid var(--electric-blue);
+            background-color: rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .step-highlight:hover {
+            background-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .formula-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+            overflow: hidden;
+            background-color: var(--deep-blue);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .formula-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 12px rgba(2, 6, 23, 0.5);
+            border-color: var(--electric-blue);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .content-container {
+            max-width: 95%;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, var(--navy-blue) 0%, #172554 100%);
+            padding: 3rem 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .header-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        
+        .resource-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid var(--electric-blue);
+            background-color: var(--deep-blue);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .resource-item:hover {
+            transform: translateX(5px);
+            border-color: var(--light-blue);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .home-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(2, 6, 23, 0.5);
+            background-color: var(--navy-blue);
+            border: 1px solid var(--electric-blue);
+        }
+        
+        .home-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(2, 6, 23, 0.7);
+            background-color: var(--electric-blue);
+        }
+        
+        .content-card {
+            background-color: var(--deep-blue);
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+            border: 1px solid var(--medium-gray);
+            border-radius: 0.75rem;
+        }
+        
+        .tab-button {
+            transition: all 0.2s ease;
+        }
+        
+        .title-accent {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .title-accent::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--electric-blue), transparent);
+            border-radius: 3px;
+        }
+        
+        .text-primary {
+            color: var(--white);
+        }
+        
+        .text-secondary {
+            color: var(--light-gray);
+        }
+        
+        .bg-light {
+            background-color: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--midnight-blue);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--navy-blue);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--electric-blue);
+        }
+        
+        .tab-button {
+            color: var(--light-gray);
+        }
+        
+        .tab-button.active {
+            color: var(--electric-blue);
+            border-bottom-color: var(--electric-blue);
+        }
+        
+        pre {
+            background-color: var(--dark-gray) !important;
+            border: 1px solid var(--medium-gray) !important;
+            border-radius: 0.5rem !important;
+            padding: 1rem !important;
+            overflow-x: auto !important;
+        }
+        
+        a {
+            color: var(--light-blue);
+            transition: color 0.2s;
+        }
+        
+        a:hover {
+            color: var(--electric-blue);
+        }
+        
+        .matrix-input {
+            background-color: var(--dark-gray);
+            border: 1px solid var(--medium-gray);
+            color: var(--white);
+            padding: 0.5rem;
+            width: 60px;
+            text-align: center;
+            border-radius: 0.25rem;
+            margin: 0.1rem;
+        }
+        
+        .matrix-input:focus {
+            outline: none;
+            border-color: var(--electric-blue);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+        
+        .matrix-container {
+            display: inline-block;
+            padding: 1rem;
+            background-color: rgba(30, 41, 59, 0.5);
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .matrix-bracket {
+            font-size: 1.5em;
+            vertical-align: middle;
+            color: var(--light-blue);
+        }
+        
+        .operation-btn {
+            background-color: var(--navy-blue);
+            color: var(--white);
+            border: 1px solid var(--electric-blue);
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0.25rem;
+        }
+        
+        .operation-btn:hover {
+            background-color: var(--electric-blue);
+        }
+        
+        .dimension-selector {
+            background-color: var(--dark-gray);
+            border: 1px solid var(--medium-gray);
+            color: var(--white);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            margin: 0.5rem;
+        }
+        
+        .result-matrix {
+            font-size: 1.2em;
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: rgba(59, 130, 246, 0.1);
+            border-radius: 0.5rem;
+            border-left: 4px solid var(--electric-blue);
+        }
+        
+        .error-message {
+            color: #f87171;
+            background-color: rgba(248, 113, 113, 0.1);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            margin: 0.5rem 0;
+            border-left: 4px solid #f87171;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="header-content content-container">
+            <h1 class="text-4xl md:text-5xl font-bold font-poppins mb-4 title-accent">CALCULADORA DE MATRICES</h1>
+            <div class="max-w-3xl bg-white/5 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+                <p class="text-lg text-white/90 leading-relaxed">
+                    Herramienta profesional para realizar operaciones con matrices de cualquier dimensión. Calcula determinantes, inversas, productos, sumas y más. Ideal para estudiantes de álgebra lineal, ingeniería y ciencias computacionales.
+                </p>
+                <div class="mt-4 flex items-center text-white/80">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-electric-blue" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-sm font-medium">Herramienta completa de álgebra matricial</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="content-container py-8">
+        <div class="main-grid">
+            <!-- Left Column - Calculator -->
+            <div>
+                <section class="mb-12 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        <span class="title-accent">Calculadora Matricial</span>
+                    </h2>
+                    
+                    <div class="flex flex-wrap mb-6">
+                        <button class="tab-button active py-2 px-4 font-medium text-electric-blue border-b-2 border-electric-blue" onclick="openCalculatorTab('operations')">
+                            Operaciones Básicas
+                        </button>
+                        <button class="tab-button py-2 px-4 font-medium text-light-gray hover:text-electric-blue" onclick="openCalculatorTab('determinant')">
+                            Determinante
+                        </button>
+                        <button class="tab-button py-2 px-4 font-medium text-light-gray hover:text-electric-blue" onclick="openCalculatorTab('inverse')">
+                            Matriz Inversa
+                        </button>
+                        <button class="tab-button py-2 px-4 font-medium text-light-gray hover:text-electric-blue" onclick="openCalculatorTab('transpose')">
+                            Transpuesta
+                        </button>
+                        <button class="tab-button py-2 px-4 font-medium text-light-gray hover:text-electric-blue" onclick="openCalculatorTab('rank')">
+                            Rango
+                        </button>
+                    </div>
+                    
+                    <!-- Operations Tab -->
+                    <div id="operations-tab" class="tab-content active">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-primary mb-4">Seleccionar Dimensión</h3>
+                            <div class="flex items-center">
+                                <label class="text-secondary mr-2">Matriz A:</label>
+                                <select id="rowsA" class="dimension-selector">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3" selected>3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                                <span class="mx-2 text-light-gray">×</span>
+                                <select id="colsA" class="dimension-selector">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3" selected>3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                                
+                                <label class="text-secondary ml-6 mr-2">Matriz B:</label>
+                                <select id="rowsB" class="dimension-selector">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3" selected>3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                                <span class="mx-2 text-light-gray">×</span>
+                                <select id="colsB" class="dimension-selector">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3" selected>3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-wrap mb-6">
+                            <button class="operation-btn" onclick="generateMatrix('A')">Generar Matriz A</button>
+                            <button class="operation-btn" onclick="generateMatrix('B')">Generar Matriz B</button>
+                            <button class="operation-btn" onclick="clearMatrix('A')">Limpiar A</button>
+                            <button class="operation-btn" onclick="clearMatrix('B')">Limpiar B</button>
+                        </div>
+                        
+                        <div class="flex flex-wrap justify-between mb-6">
+                            <div id="matrixA-container" class="matrix-container">
+                                <h4 class="text-center text-primary mb-2">Matriz A</h4>
+                                <div id="matrixA"></div>
+                            </div>
+                            
+                            <div id="matrixB-container" class="matrix-container">
+                                <h4 class="text-center text-primary mb-2">Matriz B</h4>
+                                <div id="matrixB"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-primary mb-4">Operaciones</h3>
+                            <div class="flex flex-wrap">
+                                <button class="operation-btn" onclick="calculate('add')">A + B (Suma)</button>
+                                <button class="operation-btn" onclick="calculate('subtract')">A - B (Resta)</button>
+                                <button class="operation-btn" onclick="calculate('multiply')">A × B (Producto)</button>
+                                <button class="operation-btn" onclick="calculate('scalarA')">k × A (Escalar)</button>
+                                <button class="operation-btn" onclick="calculate('scalarB')">k × B (Escalar)</button>
+                            </div>
+                        </div>
+                        
+                        <div id="scalar-input" class="mb-6 hidden">
+                            <label class="text-secondary mr-2">Valor de k:</label>
+                            <input type="number" id="scalar-value" class="matrix-input" value="1">
+                            <button class="operation-btn ml-2" onclick="applyScalar()">Aplicar</button>
+                        </div>
+                        
+                        <div id="operation-result" class="result-matrix hidden">
+                            <h4 class="text-primary mb-2">Resultado</h4>
+                            <div id="result-matrix-content"></div>
+                            <div id="operation-error" class="error-message hidden"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Determinant Tab -->
+                    <div id="determinant-tab" class="tab-content">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-primary mb-4">Matriz Cuadrada</h3>
+                            <div class="flex items-center">
+                                <label class="text-secondary mr-2">Dimensión:</label>
+                                <select id="det-size" class="dimension-selector">
+                                    <option value="1">1×1</option>
+                                    <option value="2">2×2</option>
+                                    <option value="3" selected>3×3</option>
+                                    <option value="4">4×4</option>
+                                    <option value="5">5×5</option>
+                                </select>
+                                <button class="operation-btn ml-4" onclick="generateMatrix('det')">Generar Matriz</button>
+                                <button class="operation-btn ml-2" onclick="clearMatrix('det')">Limpiar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center mb-6">
+                            <div id="det-matrix-container" class="matrix-container">
+                                <h4 class="text-center text-primary mb-2">Matriz</h4>
+                                <div id="det-matrix"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center mb-6">
+                            <button class="operation-btn" onclick="calculate('determinant')">Calcular Determinante</button>
+                        </div>
+                        
+                        <div id="det-result" class="result-matrix hidden">
+                            <h4 class="text-primary mb-2">Determinante</h4>
+                            <div id="det-result-content" class="text-xl font-math"></div>
+                            <div id="det-error" class="error-message hidden"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Inverse Tab -->
+                    <div id="inverse-tab" class="tab-content">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-primary mb-4">Matriz Invertible</h3>
+                            <div class="flex items-center">
+                                <label class="text-secondary mr-2">Dimensión:</label>
+                                <select id="inv-size" class="dimension-selector">
+                                    <option value="1">1×1</option>
+                                    <option value="2">2×2</option>
+                                    <option value="3" selected>3×3</option>
+                                    <option value="4">4×4</option>
+                                    <option value="5">5×5</option>
+                                </select>
+                                <button class="operation-btn ml-4" onclick="generateMatrix('inv')">Generar Matriz</button>
+                                <button class="operation-btn ml-2" onclick="clearMatrix('inv')">Limpiar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center mb-6">
+                            <div id="inv-matrix-container" class="matrix-container">
+                                <h4 class="text-center text-primary mb-2">Matriz</h4>
+                                <div id="inv-matrix"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center mb-6">
+                            <button class="operation-btn" onclick="calculate('inverse')">Calcular Inversa</button>
+                        </div>
+                        
+                        <div id="inv-result" class="result-matrix hidden">
+                            <h4 class="text-primary mb-2">Matriz Inversa</h4>
+                            <div id="inv-result-content"></div>
+                            <div id="inv-error" class="error-message hidden"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Transpose Tab -->
+                    <div id="transpose-tab" class="tab-content">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-primary mb-4">Matriz a Transponer</h3>
+                            <div class="flex items-center">
+                                <label class="text-secondary mr-2">Filas:</label>
+                                <select id="trans-rows" class="dimension-selector">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3" selected>3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                                <span class="mx-2 text-light-gray">×</span>
+                                <label class="text-secondary mr-2">Columnas:</label>
+                                <select id="trans-cols" class="dimension-selector">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3" selected>3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                                <button class="operation-btn ml-4" onclick="generateMatrix('trans')">Generar Matriz</button>
+                                <button class="operation-btn ml-2" onclick="clearMatrix('trans')">Limpiar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center mb-6">
+                            <div id="trans-matrix-container" class="matrix-container">
+                                <h4 class="text-center text-primary mb-2">Matriz Original</h4>
+                                <div id="trans-matrix"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center mb-6">
+                            <button class="operation-btn" onclick="calculate('transpose')">Calcular Transpuesta</button>
+                        </div>
+                        
+                        <div id="trans-result" class="result-matrix hidden">
+                            <h4 class="text-primary mb-2">Matriz Transpuesta</h4>
+                            <div id="trans-result-content"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rank Tab -->
+                    <div id="rank-tab" class="tab-content">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-primary mb-4">Matriz para Rango</h3>
+                            <div class="flex items-center">
+                                <label class="text-secondary mr-2">Filas:</label>
+                                <select id="rank-rows" class="dimension-selector">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3" selected>3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                                <span class="mx-2 text-light-gray">×</span>
+                                <label class="text-secondary mr-2">Columnas:</label>
+                                <select id="rank-cols" class="dimension-selector">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3" selected>3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                                <button class="operation-btn ml-4" onclick="generateMatrix('rank')">Generar Matriz</button>
+                                <button class="operation-btn ml-2" onclick="clearMatrix('rank')">Limpiar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center mb-6">
+                            <div id="rank-matrix-container" class="matrix-container">
+                                <h4 class="text-center text-primary mb-2">Matriz</h4>
+                                <div id="rank-matrix"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center mb-6">
+                            <button class="operation-btn" onclick="calculate('rank')">Calcular Rango</button>
+                        </div>
+                        
+                        <div id="rank-result" class="result-matrix hidden">
+                            <h4 class="text-primary mb-2">Rango de la Matriz</h4>
+                            <div id="rank-result-content" class="text-xl"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Right Column - Theory and Help -->
+            <div>
+                <section class="mb-8 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="title-accent">Guía Rápida</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Suma de Matrices</h3>
+                            <p class="text-secondary">Las matrices deben tener las mismas dimensiones. Se suman elemento a elemento:</p>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$(A + B){ij} = A{ij} + B_{ij}$$
+                            </div>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Producto de Matrices</h3>
+                            <p class="text-secondary">El número de columnas de A debe igualar al número de filas de B:</p>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$(AB){ij} = \sum{k=1}^n A_{ik}B_{kj}$$
+                            </div>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Determinante</h3>
+                            <p class="text-secondary">Solo para matrices cuadradas. Para 2×2:</p>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\begin{vmatrix} a & b \\ c & d \end{vmatrix} = ad - bc$$
+                            </div>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Matriz Inversa</h3>
+                            <p class="text-secondary">Solo existe si el determinante es ≠ 0. Para 2×2:</p>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$A^{-1} = \frac{1}{\det(A)}\begin{pmatrix} d & -b \\ -c & a \end{pmatrix}$$
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <span class="title-accent">Ejemplos Prácticos</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="p-4 border border-medium-gray rounded-lg">
+                            <h3 class="font-medium text-primary mb-2">Suma de matrices 2×2</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} + \begin{pmatrix} 5 & 6 \\ 7 & 8 \end{pmatrix} = \begin{pmatrix} 6 & 8 \\ 10 & 12 \end{pmatrix}$$
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 border border-medium-gray rounded-lg">
+                            <h3 class="font-medium text-primary mb-2">Producto de matrices 2×2</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} \times \begin{pmatrix} 5 & 6 \\ 7 & 8 \end{pmatrix} = \begin{pmatrix} 19 & 22 \\ 43 & 50 \end{pmatrix}$$
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 border border-medium-gray rounded-lg">
+                            <h3 class="font-medium text-primary mb-2">Determinante 3×3</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\begin{vmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{vmatrix} = 0$$
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <!-- Home Button -->
+        <div class="flex justify-center mt-12 mb-8">
+            <a href="index.html" class="home-button text-white font-medium py-3 px-8 rounded-lg transition duration-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                Volver a Inicio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentMatrices = {
+            A: null,
+            B: null,
+            det: null,
+            inv: null,
+            trans: null,
+            rank: null
+        };
+        
+        // Initialize calculator
+        document.addEventListener('DOMContentLoaded', function() {
+            generateMatrix('A');
+            generateMatrix('B');
+            generateMatrix('det');
+            generateMatrix('inv');
+            generateMatrix('trans');
+            generateMatrix('rank');
+            
+            // Render MathJax after content is loaded
+            if (typeof MathJax !== 'undefined') {
+                MathJax.typesetPromise();
+            }
+        });
+        
+        // Tab functionality
+        function openCalculatorTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(${tabId}-tab).classList.add('active');
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active', 'text-electric-blue', 'border-electric-blue');
+                btn.classList.add('text-light-gray');
+            });
+            
+            // Activate current tab button
+            const activeBtn = document.querySelector(button[onclick="openCalculatorTab('${tabId}')"]);
+            if (activeBtn) {
+                activeBtn.classList.add('active', 'text-electric-blue', 'border-electric-blue');
+                activeBtn.classList.remove('text-light-gray');
+            }
+        }
+        
+        // Matrix generation
+        function generateMatrix(type) {
+            let rows, cols;
+            const container = document.getElementById(${type}-matrix);
+            container.innerHTML = '';
+            
+            if (type === 'A' || type === 'B') {
+                rows = parseInt(document.getElementById(${type === 'A' ? 'rows' : 'rows'}A).value);
+                cols = parseInt(document.getElementById(${type === 'A' ? 'cols' : 'cols'}A).value);
+            } else if (type === 'det' || type === 'inv') {
+                rows = cols = parseInt(document.getElementById(${type}-size).value);
+            } else {
+                rows = parseInt(document.getElementById(${type}-rows).value);
+                cols = parseInt(document.getElementById(${type}-cols).value);
+            }
+            
+            currentMatrices[type] = {
+                rows: rows,
+                cols: cols,
+                values: Array(rows).fill().map(() => Array(cols).fill(0))
+            };
+            
+            // Create matrix input grid
+            for (let i = 0; i < rows; i++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'flex justify-center';
+                
+                for (let j = 0; j < cols; j++) {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.className = 'matrix-input';
+                    input.dataset.row = i;
+                    input.dataset.col = j;
+                    input.value = (i === j && (type === 'det' || type === 'inv')) ? '1' : '0';
+                    input.addEventListener('input', function() {
+                        updateMatrixValue(type, i, j, this.value);
+                    });
+                    
+                    rowDiv.appendChild(input);
+                }
+                
+                container.appendChild(rowDiv);
+            }
+            
+            // Update current matrix values
+            updateMatrixValues(type);
+        }
+        
+        // Clear matrix
+        function clearMatrix(type) {
+            const container = document.getElementById(${type}-matrix);
+            const inputs = container.getElementsByTagName('input');
+            
+            for (let input of inputs) {
+                input.value = '0';
+            }
+            
+            updateMatrixValues(type);
+        }
+        
+        // Update matrix value
+        function updateMatrixValue(type, row, col, value) {
+            currentMatrices[type].values[row][col] = parseFloat(value) || 0;
+        }
+        
+        // Update all matrix values from inputs
+        function updateMatrixValues(type) {
+            const container = document.getElementById(${type}-matrix);
+            const inputs = container.getElementsByTagName('input');
+            
+            for (let input of inputs) {
+                const row = parseInt(input.dataset.row);
+                const col = parseInt(input.dataset.col);
+                currentMatrices[type].values[row][col] = parseFloat(input.value) || 0;
+            }
+        }
+        
+        // Show scalar input
+        function calculate(operation) {
+            if (operation === 'scalarA' || operation === 'scalarB') {
+                document.getElementById('scalar-input').classList.remove('hidden');
+                document.getElementById('scalar-input').dataset.matrix = operation === 'scalarA' ? 'A' : 'B';
+                return;
+            }
+            
+            // Hide scalar input if showing
+            document.getElementById('scalar-input').classList.add('hidden');
+            
+            try {
+                let result;
+                const resultContainer = document.getElementById('operation-result');
+                const resultContent = document.getElementById('result-matrix-content');
+                const errorDiv = document.getElementById('operation-error');
+                
+                errorDiv.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
+                
+                switch(operation) {
+                    case 'add':
+                        result = addMatrices(currentMatrices.A, currentMatrices.B);
+                        break;
+                    case 'subtract':
+                        result = subtractMatrices(currentMatrices.A, currentMatrices.B);
+                        break;
+                    case 'multiply':
+                        result = multiplyMatrices(currentMatrices.A, currentMatrices.B);
+                        break;
+                    case 'determinant':
+                        result = calculateDeterminant(currentMatrices.det);
+                        document.getElementById('det-result-content').innerHTML = result;
+                        document.getElementById('det-result').classList.remove('hidden');
+                        document.getElementById('det-error').classList.add('hidden');
+                        return;
+                    case 'inverse':
+                        result = calculateInverse(currentMatrices.inv);
+                        displayMatrix(result, 'inv-result-content');
+                        document.getElementById('inv-result').classList.remove('hidden');
+                        document.getElementById('inv-error').classList.add('hidden');
+                        return;
+                    case 'transpose':
+                        result = transposeMatrix(currentMatrices.trans);
+                        displayMatrix(result, 'trans-result-content');
+                        document.getElementById('trans-result').classList.remove('hidden');
+                        return;
+                    case 'rank':
+                        result = calculateRank(currentMatrices.rank);
+                        document.getElementById('rank-result-content').innerHTML = result;
+                        document.getElementById('rank-result').classList.remove('hidden');
+                        return;
+                    default:
+                        throw new Error('Operación no soportada');
+                }
+                
+                displayMatrix(result, 'result-matrix-content');
+                
+            } catch (error) {
+                const errorDiv = document.getElementById('operation-error');
+                errorDiv.textContent = error.message;
+                errorDiv.classList.remove('hidden');
+                
+                if (operation === 'determinant') {
+                    document.getElementById('det-error').textContent = error.message;
+                    document.getElementById('det-error').classList.remove('hidden');
+                } else if (operation === 'inverse') {
+                    document.getElementById('inv-error').textContent = error.message;
+                    document.getElementById('inv-error').classList.remove('hidden');
+                }
+            }
+        }
+        
+        // Apply scalar multiplication
+        function applyScalar() {
+            const scalar = parseFloat(document.getElementById('scalar-value').value) || 0;
+            const matrixType = document.getElementById('scalar-input').dataset.matrix;
+            
+            const result = scalarMultiply(currentMatrices[matrixType], scalar);
+            displayMatrix(result, 'result-matrix-content');
+            document.getElementById('operation-result').classList.remove('hidden');
+            document.getElementById('operation-error').classList.add('hidden');
+        }
+        
+        // Matrix operations
+        function addMatrices(a, b) {
+            if (a.rows !== b.rows || a.cols !== b.cols) {
+                throw new Error('Las matrices deben tener las mismas dimensiones para sumarse');
+            }
+            
+            const result = {
+                rows: a.rows,
+                cols: a.cols,
+                values: Array(a.rows).fill().map(() => Array(a.cols).fill(0))
+            };
+            
+            for (let i = 0; i < a.rows; i++) {
+                for (let j = 0; j < a.cols; j++) {
+                    result.values[i][j] = a.values[i][j] + b.values[i][j];
+                }
+            }
+            
+            return result;
+        }
+        
+        function subtractMatrices(a, b) {
+            if (a.rows !== b.rows || a.cols !== b.cols) {
+                throw new Error('Las matrices deben tener las mismas dimensiones para restarse');
+            }
+            
+            const result = {
+                rows: a.rows,
+                cols: a.cols,
+                values: Array(a.rows).fill().map(() => Array(a.cols).fill(0))
+            };
+            
+            for (let i = 0; i < a.rows; i++) {
+                for (let j = 0; j < a.cols; j++) {
+                    result.values[i][j] = a.values[i][j] - b.values[i][j];
+                }
+            }
+            
+            return result;
+        }
+        
+        function multiplyMatrices(a, b) {
+            if (a.cols !== b.rows) {
+                throw new Error('El número de columnas de A debe coincidir con el número de filas de B');
+            }
+            
+            const result = {
+                rows: a.rows,
+                cols: b.cols,
+                values: Array(a.rows).fill().map(() => Array(b.cols).fill(0))
+            };
+            
+            for (let i = 0; i < a.rows; i++) {
+                for (let j = 0; j < b.cols; j++) {
+                    for (let k = 0; k < a.cols; k++) {
+                        result.values[i][j] += a.values[i][k] * b.values[k][j];
+                    }
+                }
+            }
+            
+            return result;
+        }
+        
+        function scalarMultiply(matrix, scalar) {
+            const result = {
+                rows: matrix.rows,
+                cols: matrix.cols,
+                values: Array(matrix.rows).fill().map(() => Array(matrix.cols).fill(0))
+            };
+            
+            for (let i = 0; i < matrix.rows; i++) {
+                for (let j = 0; j < matrix.cols; j++) {
+                    result.values[i][j] = matrix.values[i][j] * scalar;
+                }
+            }
+            
+            return result;
+        }
+        
+        function calculateDeterminant(matrix) {
+            if (matrix.rows !== matrix.cols) {
+                throw new Error('La matriz debe ser cuadrada para calcular el determinante');
+            }
+            
+            const n = matrix.rows;
+            const mat = matrix.values;
+            
+            // Base cases
+            if (n === 1) return mat[0][0];
+            if (n === 2) return mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
+            
+            let det = 0;
+            
+            for (let j = 0; j < n; j++) {
+                const subMatrix = getSubMatrix(mat, 0, j);
+                const sign = (j % 2 === 0) ? 1 : -1;
+                det += sign * mat[0][j] * calculateDeterminant({rows: n-1, cols: n-1, values: subMatrix});
+            }
+            
+            return det;
+        }
+        
+        function getSubMatrix(matrix, excludeRow, excludeCol) {
+            return matrix.filter((row, i) => i !== excludeRow)
+                        .map(row => row.filter((val, j) => j !== excludeCol));
+        }
+        
+        function calculateInverse(matrix) {
+            if (matrix.rows !== matrix.cols) {
+                throw new Error('La matriz debe ser cuadrada para calcular la inversa');
+            }
+            
+            const n = matrix.rows;
+            const det = calculateDeterminant(matrix);
+            
+            if (det === 0) {
+                throw new Error('La matriz no tiene inversa (determinante = 0)');
+            }
+            
+            // Special case for 2x2 matrix
+            if (n === 2) {
+                const a = matrix.values[0][0];
+                const b = matrix.values[0][1];
+                const c = matrix.values[1][0];
+                const d = matrix.values[1][1];
+                
+                return {
+                    rows: 2,
+                    cols: 2,
+                    values: [
+                        [d/det, -b/det],
+                        [-c/det, a/det]
+                    ]
+                };
+            }
+            
+            // For larger matrices, use adjugate method
+            const adjugate = getAdjugateMatrix(matrix);
+            return scalarMultiply(adjugate, 1/det);
+        }
+        
+        function getAdjugateMatrix(matrix) {
+            const n = matrix.rows;
+            const adj = Array(n).fill().map(() => Array(n).fill(0));
+            
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j < n; j++) {
+                    const subMatrix = getSubMatrix(matrix.values, i, j);
+                    const sign = ((i + j) % 2 === 0) ? 1 : -1;
+                    adj[j][i] = sign * calculateDeterminant({rows: n-1, cols: n-1, values: subMatrix});
+                }
+            }
+            
+            return {rows: n, cols: n, values: adj};
+        }
+        
+        function transposeMatrix(matrix) {
+            const result = {
+                rows: matrix.cols,
+                cols: matrix.rows,
+                values: Array(matrix.cols).fill().map(() => Array(matrix.rows).fill(0))
+            };
+            
+            for (let i = 0; i < matrix.rows; i++) {
+                for (let j = 0; j < matrix.cols; j++) {
+                    result.values[j][i] = matrix.values[i][j];
+                }
+            }
+            
+            return result;
+        }
+        
+        function calculateRank(matrix) {
+            // Convert to row echelon form and count non-zero rows
+            const mat = matrix.values.map(row => [...row]);
+            const rows = matrix.rows;
+            const cols = matrix.cols;
+            let rank = Math.min(rows, cols);
+            
+            for (let row = 0; row < rank; row++) {
+                // Diagonal element is not zero
+                if (mat[row][row] !== 0) {
+                    for (let col = 0; col < rows; col++) {
+                        if (col !== row) {
+                            // Make all other elements in current column zero
+                            const mult = mat[col][row] / mat[row][row];
+                            for (let i = 0; i < rank; i++) {
+                                mat[col][i] -= mult * mat[row][i];
+                            }
+                        }
+                    }
+                } else {
+                    // Find a row below to swap
+                    let reduce = true;
+                    for (let i = row + 1; i < rows; i++) {
+                        if (mat[i][row] !== 0) {
+                            [mat[row], mat[i]] = [mat[i], mat[row]];
+                            reduce = false;
+                            break;
+                        }
+                    }
+                    
+                    if (reduce) {
+                        rank--;
+                        for (let i = 0; i < rows; i++) {
+                            mat[i][row] = mat[i][rank];
+                        }
+                    }
+                    
+                    row--;
+                }
+            }
+            
+            return rank;
+        }
+        
+        // Display matrix in HTML
+        function displayMatrix(matrix, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            // Create matrix display
+            const matrixDiv = document.createElement('div');
+            matrixDiv.className = 'flex flex-col items-center';
+            
+            // Add opening bracket
+            const openBracket = document.createElement('span');
+            openBracket.className = 'matrix-bracket';
+            openBracket.textContent = '[';
+            matrixDiv.appendChild(openBracket);
+            
+            // Add rows
+            for (let i = 0; i < matrix.rows; i++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'flex';
+                
+                for (let j = 0; j < matrix.cols; j++) {
+                    const valDiv = document.createElement('div');
+                    valDiv.className = 'w-16 text-center';
+                    valDiv.textContent = matrix.values[i][j].toFixed(2);
+                    rowDiv.appendChild(valDiv);
+                }
+                
+                matrixDiv.appendChild(rowDiv);
+            }
+            
+            // Add closing bracket
+            const closeBracket = document.createElement('span');
+            closeBracket.className = 'matrix-bracket';
+            closeBracket.textContent = ']';
+            matrixDiv.appendChild(closeBracket);
+            
+            container.appendChild(matrixDiv);
+            
+            // Render MathJax
+            if (typeof MathJax !== 'undefined') {
+                MathJax.typesetPromise();
+            }
+        }
+    </script>
+</body>
+</html>

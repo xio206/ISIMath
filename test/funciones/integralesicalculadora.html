@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Integrales Indefinidas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://unpkg.com/mathlive" defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/mathlive@0.95.0/dist/mathlive-static.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Variables de Color --- */
+        :root {
+            /* Colores modo claro */
+            --bg-light: #f8fafc;
+            --surface-light: #ffffff;
+            --text-light: #1e293b;
+            --primary-light: #3b82f6; /* Azul */
+            --primary-light-hover: #2563eb; /* Azul más oscuro */
+            --secondary-light: #10b981; /* Verde */
+            --secondary-light-hover: #0d9f76; /* Verde más oscuro */
+            --border-light: #e2e8f0;
+            --error-light: #ef4444; /* Rojo para texto de error */
+            --text-muted-light: #64748b;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            
+            /* Colores modo oscuro */
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --text-dark: #e2e8f0;
+            --primary-dark: #60a5fa; /* Azul más claro para oscuro */
+            --primary-dark-hover: #93c5fd; /* Azul aún más claro */
+            --secondary-dark: #10b981; /* Verde */
+            --secondary-dark-hover: #34d399; /* Verde más claro */
+            --border-dark: #334155;
+            --error-dark: #f87171; /* Rojo para texto de error */
+            --text-muted-dark: #94a3b8;
+            --shadow-sm-dark: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md-dark: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-lg-dark: 0 10px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- Estilos Base --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        body.dark {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        /* --- Layout Principal --- */
+        .app-container {
+            display: grid;
+            grid-template-columns: minmax(300px, 400px) 1fr;
+            gap: 2rem;
+            min-height: 100vh;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .app-container {
+                padding: 1rem;
+                gap: 1.5rem;
+            }
+        }
+
+        /* --- Panel de Entrada --- */
+        .input-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        @media (max-width: 1024px) {
+            .input-panel {
+                position: static;
+            }
+        }
+
+        .panel-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .panel-card {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+            box-shadow: var(--shadow-md-dark);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .panel-title {
+            color: var(--primary-dark);
+        }
+
+        .panel-title svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* --- Formulario --- */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        body.dark .form-label {
+            color: var(--text-dark);
+        }
+
+        .math-input-container {
+            width: 100%;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background-color: var(--surface-light);
+            transition: all 0.2s ease;
+            min-height: 60px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark .math-input-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .math-input-container:focus-within {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            outline: none;
+        }
+
+        body.dark .math-input-container:focus-within {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        /* --- Botones --- */
+        .btn-group {
+            display: flex;
+            gap: 1rem; /* Espacio entre botones */
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-light);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            width: 100%; /* Ocupa todo el ancho disponible en el grupo */
+            gap: 0.5rem;
+        }
+
+        body.dark .btn {
+            background-color: var(--primary-dark);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-light-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        body.dark .btn:hover {
+            background-color: var(--primary-dark-hover);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-light);
+        }
+
+        body.dark .btn-secondary {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-light-hover);
+        }
+
+        body.dark .btn-secondary:hover {
+            background-color: var(--secondary-dark-hover);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* --- Panel de Resultados --- */
+        .output-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* --- Resultado --- */
+        .result-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .result-card {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+        }
+
+        body.dark .result-title {
+            color: var(--primary-dark);
+        }
+
+        .result-content {
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        body.dark .result-content {
+            background-color: var(--bg-dark);
+            border-color: var(--border-dark);
+        }
+
+        /* --- Gráfica --- */
+        .graph-container {
+            width: 100%;
+            height: 400px;
+            background-color: var(--surface-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        body.dark .graph-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .graph-legend {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .legend-original {
+            color: var(--secondary-light);
+        }
+
+        .legend-derivative {
+            color: var(--primary-light);
+        }
+
+        body.dark .legend-original {
+            color: var(--secondary-dark);
+        }
+
+        body.dark .legend-derivative {
+            color: var(--primary-dark);
+        }
+
+        .legend-line {
+            width: 20px;
+            height: 2px;
+            border-radius: 1px;
+        }
+
+        .legend-original .legend-line {
+            background-color: var(--secondary-light);
+        }
+
+        .legend-derivative .legend-line {
+            background-color: var(--primary-light);
+        }
+
+        body.dark .legend-original .legend-line {
+            background-color: var(--secondary-dark);
+        }
+
+        body.dark .legend-derivative .legend-line {
+            background-color: var(--primary-dark);
+        }
+
+        /* --- Pasos --- */
+        .steps-container {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .steps-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .steps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .step-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-light);
+            transition: all 0.3s ease;
+        }
+
+        body.dark .step-item {
+            background-color: var(--bg-dark);
+            border-left-color: var(--primary-dark);
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .step-title {
+            color: var(--primary-dark);
+        }
+
+        .step-title svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .step-rule {
+            font-size: 0.875em;
+            color: var(--text-muted-light);
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        body.dark .step-rule {
+            color: var(--text-muted-dark);
+        }
+
+        /* --- Mensajes de error --- */
+        .error-message {
+            color: white; /* Texto blanco para ambos modos */
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            padding: 0.75rem;
+            background-color: #A00000; /* Rojo sangre para modo claro */
+            border-radius: 6px;
+            border: 1px solid #700000; /* Borde más oscuro */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .error-message {
+            color: white; /* Texto blanco para ambos modos */
+            background-color: #8B0000; /* Rojo más oscuro que combine para modo oscuro */
+            border-color: #6A0000; /* Borde aún más oscuro */
+        }
+
+        .error-message svg {
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* --- Toggle de tema --- */
+        .theme-toggle {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--surface-light);
+            color: var(--text-light);
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.dark .theme-toggle {
+            background-color: var(--surface-dark);
+            color: var(--text-dark);
+            box-shadow: var(--shadow-lg-dark);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- Estado oculto --- */
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- Estilos específicos para math-field --- */
+        math-field {
+            font-size: 1.2rem;
+            border: none;
+            padding: 0;
+            background: transparent;
+            width: 100%;
+            min-height: 40px;
+        }
+
+        body.dark math-field {
+            color: var(--text-dark);
+        }
+
+        math-field:focus {
+            outline: none;
+        }
+
+        .ML__frac-line {
+            border-top-width: 1.5px !important;
+        }
+
+        /* --- Iconos SVG --- */
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        /* --- Animaciones --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="input-panel">
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
+                        <path d="M8.5 8.5v.01"></path>
+                        <path d="M16 15.5v.01"></path>
+                        <path d="M12 12v.01"></path>
+                        <path d="M11 17v.01"></path>
+                        <path d="M7 14v.01"></path>
+                    </svg>
+                    Función a integrar
+                </h2>
+                <div class="form-group">
+                    <label for="function-input" class="form-label">Ingrese f(x):</label>
+                    <div class="math-input-container">
+                        <math-field id="function-input" virtual-keyboard-mode="manual"></math-field>
+                    </div>
+                    <div id="function-error" class="error-message hidden">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span id="error-text"></span>
+                    </div>
+                </div>
+                <button id="solve-btn" class="btn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                    Calcular Integral
+                </button>
+                <div class="btn-group">
+                    <button id="clear-btn" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6L6 18"></path>
+                            <path d="M6 6L18 18"></path>
+                        </svg>
+                        Limpiar
+                    </button>
+                    <button id="theory-btn" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Ir a la Teoría
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Instrucciones
+                </h2>
+                <ul style="padding-left: 1.25rem; color: var(--text-muted-light);">
+                    <li style="margin-bottom: 0.5rem;">Ingrese una función matemática válida (ej. `x^2`, `sin(x)`).</li>
+                    <li style="margin-bottom: 0.5rem;">Use el teclado matemático para símbolos especiales.</li>
+                    <li style="margin-bottom: 0.5rem;">Presione "Calcular Integral" para ver resultados.</li>
+                    <li style="margin-bottom: 0.5rem;">Use "Limpiar" para borrar la entrada y la gráfica.</li>
+                    <li style="margin-bottom: 0.5rem;">"Ir a la Teoría" lo llevará a una página de recursos.</li>
+                    <li style="margin-bottom: 0.5rem;">Funciones soportadas: `sin(x)`, `cos(x)`, `exp(x)`, `ln(x)`, `log_b(x)`, `x^n`, constantes.</li>
+                    <li style="margin-bottom: 0.5rem;">Ahora también soporta integración por partes para productos como `x*sin(x)`, `x*e^x`, `x*ln(x)`.</li>
+                    <li style="margin-bottom: 0.5rem;">Soporte mejorado para integrales de la forma `(ax+b)^n` y divisiones como `k/x^n` o `k/(ax+b)^n`.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="output-panel">
+            <div id="result-card" class="result-card hidden fade-in">
+                <h2 class="result-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Resultado de la integral
+                </h2>
+                <div class="result-content">
+                    <div id="result-math-field" style="font-size: 1.2rem; margin: 1rem 0;"></div>
+                </div>
+            </div>
+
+            <div id="graph-card" class="result-card fade-in"> <h2 class="result-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    Visualización gráfica
+                </h2>
+                <div id="graph-container" class="graph-container">
+                    <div id="plot" style="width: 100%; height: 100%;"></div>
+                </div>
+                <div id="graph-legend" class="graph-legend hidden">
+                    <div class="legend-item legend-original">
+                        <span class="legend-line"></span>
+                        <span>f(x) (función original)</span>
+                    </div>
+                    <div class="legend-item legend-derivative">
+                        <span class="legend-line"></span>
+                        <span>∫f(x)dx (integral indefinida)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="steps-card" class="steps-container hidden fade-in">
+                <div class="steps-header">
+                    <h2 class="result-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        Pasos de resolución
+                    </h2>
+                    <button id="toggle-steps-btn" class="btn btn-secondary btn-sm">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="18 15 12 9 6 15"></polyline>
+                        </svg>
+                        Mostrar detalle
+                    </button>
+                </div>
+                <div id="steps-content" class="hidden">
+                    <div id="steps-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="theme-toggle" class="theme-toggle">
+        <svg id="theme-icon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // References to DOM elements
+            const functionInput = document.getElementById('function-input');
+            const solveBtn = document.getElementById('solve-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const theoryBtn = document.getElementById('theory-btn');
+            const resultCard = document.getElementById('result-card');
+            const resultMathField = document.getElementById('result-math-field');
+            const functionError = document.getElementById('function-error');
+            const errorText = document.getElementById('error-text');
+            const stepsCard = document.getElementById('steps-card');
+            const stepsList = document.getElementById('steps-list');
+            const toggleStepsBtn = document.getElementById('toggle-steps-btn');
+            const stepsContent = document.getElementById('steps-content');
+            const graphCard = document.getElementById('graph-card');
+            const graphContainer = document.getElementById('graph-container');
+            const graphLegend = document.getElementById('graph-legend');
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+
+            // Variables to store functions and steps
+            let originalFunction = null;
+            let integralFunction = null;
+            let integrationSteps = [];
+
+            // Function to draw the graph
+            const drawGraph = (integrandFunc, integralFunc) => {
+                // Define config at the very beginning of the function
+                const config = {
+                    responsive: true,
+                    displayModeBar: true,
+                    displaylogo: false,
+                    modeBarButtonsToRemove: [
+                        'pan2d', 'lasso2d', 'select2d', 'autoScale2d', 'toggleSpikelines',
+                        'hoverClosestCartesian', 'hoverCompareCartesian', 'zoom2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'
+                    ]
+                };
+
+                const xMin = -5;
+                const xMax = 5;
+                const numPoints = 500;
+                const step = (xMax - xMin) / numPoints;
+                
+                const xValues = [];
+                const yIntegrand = [];
+                const yIntegral = [];
+                
+                // If no functions, draw only the axes
+                if (!integrandFunc && !integralFunc) {
+                    for (let i = 0; i <= numPoints; i++) {
+                        const x = xMin + i * step;
+                        xValues.push(x);
+                        yIntegrand.push(null); // No data
+                        yIntegral.push(null); // No data
+                    }
+                } else {
+                    for (let i = 0; i <= numPoints; i++) {
+                        const x = xMin + i * step;
+                        xValues.push(x);
+                        
+                        try {
+                            const y = integrandFunc ? integrandFunc.evaluate({x: x}) : null;
+                            // Limit y values to prevent extreme scaling, set to null if out of bounds
+                            yIntegrand.push(isFinite(y) && Math.abs(y) < 100 ? y : null);
+                        } catch (e) {
+                            yIntegrand.push(null);
+                        }
+                        
+                        try {
+                            // Evaluate integral for C=0
+                            const integral = integralFunc ? integralFunc.evaluate({x: x}) : null;
+                            // Limit integral values to prevent extreme scaling, set to null if out of bounds
+                            yIntegral.push(isFinite(integral) && Math.abs(integral) < 100 ? integral : null);
+                        } catch (e) {
+                            yIntegral.push(null);
+                        }
+                    }
+                }
+                
+                const isDarkMode = document.body.classList.contains('dark');
+                const bgColor = isDarkMode ? '#1E293B' : '#FFFFFF';
+                const gridColor = isDarkMode ? '#334155' : '#E2E8F0';
+                const textColor = isDarkMode ? '#E2E8F0' : '#1E293B';
+                // Updated line colors for the graph
+                const lineColors = isDarkMode ? ['#10B981', '#60a5fa'] : ['#10B981', '#3b82f6']; /* Green and Blue */
+                
+                const data = [
+                    {
+                        x: xValues,
+                        y: yIntegrand,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'f(x) (función original)',
+                        line: {
+                            color: lineColors[0],
+                            width: 2
+                        },
+                        connectgaps: false // Do not connect gaps caused by null values
+                    },
+                    {
+                        x: xValues,
+                        y: yIntegral,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: "∫f(x)dx (integral indefinida)",
+                        line: {
+                            color: lineColors[1],
+                            width: 2
+                        },
+                        connectgaps: false // Do not connect gaps caused by null values
+                    }
+                ];
+                
+                const layout = {
+                    title: {
+                        text: 'Función Original e Integral Indefinida',
+                        font: {
+                            size: 16,
+                            color: textColor
+                        }
+                    },
+                    xaxis: {
+                        title: 'x',
+                        zeroline: true,
+                        zerolinecolor: textColor,
+                        zerolinewidth: 1,
+                        gridcolor: gridColor,
+                        gridwidth: 0.5,
+                        color: textColor
+                    },
+                    yaxis: {
+                        title: 'y',
+                        zeroline: true,
+                        zerolinecolor: textColor,
+                        zerolinewidth: 1,
+                        gridcolor: gridColor,
+                        gridwidth: 0.5,
+                        color: textColor
+                    },
+                    plot_bgcolor: bgColor,
+                    paper_bgcolor: bgColor,
+                    font: {
+                        family: 'Inter, Arial, sans-serif',
+                        size: 12,
+                        color: textColor
+                    },
+                    showlegend: (integrandFunc || integralFunc), // Show legend only if there are functions
+                    legend: {
+                        x: 0.02,
+                        y: 0.98,
+                        bgcolor: isDarkMode ? 'rgba(30,41,59,0.8)' : 'rgba(255,255,255,0.8)',
+                        bordercolor: isDarkMode ? '#334155' : '#E2E8F0',
+                        borderwidth: 1,
+                        font: {
+                            color: textColor
+                        }
+                    },
+                    margin: {
+                        l: 50,
+                        r: 50,
+                        t: 50,
+                        b: 50
+                    }
+                };
+                
+                Plotly.newPlot('plot', data, layout, config);
+            };
+
+            // Theme handling
+            function setTheme(isDark) {
+                document.body.classList.toggle('dark', isDark);
+                localStorage.setItem('darkMode', isDark);
+                
+                // Update icon
+                if (isDark) {
+                    themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+                } else {
+                    themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+                }
+                
+                // Update graph if it exists or draw an empty one at the start
+                drawGraph(originalFunction, integralFunction);
+            }
+
+            // Check system preference or localStorage
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const storedDarkMode = localStorage.getItem('darkMode') === 'true';
+            setTheme(storedDarkMode || (localStorage.getItem('darkMode') === null && prefersDark));
+
+            themeToggle.addEventListener('click', () => {
+                const isDark = !document.body.classList.contains('dark');
+                setTheme(isDark);
+            });
+
+            // Handle steps toggle
+            toggleStepsBtn.addEventListener('click', () => {
+                if (stepsContent.classList.contains('hidden')) {
+                    stepsContent.classList.remove('hidden');
+                    toggleStepsBtn.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>Ocultar detalle`;
+                } else {
+                    stepsContent.classList.add('hidden');
+                    toggleStepsBtn.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>Mostrar detalle`;
+                }
+            });
+
+            // Function to normalize the input from MathLive to math.js
+            const normalizeInput = (input) => {
+                let normalized = input;
+
+                // 1. Aggressive whitespace removal and trim
+                normalized = normalized.replace(/\s/g, ''); // Remove all whitespace characters
+                normalized = normalized.replace(/[\u200B-\u200F\uFEFF]/g, ''); // Remove zero-width characters
+
+                // If input is empty after initial cleaning, return '0' early
+                if (normalized === '') {
+                    return '0';
+                }
+
+                // 2. Remove MathLive placeholders (e.g., \placeholder{})
+                normalized = normalized.replace(/\\placeholder\{[^}]*\}/g, '');
+
+                // 3. Remove \text{} wrappers
+                normalized = normalized.replace(/\\text\{([^}]+)\}/g, '$1');
+
+                // 4. Convert \ln to log (natural logarithm in math.js)
+                normalized = normalized.replace(/\\ln/g, 'log');
+                // Also handle common misspellings or direct input
+                normalized = normalized.replace(/ln/g, 'log');
+                normalized = normalized.replace(/In/g, 'log');
+
+                // 5. Convert \log_{base}{arg} to log(arg, base)
+                // This regex handles arguments with or without parentheses/braces
+                const logBaseRegex = /\\log_\{([0-9]+)\}([^\\s()+\-*/^,]+|\([^)]+\)|\{[^}]+\})/g;
+                normalized = normalized.replace(logBaseRegex, (match, base, arg) => {
+                    arg = arg.replace(/\{([^}]+)\}/g, '$1'); // Clean braces
+                    if (!arg.startsWith('(') && !arg.endsWith(')')) {
+                        arg = `(${arg})`; // Ensure parentheses for clarity in math.js
+                    }
+                    return `log(${arg}, ${base})`;
+                });
+
+                // 6. Convert \log{arg} to log(arg, 10) - assuming base 10 if no base specified
+                const logNoBaseRegex = /\\log([^\\s()+\-*/^,]+|\([^)]+\)|\{[^}]+\})/g;
+                normalized = normalized.replace(logNoBaseRegex, (match, arg) => {
+                    arg = arg.replace(/\{([^}]+)\}/g, '$1'); // Clean braces
+                    if (!arg.startsWith('(') && !arg.endsWith(')')) {
+                        arg = `(${arg})`; // Ensure parentheses for clarity in math.js
+                    }
+                    return `log(${arg}, 10)`;
+                });
+
+                // 7. General LaTeX to plain text conversions
+                normalized = normalized
+                    .replace(/\\cdot/g, '*')
+                    .replace(/\\left\(/g, '(')
+                    .replace(/\\right\)/g, ')')
+                    .replace(/\\sin/g, 'sin')
+                    .replace(/\\cos/g, 'cos')
+                    .replace(/\\tan/g, 'tan')
+                    .replace(/\\sec\(([^)]+)\)/g, '(1/cos($1))') // Convert sec(x) to 1/cos(x)
+                    .replace(/\\csc\(([^)]+)\)/g, '(1/sin($1))') // Convert csc(x) to 1/sin(x)
+                    .replace(/\\cot\(([^)]+)\)/g, '(cos($1)/sin($1))') // Convert cot(x) to cos(x)/sin(x)
+                    .replace(/\\exp/g, 'exp')
+                    .replace(/\\sqrt{([^}]+)}/g, 'sqrt($1)')
+                    .replace(/\\frac{([^}]+)}{([^}]+)}/g, '($1)/($2)');
+                
+                // 8. Add parentheses for common functions if missing (e.g., sinx -> sin(x))
+                // This regex ensures we don't accidentally add parentheses to variables like 'sinx' if 'sin' is part of a variable name.
+                // It looks for function names followed by characters that are not opening parentheses.
+                const functionNames = ['sin', 'cos', 'tan', 'log', 'exp', 'sqrt', 'abs'];
+                const functionWrapRegex = new RegExp(`(?<![a-zA-Z0-9])(${functionNames.join('|')})([a-zA-Z0-9]+)(?!\\()`, 'g');
+                normalized = normalized.replace(functionWrapRegex, '$1($2)');
+
+                // 9. Handle implicit multiplication (e.g., 2x, (x+1)x, x(x+1))
+                // This is a complex step and needs careful regex.
+                // Case: Number followed by variable/function/parenthesis (e.g., 2x, 2sin(x), 2(x+1))
+                normalized = normalized.replace(/([0-9])([a-zA-Z(])/g, '$1*$2');
+                // Case: Variable/parenthesis followed by variable/function/parenthesis (e.g., x(x+1), (x+1)(x+2), xsin(x))
+                normalized = normalized.replace(/([a-zA-Z)])([a-zA-Z(])/g, '$1*$2');
+                // Case: Variable/parenthesis followed by number (e.g., x2 -> x*2, (x+1)2 -> (x+1)*2)
+                normalized = normalized.replace(/([a-zA-Z)])([0-9])/g, '$1*$2');
+
+                // Final check for empty string after all transformations
+                if (normalized.trim() === '') {
+                    return '0';
+                }
+
+                return normalized;
+            };
+
+            // Function to check if a node is the symbol 'x'
+            const isSymbolX = (node) => {
+                // Unwrap parenthesis
+                while (node.type === 'ParenthesisNode') {
+                    node = node.content;
+                }
+                return node.type === 'SymbolNode' && node.name === 'x';
+            };
+
+            // Helper function to check if a node is a linear expression in 'x' (ax + b) where a != 0
+            const isLinearInX = (node) => {
+                // Unwrap parenthesis first
+                while (node.type === 'ParenthesisNode') {
+                    node = node.content;
+                }
+
+                // Case 1: Simple 'x'
+                if (node.type === 'SymbolNode' && node.name === 'x') {
+                    console.log(`DEBUG: isLinearInX: Node '${node.toString()}' is 'x', returning true.`);
+                    return true;
+                }
+
+                // Case 2: Constant (e.g., 5, 0) - derivative is 0, so not linear in x (unless it's just 'x' as per Case 1)
+                if (node.type === 'ConstantNode') {
+                    console.log(`DEBUG: isLinearInX: Node '${node.toString()}' is a ConstantNode, returning false.`);
+                    return false;
+                }
+
+                // Fallback: For any other expression, check if its derivative with respect to 'x' is a non-zero constant.
+                try {
+                    const derivative = math.derivative(node, 'x');
+                    console.log(`DEBUG: isLinearInX: Derivative of '${node.toString()}' is '${derivative.toString()}' (Type: ${derivative.type}, Value: ${derivative.value}).`);
+                    // If the derivative is a ConstantNode and its value is not 0, then the original node is linear in x.
+                    return derivative.type === 'ConstantNode' && derivative.value !== 0;
+                } catch (e) {
+                    // If derivative fails (e.g., for non-differentiable functions or complex expressions), it's not linear in our context.
+                    console.error(`ERROR: isLinearInX: Derivative failed for '${node.toString()}':`, e);
+                    return false;
+                }
+            };
+
+            // Function to add integration steps
+            const addStep = (description, formula, rule) => {
+                integrationSteps.push({
+                    description: description,
+                    formula: formula, // Formula should already be formatted LaTeX
+                    rule: rule
+                });
+            };
+
+            // Function to display integration steps
+            const displaySteps = () => {
+                stepsList.innerHTML = '';
+                integrationSteps.forEach((step, index) => {
+                    const stepDiv = document.createElement('div');
+                    stepDiv.className = 'step-item fade-in';
+                    stepDiv.style.animationDelay = `${index * 0.1}s`;
+                    stepDiv.innerHTML = `
+                        <div class="step-title">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 8v4l3 3"></path>
+                            </svg>
+                            Paso ${index + 1}: ${step.description}
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <math-field read-only>${step.formula}</math-field>
+                        </div>
+                        <div class="step-rule">
+                            Regla aplicada: ${step.rule}
+                        </div>
+                    `;
+                    stepsList.appendChild(stepDiv);
+                });
+            };
+
+            // Function to improve LaTeX visualization (e.g., remove redundant \cdot)
+            const formatLatex = (latexStr) => {
+                if (typeof latexStr !== 'string') {
+                    console.error("formatLatex received non-string input:", latexStr);
+                    return String(latexStr);
+                }
+                // Remove \cdot when it represents implicit multiplication (e.g., 2 \cdot x -> 2x)
+                // This regex is tricky, only remove if followed by a letter or opening parenthesis
+                latexStr = latexStr.replace(/\\cdot([a-zA-Z(])/g, '$1');
+                // Remove \cdot between a number and a variable/function name
+                latexStr = latexStr.replace(/([0-9])\\cdot([a-zA-Z])/g, '$1$2');
+                return latexStr;
+            };
+
+            // Function to integrate a math.js node
+            const integrateNode = (n, depth = 0) => {
+                // Simplify the node first if possible
+                n = math.simplify(n); 
+                console.log(`DEBUG (Depth ${depth}): Processing node: ${n.toString()}, Type: ${n.type}, Op: ${n.op || 'N/A'}`);
+
+                // Options for toTex to ensure consistent LaTeX output
+                const toTexOptions = { implicit: 'hide', parenthesis: 'auto' };
+
+                // Case 1: Constant (k)
+                if (n.type === 'ConstantNode') {
+                    console.log(`DEBUG (Depth ${depth}): Matched ConstantNode.`);
+                    const result = new math.OperatorNode('*', 'multiply', [n, new math.SymbolNode('x')]);
+                    addStep(
+                        "Integral de una constante",
+                        `$$ \\int ${formatLatex(n.toTex(toTexOptions))} \\, dx = ${formatLatex(result.toTex(toTexOptions))} $$`,
+                        "∫ k dx = kx + C"
+                    );
+                    return result;
+                } 
+                // Case 2: Variable 'x'
+                else if (isSymbolX(n)) {
+                    console.log(`DEBUG (Depth ${depth}): Matched SymbolNode 'x'.`);
+                    // Integral of x: x^2 / 2
+                    const result = new math.OperatorNode('/', 'divide', [
+                        new math.OperatorNode('^', 'pow', [new math.SymbolNode('x'), new math.ConstantNode(2)]),
+                        new math.ConstantNode(2)
+                    ]);
+                    addStep(
+                        "Integral de la variable x",
+                        `$$ \\int x \\, dx = ${formatLatex(result.toTex(toTexOptions))} $$`,
+                        "∫ x dx = x²/2 + C"
+                    );
+                    return result;
+                } 
+                // Case 3: Other symbols (treated as constants)
+                else if (n.type === 'SymbolNode' && n.name !== 'x') {
+                    console.log(`DEBUG (Depth ${depth}): Matched other SymbolNode (constant).`);
+                    const result = new math.OperatorNode('*', 'multiply', [n, new math.SymbolNode('x')]);
+                    addStep(
+                        `Integral de un símbolo tratado como constante (${n.name})`,
+                        `$$ \\int ${formatLatex(n.toTex(toTexOptions))} \\, dx = ${formatLatex(result.toTex(toTexOptions))} $$`,
+                        "∫ s dx = sx + C (símbolo tratado como constante)"
+                    );
+                    return result;
+                }
+                // Case 4: Operator Nodes (+, -, *, /, ^)
+                else if (n.type === 'OperatorNode') {
+                    console.log(`DEBUG (Depth ${depth}): Matched OperatorNode with op: ${n.op}`);
+                    if (n.op === '^') { // Power Rule: x^n, a^x, or (ax+b)^n
+                        const base = n.args[0];
+                        const exponent = n.args[1];
+                        console.log(`DEBUG (Power Rule - Depth ${depth}): Current node: ${n.toString()}`);
+                        console.log(`DEBUG (Power Rule - Depth ${depth}): Base: ${base.toString()} (Type: ${base.type})`);
+                        console.log(`DEBUG (Power Rule - Depth ${depth}): Exponent: ${exponent.toString()} (Type: ${exponent.type})`);
+
+                        // Ensure exponent is a ConstantNode for all these cases
+                        if (exponent.type !== 'ConstantNode') {
+                            console.log(`DEBUG (Power Rule - Depth ${depth}): Exponent is not a ConstantNode. Exponent type: ${exponent.type}`);
+                            throw new Error(`Integración de potencia con exponente no constante (${formatLatex(exponent.toTex(toTexOptions))}) no soportada.`);
+                        }
+                        const expValue = parseFloat(exponent.value);
+
+                        // --- Explicitly handle x^n (including negative n) ---
+                        if (isSymbolX(base)) {
+                            console.log(`DEBUG (Power Rule - Depth ${depth}): Explicitly handling x^n.`);
+                            if (expValue === -1) {
+                                // Special case: 1/x -> ln|x|
+                                const result = new math.FunctionNode('log', [new math.FunctionNode('abs', [new math.SymbolNode('x')])]);
+                                addStep(
+                                    "Integral de 1/x",
+                                    `$$ \\int \\frac{1}{x} \\, dx = \\ln|x| $$`,
+                                    "∫ (1/x) dx = ln|x| + C"
+                                );
+                                return result;
+                            } else {
+                                // Power Rule: x^n -> x^(n+1)/(n+1)
+                                const newExp = new math.ConstantNode(expValue + 1);
+                                const newCoeff = new math.ConstantNode(expValue + 1); // Denominator is n+1
+                                if (newCoeff.value === 0) { // Avoid division by zero for x^-1 case, though it should be caught above
+                                    throw new Error(`Error: Exponente inválido para la regla de la potencia (n = -1).`);
+                                }
+                                const result = new math.OperatorNode('/', 'divide', [
+                                    new math.OperatorNode('^', 'pow', [base, newExp]),
+                                    newCoeff
+                                ]);
+                                addStep(
+                                    "Integral de potencia (Regla de la Potencia)",
+                                    `$$ \\int x^{${formatLatex(exponent.toTex(toTexOptions))}} \\, dx = \\frac{x^{${formatLatex(newExp.toTex(toTexOptions))}}}}{${formatLatex(newCoeff.toTex(toTexOptions))}} $$`,
+                                    "∫ x^n dx = x^(n+1)/(n+1) + C (para n ≠ -1)"
+                                );
+                                return result;
+                            }
+                        }
+                        // --- End explicit x^n handling ---
+
+                        // Case: (ax+b)^n where n is a constant (generalized power rule)
+                        // This covers x^n as well, since x is a linear expression (1x + 0)
+                        else if (isLinearInX(base)) { // Simplified condition
+                            console.log(`DEBUG (Power Rule - Depth ${depth}): Matched generalized power rule (ax+b)^n. Base is linear.`);
+                            const du_dx_node = math.derivative(base, 'x');
+                            const a_val = du_dx_node.value; // This will be 1 if base is 'x'
+                            console.log(`DEBUG (Power Rule - Depth ${depth}): a_val (from derivative of base): ${a_val}`);
+
+                            if (expValue === -1) {
+                                console.log(`DEBUG (Power Rule - Depth ${depth}): Exponent is -1, applying ln rule for (ax+b).`);
+                                // Special case: (ax+b)^-1 -> 1/(ax+b) -> (1/a)ln|ax+b|
+                                const oneNode = new math.ConstantNode(1);
+                                const divisionNode = new math.OperatorNode('/', 'divide', [oneNode, base]);
+                                addStep(
+                                    "Transformando a forma de división para integral logarítmica (Regla de la Cadena)",
+                                    `$$ \\int (${formatLatex(base.toTex(toTexOptions))})^{-1} \\, dx = \\int \\frac{1}{${formatLatex(base.toTex(toTexOptions))}} \\, dx $$`,
+                                    "Transformación de potencia negativa a división y aplicación de regla logarítmica"
+                                );
+                                return integrateNode(divisionNode, depth + 1);
+                            } else {
+                                console.log(`DEBUG (Power Rule - Depth ${depth}): Exponent is not -1, applying general power rule for (ax+b).`);
+                                // Generalized Power Rule: (ax+b)^n -> (1/a) * (ax+b)^(n+1)/(n+1)
+                                const newExp = new math.ConstantNode(expValue + 1);
+                                console.log(`DEBUG (Power Rule - Depth ${depth}): New exponent: ${newExp.toString()}`);
+
+                                const newDenominator = new math.OperatorNode('*', 'multiply', [new math.ConstantNode(a_val), new math.ConstantNode(expValue + 1)]);
+                                console.log(`DEBUG (Power Rule - Depth ${depth}): New denominator (a * (n+1)): ${newDenominator.toString()}`);
+                                
+                                const result = new math.OperatorNode('/', 'divide', [
+                                    new math.OperatorNode('^', 'pow', [base, newExp]),
+                                    newDenominator
+                                ]);
+                                console.log(`DEBUG (Power Rule - Depth ${depth}): Calculated result node: ${result.toString()}`);
+                                addStep(
+                                    "Integral de potencia generalizada (ax+b)^n (Regla de la Cadena)",
+                                    `$$ \\int (${formatLatex(base.toTex(toTexOptions))})^{${formatLatex(exponent.toTex(toTexOptions))}} \\, dx = \\frac{1}{${a_val}} \\frac{(${formatLatex(base.toTex(toTexOptions))})^{${formatLatex(newExp.toTex(toTexOptions))}}}}{${formatLatex(newExp.toTex(toTexOptions))}} = ${formatLatex(result.toTex(toTexOptions))} $$`,
+                                    "∫ (ax+b)^n dx = (1/a) * (ax+b)^(n+1)/(n+1) + C"
+                                );
+                                return result;
+                            }
+                        }
+                        // Case: a^x where a is a constant (base is constant, exponent is 'x')
+                        else if (base.type === 'ConstantNode' && isSymbolX(exponent)) {
+                            console.log(`DEBUG (Power Rule - Depth ${depth}): Matched exponential rule a^x.`);
+                            const constantBase = base;
+                            const result = new math.OperatorNode('/', 'divide', [
+                                n, // The original a^x
+                                new math.FunctionNode('log', [constantBase]) // ln(a)
+                            ]);
+                            addStep(
+                                "Integral de una constante elevada a x",
+                                `$$ \\int ${formatLatex(constantBase.toTex(toTexOptions))}^x \\, dx = \\frac{${formatLatex(constantBase.toTex(toTexOptions))}^x}{\\ln(${formatLatex(constantBase.toTex(toTexOptions))})} $$`,
+                                "∫ a^x dx = a^x/ln(a) + C"
+                            );
+                            return result;
+                        }
+                        // If none of the above, it's not supported
+                        else {
+                            console.error(`ERROR (Power Rule - Depth ${depth}): No power rule matched for base: ${base.toString()} (Type: ${base.type}), exponent: ${exponent.toString()} (Type: ${exponent.type}). isLinearInX(base): ${isLinearInX(base)}`); // More detailed error log
+                            throw new Error(`Integración de potencia de la forma ${formatLatex(n.toTex(toTexOptions))} no soportada directamente. Solo x^n, a^x, o (ax+b)^n.`);
+                        }
+                    } else if (n.op === '*') { // Multiplication: Constant Multiple Rule or Integration by Parts
+                        const arg1 = n.args[0];
+                        const arg2 = n.args[1];
+                        console.log(`DEBUG (Depth ${depth}): Multiplication Node - arg1: ${arg1.toString()}, arg2: ${arg2.toString()}`);
+
+                        let u_node = null;
+                        let dv_node = null;
+
+                        // Heuristics for choosing u and dv (LIATE rule simplification)
+                        // Priority for u: L (Logarithmic)
+                        if (arg1.type === 'FunctionNode' && arg1.fn.name === 'log' && arg1.args.length === 1 && isSymbolX(arg1.args[0])) { // ln(x) or log(x)
+                            u_node = arg1;
+                            dv_node = arg2;
+                            console.log(`DEBUG (Depth ${depth}): LIATE - Logarithmic found as u: ${u_node.toString()}`);
+                        } else if (arg2.type === 'FunctionNode' && arg2.fn.name === 'log' && arg2.args.length === 1 && isSymbolX(arg2.args[0])) { // ln(x) or log(x)
+                            u_node = arg2;
+                            dv_node = arg1;
+                            console.log(`DEBUG (Depth ${depth}): LIATE - Logarithmic found as u: ${u_node.toString()}`);
+                        }
+                        // Priority for u: A (Algebraic x^n, (ax+b)^n) if L is not found
+                        else if ((isSymbolX(arg1) || (arg1.type === 'OperatorNode' && arg1.op === '^' && isLinearInX(arg1.args[0]) && arg1.args[1].type === 'ConstantNode' && arg1.args[1].value > 0) || isLinearInX(arg1)) && // Added isLinearInX(arg1) directly for cases like x * sin(x) where x is just linear
+                                 (arg2.type === 'FunctionNode' && ['sin', 'cos', 'exp'].includes(arg2.fn.name) && (isSymbolX(arg2.args[0]) || isLinearInX(arg2.args[0])))) { // Added isSymbolX and isLinearInX for function arguments
+                            u_node = arg1;
+                            dv_node = arg2;
+                            console.log(`DEBUG (Depth ${depth}): LIATE - Algebraic found as u: ${u_node.toString()}`);
+                        } else if ((isSymbolX(arg2) || (arg2.type === 'OperatorNode' && arg2.op === '^' && isLinearInX(arg2.args[0]) && arg2.args[1].type === 'ConstantNode' && arg2.args[1].value > 0) || isLinearInX(arg2)) && // Added isLinearInX(arg2) directly
+                                   (arg1.type === 'FunctionNode' && ['sin', 'cos', 'exp'].includes(arg1.fn.name) && (isSymbolX(arg1.args[0]) || isLinearInX(arg1.args[0])))) { // Added isSymbolX and isLinearInX for function arguments
+                            u_node = arg2;
+                            dv_node = arg1;
+                            console.log(`DEBUG (Depth ${depth}): LIATE - Algebraic found as u: ${u_node.toString()}`);
+                        }
+
+                        // If u and dv are identified for integration by parts
+                        if (u_node && dv_node) {
+                            try {
+                                addStep(
+                                    `Aplicando Integración por Partes: $\\int u \\, dv = uv - \\int v \\, du$`,
+                                    `Identificando $u = ${formatLatex(u_node.toTex(toTexOptions))}$ y $dv = ${formatLatex(dv_node.toTex(toTexOptions))} \\, dx$`,
+                                    "Regla de Integración por Partes"
+                                );
+                                console.log(`DEBUG (Depth ${depth}): Integration by Parts - u: ${u_node.toString()}, dv: ${dv_node.toString()}`);
+
+                                const du_node = math.derivative(u_node, 'x'); // Calculate du/dx
+                                addStep(
+                                    `Calculando $du$`,
+                                    `$du = ${formatLatex(du_node.toTex(toTexOptions))} \\, dx$`,
+                                    "Derivación de u"
+                                );
+                                console.log(`DEBUG (Depth ${depth}): Integration by Parts - du: ${du_node.toString()}`);
+
+                                // Special handling for dv_node if it's a constant, for example, if we have ln(x) and dv is 1
+                                let v_node;
+                                if (dv_node.type === 'ConstantNode' && dv_node.value === 1) {
+                                    v_node = new math.SymbolNode('x');
+                                    console.log(`DEBUG (Depth ${depth}): Integration by Parts - dv is 1, v is x`);
+                                } else {
+                                    v_node = integrateNode(dv_node, depth + 1); // Calculate v = integral of dv
+                                    console.log(`DEBUG (Depth ${depth}): Integration by Parts - v (from integrateNode(dv)): ${v_node.toString()}`);
+                                }
+
+                                addStep(
+                                    `Calculando $v = \\int dv$`,
+                                    `$v = ${formatLatex(v_node.toTex(toTexOptions))}$`,
+                                    "Integración de dv"
+                                );
+
+                                // Construct uv
+                                const uv_term = new math.OperatorNode('*', 'multiply', [u_node, v_node]);
+                                addStep(
+                                    `Formando el término $uv$`,
+                                    `$uv = ${formatLatex(uv_term.toTex(toTexOptions))}$`,
+                                    "Parte de la fórmula de integración por partes"
+                                );
+                                console.log(`DEBUG (Depth ${depth}): Integration by Parts - uv_term: ${uv_term.toString()}`);
+
+                                // Construct v du
+                                const v_du_term = new math.OperatorNode('*', 'multiply', [v_node, du_node]);
+                                addStep(
+                                    `Formando el término $\\int v \\, du$`,
+                                    `Necesitamos integrar $\\int ${formatLatex(v_du_term.toTex(toTexOptions))} \\, dx$`,
+                                    "Parte de la fórmula de integración por partes"
+                                );
+                                console.log(`DEBUG (Depth ${depth}): Integration by Parts - v_du_term: ${v_du_term.toString()}`);
+
+                                const integral_v_du = integrateNode(v_du_term, depth + 1); // Recursively integrate v du
+                                addStep(
+                                    `Integrando $\\int v \\, du$`,
+                                    `$\\int ${formatLatex(v_du_term.toTex(toTexOptions))} \\, dx = ${formatLatex(integral_v_du.toTex(toTexOptions))}$`,
+                                    "Integración recursiva"
+                                );
+                                console.log(`DEBUG (Depth ${depth}): Integration by Parts - integral_v_du: ${integral_v_du.toString()}`);
+
+                                // Final result: uv - integral(v du)
+                                const final_result = new math.OperatorNode('-', 'subtract', [uv_term, integral_v_du]);
+                                addStep(
+                                    `Combinando los términos: $uv - \\int v \\, du$`,
+                                    `$$ \\int ${formatLatex(n.toTex(toTexOptions))} \\, dx = ${formatLatex(final_result.toTex(toTexOptions))} $$`,
+                                    "Resultado final de integración por partes"
+                                );
+                                console.log(`DEBUG (Depth ${depth}): Integration by Parts - Final result: ${final_result.toString()}`);
+                                return final_result;
+
+                            } catch (e) {
+                                console.error(`ERROR (Depth ${depth}): Integration by parts failed for: ${n.toString()}. Original error:`, e);
+                                throw new Error(`Error al intentar integración por partes para ${formatLatex(n.toTex(toTexOptions))}. Esto puede deberse a que las sub-integrales o derivadas no son soportadas o la función es demasiado compleja para esta implementación. Mensaje: ${e.message}`);
+                            }
+                        } else {
+                            // If it's not a constant multiple and not a recognized integration by parts pattern
+                            console.log(`DEBUG (Depth ${depth}): Product not recognized for integration by parts or constant multiple.`);
+                            console.log(`DEBUG (Depth ${depth}): arg1 type: ${arg1.type}, arg1 value: ${arg1.toString()}`);
+                            console.log(`DEBUG (Depth ${depth}): arg2 type: ${arg2.type}, arg2 value: ${arg2.toString()}`);
+                            console.log(`DEBUG (Depth ${depth}): isLinearInX(arg1): ${isLinearInX(arg1)}, isLinearInX(arg2): ${isLinearInX(arg2)}`);
+                            if (arg1.type === 'FunctionNode') {
+                                console.log(`DEBUG (Depth ${depth}): arg1 fn.name: ${arg1.fn.name}, isLinearInX(arg1.args[0]): ${isLinearInX(arg1.args[0])}`);
+                            }
+                            if (arg2.type === 'FunctionNode') {
+                                console.log(`DEBUG (Depth ${depth}): arg2 fn.name: ${arg2.fn.name}, isLinearInX(arg2.args[0]): ${isLinearInX(arg2.args[0])}`);
+                            }
+                            console.warn(`WARN (Depth ${depth}): No se pudo aplicar la regla de factor constante o integración por partes para el producto: ${n.toString()}`);
+                            throw new Error(`Error: La integración de productos complejos no soportada directamente por este calculador. Este calculador solo puede integrar funciones donde el factor de multiplicación es una constante (ej. 2*x, 5*sin(x)) o casos específicos de integración por partes.`);
+                        }
+
+                    } else if (n.op === '+' || n.op === '-') { // Sum/Difference Rule
+                        console.log(`DEBUG (Depth ${depth}): Matched Sum/Difference Rule.`);
+                        const integratedArgs = n.args.map(arg => integrateNode(arg, depth + 1));
+                        let result = integratedArgs[0];
+                        for (let i = 1; i < integratedArgs.length; i++) {
+                            result = new math.OperatorNode(n.op, n.op === '+' ? 'add' : 'subtract', [result, integratedArgs[i]]);
+                        }
+                        addStep(
+                            `Aplicando regla de la ${n.op === '+' ? 'suma' : 'resta'}`,
+                            `$$ \\int (u ${n.op} v) \\, dx = \\int u \\, dx ${n.op} \\int v \\, dx $$`,
+                            `∫ (u ${n.op} v) dx = ∫ u dx ${n.op} ∫ v dx`
+                        );
+                        return result;
+                    } else if (n.op === 'unaryMinus') { // Unary Minus Rule
+                        console.log(`DEBUG (Depth ${depth}): Matched Unary Minus Rule.`);
+                        const integratedArg = integrateNode(n.args[0], depth + 1);
+                        const result = new math.OperatorNode('-', 'unaryMinus', [integratedArg]);
+                        addStep(
+                            "Aplicando regla del factor constante (-1)",
+                            `$$ \\int -f(x) \\, dx = -\\int f(x) \\, dx = ${formatLatex(result.toTex(toTexOptions))} $$`,
+                            "∫ -f(x) dx = -∫f(x) dx"
+                        );
+                        return result;
+                    } else if (n.op === '/') { // Division
+                        let numerator = n.args[0];
+                        let denominator = n.args[1];
+                        console.log(`DEBUG (Division - Depth ${depth}): Processing division: ${n.toString()}`);
+                        console.log(`DEBUG (Division - Depth ${depth}): Numerator: ${numerator.toString()} (Type: ${numerator.type})`);
+                        console.log(`DEBUG (Division - Depth ${depth}): Denominator: ${denominator.toString()} (Type: ${denominator.type})`);
+
+                        // Unwrap parenthesis for both numerator and denominator
+                        while (numerator.type === 'ParenthesisNode') {
+                            numerator = numerator.content;
+                        }
+                        while (denominator.type === 'ParenthesisNode') {
+                            denominator = denominator.content;
+                        }
+                        console.log(`DEBUG (Division - Depth ${depth}): Division Node (unwrapped) - numerator: ${numerator.toString()}, denominator: ${denominator.toString()}`);
+
+                        // NEW CASE: Handle division that can be rewritten as a negative power (e.g., 1/x^4 -> x^-4 or k/(ax+b)^n -> k*(ax+b)^-n)
+                        if (denominator.type === 'OperatorNode' && denominator.op === '^' && (isSymbolX(denominator.args[0]) || isLinearInX(denominator.args[0])) && denominator.args[1].type === 'ConstantNode') {
+                            console.log(`DEBUG (Division - Depth ${depth}): Matched division as negative power transformation.`);
+                            const base = denominator.args[0];
+                            const exponent = denominator.args[1].value;
+                            const newExponent = new math.ConstantNode(-exponent); // Convert 1/f(x)^n to f(x)^-n
+
+                            let termToIntegrate;
+                            if (numerator.type === 'ConstantNode') {
+                                // k / f(x)^n -> k * f(x)^-n
+                                termToIntegrate = new math.OperatorNode('*', 'multiply', [numerator, new math.OperatorNode('^', 'pow', [base, newExponent])]);
+                                addStep(
+                                    "Transformando división a potencia negativa con factor constante",
+                                    `$$ \\int \\frac{${formatLatex(numerator.toTex(toTexOptions))}}{(${formatLatex(base.toTex(toTexOptions))})^{${formatLatex(new math.ConstantNode(exponent).toTex(toTexOptions))}}} \\, dx = \\int ${formatLatex(numerator.toTex(toTexOptions))} (${formatLatex(base.toTex(toTexOptions))})^{${formatLatex(newExponent.toTex(toTexOptions))}} \\, dx $$`,
+                                    "k/f(x)^n = k*f(x)^-n"
+                                );
+                            } else if (numerator.type === 'ConstantNode' && numerator.value === 1) {
+                                // 1 / f(x)^n -> f(x)^-n
+                                termToIntegrate = new math.OperatorNode('^', 'pow', [base, newExponent]);
+                                addStep(
+                                    "Transformando división a potencia negativa",
+                                    `$$ \\int \\frac{1}{(${formatLatex(base.toTex(toTexOptions))})^{${formatLatex(new math.ConstantNode(exponent).toTex(toTexOptions))}}} \\, dx = \\int (${formatLatex(base.toTex(toTexOptions))})^{${formatLatex(newExponent.toTex(toTexOptions))}} \\, dx $$`,
+                                    "1/f(x)^n = f(x)^-n"
+                                );
+                            } else {
+                                console.log(`DEBUG (Division - Depth ${depth}): Numerator is not a constant for power transformation: ${numerator.toString()}`);
+                            }
+
+                            if (termToIntegrate) {
+                                console.log(`DEBUG (Division - Depth ${depth}): Transformed to: ${termToIntegrate.toString()}. Recursively integrating.`);
+                                return integrateNode(termToIntegrate, depth + 1);
+                            }
+                        }
+                        // END NEW CASE
+
+                        // Case 1: k / (ax + b) form (only if it's not handled as a power rule already)
+                        if (numerator.type === 'ConstantNode' && isLinearInX(denominator)) { // Check if denominator is truly linear (ax+b)
+                            console.log(`DEBUG (Division - Depth ${depth}): Matched k/(ax+b) rule.`);
+                            const k_val = numerator.value;
+                            let u_node = denominator;
+                            try {
+                                const du_dx_node = math.derivative(u_node, 'x');
+                                if (du_dx_node.type === 'ConstantNode' && du_dx_node.value !== 0) {
+                                    const a_val = du_dx_node.value;
+                                    const coeff = new math.OperatorNode('/', 'divide', [new math.ConstantNode(k_val), new math.ConstantNode(a_val)]);
+                                    const result = new math.FunctionNode('log', [new math.FunctionNode('abs', [denominator])]);
+                                    const finalResult = new math.OperatorNode('*', 'multiply', [coeff, result]);
+                                    
+                                    addStep(
+                                        `Integral de una función de la forma k/(ax+b) (Regla de la Cadena)`,
+                                        `$$ \\int \\frac{${formatLatex(new math.ConstantNode(k_val).toTex(toTexOptions))}}{${formatLatex(denominator.toTex(toTexOptions))}} \\, dx = \\frac{${formatLatex(new math.ConstantNode(k_val).toTex(toTexOptions))}}{${formatLatex(new math.ConstantNode(a_val).toTex(toTexOptions))}}\\ln|${formatLatex(denominator.toTex(toTexOptions))}| $$`,
+                                        `∫ k/(ax+b) dx = (k/a)ln|ax+b| + C`
+                                    );
+                                    return finalResult;
+                                } else {
+                                    console.warn(`WARN (Division - Depth ${depth}): Derivative of denominator is zero or not constant for k/(ax+b) rule.`);
+                                    throw new Error(`La derivada del denominador no es una constante no nula. No se puede aplicar la regla de integración logarítmica para esta forma de división.`);
+                                }
+                            } catch (e) {
+                                console.error(`ERROR (Division - Depth ${depth}): Error during derivative calculation for k/(ax+b) form:`, e);
+                                throw new Error(`Error al procesar el denominador para la regla k/(ax+b): ${e.message}`);
+                            }
+                        }
+
+                        // Case 2: f(x) / k form (where k is a constant)
+                        if (denominator.type === 'ConstantNode') {
+                            console.log(`DEBUG (Division - Depth ${depth}): Matched f(x)/k rule.`);
+                            const k_val = denominator.value;
+                            if (k_val !== 0) {
+                                const constant_factor = new math.OperatorNode('/', 'divide', [new math.ConstantNode(1), new math.ConstantNode(k_val)]);
+                                const integratedNumerator = integrateNode(numerator, depth + 1);
+                                const result = new math.OperatorNode('*', 'multiply', [constant_factor, integratedNumerator]);
+                                addStep(
+                                    `Aplicando regla del factor constante para división`,
+                                    `$$ \\int \\frac{${formatLatex(numerator.toTex(toTexOptions))}}{${formatLatex(new math.ConstantNode(k_val).toTex(toTexOptions))}} \\, dx = \\frac{1}{${formatLatex(new math.ConstantNode(k_val).toTex(toTexOptions))}} \\int ${formatLatex(numerator.toTex(toTexOptions))} \\, dx = ${formatLatex(result.toTex(toTexOptions))} $$`,
+                                    "∫ f(x)/k dx = (1/k)∫f(x) dx"
+                                );
+                                return result;
+                            } else {
+                                throw new Error(`División por cero en la función.`);
+                            }
+                        }
+                        
+                        // Fallback for unsupported terms
+                        console.warn(`WARN (Division - Depth ${depth}): No se pudo integrar el término de división: ${n.toString()}.`);
+                        throw new Error(`No se puede integrar el término de división: ${formatLatex(n.toTex(toTexOptions))}. Regla de integración no implementada para esta forma.`);
+                    }
+                } 
+                // Case 5: Function Nodes (sin, cos, exp, log, sqrt)
+                else if (n.type === 'FunctionNode') {
+                    console.log(`DEBUG (Depth ${depth}): Matched FunctionNode with fn: ${n.fn.name}`);
+                    const arg = n.args[0];
+                    const fnName = n.fn.name;
+                    console.log(`DEBUG (Depth ${depth}): Function Node - fnName: ${fnName}, arg: ${arg.toString()}`);
+
+                    // First, check for simple 'x' argument
+                    if (isSymbolX(arg)) {
+                        console.log(`DEBUG (Depth ${depth}): Function argument is simple 'x'.`);
+                        switch (fnName) {
+                            case 'sin':
+                                const negCosX = new math.OperatorNode('-', 'unaryMinus', [new math.FunctionNode('cos', [new math.SymbolNode('x')])]);
+                                addStep(
+                                    "Integral de seno",
+                                    `$$ \\int \\sin(x) \\, dx = ${formatLatex(negCosX.toTex(toTexOptions))} $$`,
+                                    "∫ sin(x) dx = -cos(x) + C"
+                                );
+                                return negCosX;
+                            case 'cos':
+                                const sinX = new math.FunctionNode('sin', [new math.SymbolNode('x')]);
+                                addStep(
+                                    "Integral de coseno",
+                                    `$$ \\int \\cos(x) \\, dx = ${formatLatex(sinX.toTex(toTexOptions))} $$`,
+                                    "∫ cos(x) dx = sin(x) + C"
+                                );
+                                return sinX;
+                            case 'exp': // e^x
+                                const expX = new math.FunctionNode('exp', [new math.SymbolNode('x')]);
+                                addStep(
+                                    "Integral de exponencial",
+                                    `$$ \\int e^x \\, dx = ${formatLatex(expX.toTex(toTexOptions))} $$`,
+                                    "∫ e^x dx = e^x + C"
+                                );
+                                return expX;
+                            case 'log': // Natural logarithm ln(x) in math.js when one argument, log_b(x) when two
+                                if (n.args.length === 1) { // ln(x)
+                                    const x = new math.SymbolNode('x');
+                                    const xLogAbsX = new math.OperatorNode('*', 'multiply', [x, new math.FunctionNode('log', [new math.FunctionNode('abs', [x])])]);
+                                    const result = new math.OperatorNode('-', 'subtract', [xLogAbsX, x]);
+                                    addStep(
+                                        "Integral de logaritmo natural",
+                                        `$$ \\int \\ln(x) \\, dx = ${formatLatex(result.toTex(toTexOptions))} $$`,
+                                        "∫ ln(x) dx = xln|x| - x + C"
+                                    );
+                                    return result;
+                                } else if (n.args.length === 2) { // log_b(x)
+                                    const base = n.args[1];
+                                    const x = new math.SymbolNode('x');
+                                    const xLogAbsX = new math.OperatorNode('*', 'multiply', [x, new math.FunctionNode('log', [new math.FunctionNode('abs', [x])])]);
+                                    const term1 = new math.OperatorNode('-', 'subtract', [xLogAbsX, x]);
+                                    const result = new math.OperatorNode('/', 'divide', [term1, new math.FunctionNode('log', [base])]);
+                                    addStep(
+                                        `Integral de logaritmo base ${formatLatex(base.toTex(toTexOptions))}`,
+                                        `$$ \\int \\log_{${formatLatex(base.toTex(toTexOptions))}}(x) \\, dx = \\frac{${formatLatex(xLogAbsX.toTex(toTexOptions))} - x}{\\ln(${formatLatex(base.toTex(toTexOptions))})} $$`,
+                                        "∫ log_b(x) dx = (xln|x| - x)/ln(b) + C"
+                                    );
+                                    return result;
+                                }
+                                break;
+                            case 'sqrt': // sqrt(x) = x^(1/2)
+                                const xPow3_2 = new math.OperatorNode('^', 'pow', [new math.SymbolNode('x'), new math.FractionNode(3, 2)]);
+                                const resultSqrt = new math.OperatorNode('*', 'multiply', [new math.FractionNode(2, 3), xPow3_2]);
+                                addStep(
+                                    "Integral de raíz cuadrada",
+                                    `$$ \\int \\sqrt{x} \\, dx = ${formatLatex(resultSqrt.toTex(toTexOptions))} $$`,
+                                    "∫ sqrt(x) dx = (2/3)x^(3/2) + C"
+                                );
+                                return resultSqrt;
+                            case 'abs':
+                                throw new Error(`Función de valor absoluto no soportada para integración directa.`);
+                            case 'sec':
+                            case 'csc':
+                            case 'cot':
+                                throw new Error(`Funciones trigonométricas secante, cosecante o cotangente no soportadas para integración directa.`);
+                            default:
+                                throw new Error(`Función '${n.fn.name}' no soportada para integración.`);
+                        }
+                    } else { // Argument is not a simple 'x', try linear substitution (u = ax+b)
+                        console.log(`DEBUG (Depth ${depth}): Function argument is not simple 'x', attempting linear substitution.`);
+                        let u_node = arg;
+                        // Unwrap parenthesis from the argument if present
+                        while (u_node.type === 'ParenthesisNode') {
+                            u_node = u_node.content;
+                        }
+                        console.log(`DEBUG (Depth ${depth}): Linear Substitution - u_node (unwrapped): ${u_node.toString()}`);
+
+                        try {
+                            const du_dx_node = math.derivative(u_node, 'x');
+                            console.log(`DEBUG (Depth ${depth}): Linear Substitution - du_dx_node: ${du_dx_node.toString()}`);
+                            // Ensure a_val is a non-zero constant for this rule
+                            if (du_dx_node.type === 'ConstantNode' && du_dx_node.value !== 0) {
+                                const a_val = du_dx_node.value;
+                                console.log(`DEBUG (Depth ${depth}): Linear Substitution - a_val: ${a_val}`);
+
+                                let integral_of_f_u;
+                                let integral_formula_tex_for_step;
+
+                                if (fnName === 'log') {
+                                    if (n.args.length === 1) { // ln(u)
+                                        const absArg = new math.FunctionNode('abs', [arg]);
+                                        const logAbsArg = new math.FunctionNode('log', [absArg]);
+                                        const argLogAbsArg = new math.OperatorNode('*', 'multiply', [arg, logAbsArg]);
+                                        integral_of_f_u = new math.OperatorNode('-', 'subtract', [argLogAbsArg, arg]);
+                                        integral_formula_tex_for_step = `${formatLatex(arg.toTex(toTexOptions))} \\ln|${formatLatex(arg.toTex(toTexOptions))}| - ${formatLatex(arg.toTex(toTexOptions))}`;
+                                    } else if (n.args.length === 2) { // log_b(u)
+                                        const base = n.args[1];
+                                        const absArg = new math.FunctionNode('abs', [arg]);
+                                        const logAbsArg = new math.FunctionNode('log', [absArg]);
+                                        const argLogAbsArg = new math.OperatorNode('*', 'multiply', [arg, logAbsArg]);
+                                        const term1 = new math.OperatorNode('-', 'subtract', [argLogAbsArg, arg]);
+                                        integral_of_f_u = new math.OperatorNode('/', 'divide', [term1, new math.FunctionNode('log', [base])]);
+                                        const baseTex = formatLatex(base.toTex(toTexOptions));
+                                        integral_formula_tex_for_step = `\\frac{${formatLatex(arg.toTex(toTexOptions))} \\ln|${formatLatex(arg.toTex(toTexOptions))}| - ${formatLatex(arg.toTex(toTexOptions))}}{\\ln(${baseTex})}`;
+                                    } else {
+                                        throw new Error(`Función '${fnName}' con argumentos no soportados para sustitución.`);
+                                    }
+                                    // Multiply by 1/a
+                                    const coeff_1_over_a = new math.OperatorNode('/', 'divide', [new math.ConstantNode(1), new math.ConstantNode(a_val)]);
+                                    const final_result = new math.OperatorNode('*', 'multiply', [coeff_1_over_a, integral_of_f_u]);
+
+                                    addStep(
+                                        `Aplicando sustitución u = ${formatLatex(u_node.toTex(toTexOptions))} (du/dx = ${a_val})`,
+                                        `$$ \\int ${formatLatex(n.toTex(toTexOptions))} \\, dx = \\frac{1}{${a_val}} \\int ${n.fn.name}(u) \\, du = ${formatLatex(final_result.toTex(toTexOptions))} $$`,
+                                        "∫ f(ax+b) dx = (1/a)F(ax+b) + C"
+                                    );
+                                    return final_result;
+
+                                } else { // For other functions (sin, cos, exp, sqrt), use temp_x_node and transform
+                                    const temp_x_node = new math.SymbolNode('x');
+                                    let integral_of_f_temp_x;
+
+                                    switch (fnName) {
+                                        case 'sin':
+                                            integral_of_f_temp_x = new math.OperatorNode('-', 'unaryMinus', [new math.FunctionNode('cos', [temp_x_node])]);
+                                            break;
+                                        case 'cos':
+                                            integral_of_f_temp_x = new math.FunctionNode('sin', [temp_x_node]);
+                                            break;
+                                        case 'exp': // e^u
+                                            integral_of_f_temp_x = new math.FunctionNode('exp', [temp_x_node]);
+                                            break;
+                                        case 'sqrt': // sqrt(u) = u^(1/2)
+                                            const uPow3_2 = new math.OperatorNode('^', 'pow', [temp_x_node, new math.FractionNode(3, 2)]);
+                                            integral_of_f_temp_x = new math.OperatorNode('*', 'multiply', [new math.FractionNode(2, 3), uPow3_2]);
+                                            break;
+                                        default:
+                                            throw new Error(`Función '${fnName}' no soportada para integración con sustitución.`);
+                                    }
+                                    // Replace the temporary 'x' with the original argument 'u_node'
+                                    integral_of_f_u = integral_of_f_temp_x.transform(function (node) {
+                                        return node.type === 'SymbolNode' && node.name === 'x' ? arg : node;
+                                    });
+
+                                    // Multiply by 1/a
+                                    const coeff_1_over_a = new math.OperatorNode('/', 'divide', [new math.ConstantNode(1), new math.ConstantNode(a_val)]);
+                                    const final_result = new math.OperatorNode('*', 'multiply', [coeff_1_over_a, integral_of_f_u]);
+
+                                    addStep(
+                                        `Aplicando sustitución u = ${formatLatex(u_node.toTex(toTexOptions))} (du/dx = ${a_val})`,
+                                        `$$ \\int ${formatLatex(n.toTex(toTexOptions))} \\, dx = \\frac{1}{${a_val}} \\int ${n.fn.name}(u) \\, du = ${formatLatex(final_result.toTex(toTexOptions))} $$`,
+                                        "∫ f(ax+b) dx = (1/a)F(ax+b) + C"
+                                    );
+                                    return final_result;
+                                }
+
+                            } else {
+                                console.warn(`WARN (Depth ${depth}): Derivative of argument is zero or not constant non-zero for linear substitution.`);
+                                throw new Error(`La derivada del argumento (${formatLatex(u_node.toTex(toTexOptions))}) es cero o no es una constante no nula, no se puede aplicar la regla de sustitución directa.`);
+                            }
+                        } catch (e) {
+                            console.error(`ERROR (Depth ${depth}): Error during derivative calculation for substitution:`, e);
+                            throw new Error(`Error al procesar la sustitución para la función: ${e.message}`);
+                        }
+                    }
+                } 
+                // Case 6: Parenthesis Node
+                else if (n.type === 'ParenthesisNode') {
+                    console.log(`DEBUG (Depth ${depth}): Matched ParenthesisNode.`);
+                    // Recursively integrate the content of the parenthesis
+                    return integrateNode(n.content, depth + 1);
+                }
+                
+                // Fallback for unsupported terms
+                console.warn(`WARN (Depth ${depth}): Could not integrate term (final fallback): ${n.toString()}, Node type: ${n.type}`);
+                throw new Error(`No se puede integrar el término: ${formatLatex(n.toTex(toTexOptions))}. Tipo de elemento no reconocido o regla de integración no implementada.`);
+            };
+
+            // Main function to calculate the integral
+            const calculateIntegral = (funcText) => {
+                resultCard.classList.add('hidden');
+                functionError.classList.add('hidden');
+                errorText.textContent = '';
+                stepsCard.classList.add('hidden');
+                graphCard.classList.remove('hidden'); // Ensure the graph card is visible
+                graphLegend.classList.add('hidden'); // Hide legend initially
+                integrationSteps = []; // Reset steps
+
+                try {
+                    const cleanInput = normalizeInput(funcText);
+                    console.log("DEBUG: Input after normalization:", cleanInput); // For debugging
+
+                    // Final check for empty string after all transformations
+                    if (cleanInput.trim() === '' || cleanInput === '0') {
+                        errorText.textContent = 'La función resultante después de la normalización está vacía o es cero. Por favor, introduce una función válida.';
+                        functionError.classList.remove('hidden');
+                        drawGraph(null, null);
+                        return;
+                    }
+
+                    const node = math.parse(cleanInput);
+                    console.log("DEBUG: Parsed math.js node:", node.toString());
+                    
+                    originalFunction = math.compile(cleanInput);
+                    
+                    addStep(
+                        "Función original a integrar",
+                        `$$ f(x) = ${formatLatex(node.toTex({ implicit: 'hide', parenthesis: 'auto' }))} $$`,
+                        "Identificación de la función"
+                    );
+
+                    const integratedNode = integrateNode(node);
+                    console.log("DEBUG: Result of integrateNode:", integratedNode ? integratedNode.toString() : "null");
+
+
+                    if (integratedNode) {
+                        const simplifiedNode = math.simplify(integratedNode);
+                        console.log("DEBUG: Result of math.simplify:", simplifiedNode ? simplifiedNode.toString() : "null");
+                        
+                        // Add simplification step if the simplified node is different from the raw integrated node
+                        if (integratedNode.toString() !== simplifiedNode.toString()) {
+                            addStep(
+                                "Simplificación del resultado",
+                                `$$ ${formatLatex(integratedNode.toTex({ implicit: 'hide', parenthesis: 'auto' }))} = ${formatLatex(simplifiedNode.toTex({ implicit: 'hide', parenthesis: 'auto' }))} $$`,
+                                "Simplificación algebraica"
+                            );
+                        }
+                        
+                        integralFunction = math.compile(simplifiedNode.toString());
+                        
+                        const originalLatex = formatLatex(node.toTex({
+                            parenthesis: 'auto',
+                            implicit: 'hide'
+                        }));
+                        
+                        const integralLatex = formatLatex(simplifiedNode.toTex({
+                            parenthesis: 'auto',
+                            implicit: 'hide'
+                        }));
+
+                        // Explicitly add integral symbol and dx, and + C
+                        resultMathField.innerHTML = `
+                            <math-field read-only>
+                                \\int ${originalLatex} \\, dx = ${integralLatex} + C
+                            </math-field>
+                        `;
+                        resultCard.classList.remove('hidden');
+                        
+                        stepsCard.classList.remove('hidden');
+                        displaySteps();
+                        
+                        // Show and draw the graph
+                        graphLegend.classList.remove('hidden');
+                        drawGraph(originalFunction, integralFunction);
+                    } else {
+                        errorText.textContent = `No se pudo integrar la función. El proceso de integración devolvió un resultado nulo.`;
+                        functionError.classList.remove('hidden');
+                        // Ensure the graph is drawn empty if there's an error
+                        drawGraph(null, null);
+                    }
+                } catch (error) {
+                    errorText.textContent = 'Error al procesar la función. Asegúrate de que la sintaxis es correcta o que la función es integrable con las reglas implementadas. Mensaje: ' + error.message;
+                    functionError.classList.remove('hidden');
+                    console.error("Error al calcular la integral:", error);
+                    // Ensure the graph is drawn empty if there's an error
+                    drawGraph(null, null);
+                }
+            };
+
+            // Function to clear the interface
+            const clearInterface = () => {
+                functionInput.setValue('');
+                resultCard.classList.add('hidden');
+                functionError.classList.add('hidden');
+                errorText.textContent = '';
+                stepsCard.classList.add('hidden');
+                stepsList.innerHTML = '';
+                graphLegend.classList.add('hidden');
+                originalFunction = null;
+                integralFunction = null;
+                integrationSteps = [];
+                drawGraph(null, null); // Draw an empty graph
+            };
+
+            // Event listener for the "Calculate Integral" button
+            solveBtn.addEventListener('click', () => {
+                const functionText = functionInput.getValue();
+                
+                if (!functionText) {
+                    errorText.textContent = 'Por favor, introduce una función para integrar.';
+                    functionError.classList.remove('hidden');
+                    // Ensure the graph is drawn empty if no input
+                    drawGraph(null, null);
+                    return;
+                }
+
+                calculateIntegral(functionText);
+            });
+
+            // Event listener for the "Clear" button
+            clearBtn.addEventListener('click', clearInterface);
+
+            // Event listener for the "Go to Theory" button
+            theoryBtn.addEventListener('click', () => {
+                // Opens a new tab with the Wikipedia page on indefinite integrals
+                window.open('https://es.wikipedia.org/wiki/Integral_indefinida', '_blank'); 
+            });
+
+            // Allow calculation with Enter key
+            functionInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    solveBtn.click();
+                }
+            });
+
+            // Draw an empty graph when the page loads for preview
+            drawGraph(null, null);
+        });
+    </script>
+</body>
+</html>

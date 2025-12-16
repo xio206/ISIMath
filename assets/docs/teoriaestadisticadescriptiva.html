@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadística Descriptiva - Análisis de Datos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --midnight-blue: #0f172a;
+            --deep-blue: #1e293b;
+            --navy-blue: #1e3a8a;
+            --electric-blue: #3b82f6;
+            --light-blue: #60a5fa;
+            --pale-blue: #bfdbfe;
+            --dark-gray: #0f172a;
+            --medium-gray: #334155;
+            --light-gray: #94a3b8;
+            --white: #f8fafc;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--midnight-blue);
+            color: var(--white);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .math-display {
+            font-size: 1.1rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            color: var(--pale-blue);
+        }
+        .step-highlight {
+            border-left: 4px solid var(--electric-blue);
+            background-color: rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+        .step-highlight:hover {
+            background-color: rgba(59, 130, 246, 0.2);
+        }
+        .formula-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+            overflow: hidden;
+            background-color: var(--deep-blue);
+            border: 1px solid var(--medium-gray);
+        }
+        .formula-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 12px rgba(2, 6, 23, 0.5);
+            border-color: var(--electric-blue);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .content-container {
+            max-width: 95%;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        .header-section {
+            background: linear-gradient(135deg, var(--navy-blue) 0%, #172554 100%);
+            padding: 3rem 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        .header-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        .resource-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid var(--electric-blue);
+            background-color: var(--deep-blue);
+            border: 1px solid var(--medium-gray);
+        }
+        .resource-item:hover {
+            transform: translateX(5px);
+            border-color: var(--light-blue);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .home-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(2, 6, 23, 0.5);
+            background-color: var(--navy-blue);
+            border: 1px solid var(--electric-blue);
+        }
+        .home-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(2, 6, 23, 0.7);
+            background-color: var(--electric-blue);
+        }
+        .content-card {
+            background-color: var(--deep-blue);
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+            border: 1px solid var(--medium-gray);
+            border-radius: 0.75rem;
+        }
+        .tab-button {
+            transition: all 0.2s ease;
+        }
+        .title-accent {
+            position: relative;
+            display: inline-block;
+        }
+        .title-accent::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--electric-blue), transparent);
+            border-radius: 3px;
+        }
+        .text-primary {
+            color: var(--white);
+        }
+        .text-secondary {
+            color: var(--light-gray);
+        }
+        .bg-light {
+            background-color: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--medium-gray);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--midnight-blue);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--navy-blue);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--electric-blue);
+        }
+        .tab-button {
+            color: var(--light-gray);
+        }
+        .tab-button.active {
+            color: var(--electric-blue);
+            border-bottom-color: var(--electric-blue);
+        }
+        pre {
+            background-color: var(--dark-gray) !important;
+            border: 1px solid var(--medium-gray) !important;
+            border-radius: 0.5rem !important;
+            padding: 1rem !important;
+            overflow-x: auto !important;
+        }
+        a {
+            color: var(--light-blue);
+            transition: color 0.2s;
+        }
+        a:hover {
+            color: var(--electric-blue);
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid var(--medium-gray);
+            padding: 0.75rem;
+            text-align: center;
+        }
+        th {
+            background-color: var(--navy-blue);
+            color: var(--white);
+            font-weight: 600;
+        }
+        td {
+            background-color: var(--deep-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="header-section">
+        <div class="header-content content-container">
+            <h1 class="text-4xl md:text-5xl font-bold font-poppins mb-4 title-accent">ESTADÍSTICA DESCRIPTIVA</h1>
+            <div class="max-w-3xl bg-white/5 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+                <p class="text-lg text-white/90 leading-relaxed">
+                    La estadística descriptiva es la rama de la estadística que se encarga de recolectar, organizar, resumir y presentar datos de manera significativa. Utiliza medidas de posición, dispersión y forma para caracterizar conjuntos de datos, además de tablas y gráficos para su visualización.
+                </p>
+                <div class="mt-4 flex items-center text-white/80">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-electric-blue" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-sm font-medium">Fundamento del análisis de datos</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="content-container py-8">
+        <div class="main-grid">
+            <div>
+                <section class="mb-12 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        <span class="title-accent">Medidas Estadísticas</span>
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="formula-card p-6">
+                            <h3 class="font-semibold text-primary mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                                </svg>
+                                Posición
+                            </h3>
+                            <ul class="space-y-2 text-secondary text-sm">
+                                <li class="flex items-start">
+                                    <span class="text-electric-blue mr-2">•</span>
+                                    Media aritmética
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-electric-blue mr-2">•</span>
+                                    Mediana
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-electric-blue mr-2">•</span>
+                                    Moda
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-electric-blue mr-2">•</span>
+                                    Cuartiles y percentiles
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="formula-card p-6">
+                            <h3 class="font-semibold text-primary mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z" clip-rule="evenodd" />
+                                </svg>
+                                Dispersión
+                            </h3>
+                            <ul class="space-y-2 text-secondary text-sm">
+                                <li class="flex items-start">
+                                    <span class="text-electric-blue mr-2">•</span>
+                                    Rango
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-electric-blue mr-2">•</span>
+                                    Varianza
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-electric-blue mr-2">•</span>
+                                    Desviación estándar
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-electric-blue mr-2">•</span>
+                                    Coeficiente de variación
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="formula-card p-6">
+                            <h3 class="font-semibold text-primary mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                Forma
+                            </h3>
+                            <ul class="space-y-2 text-secondary text-sm">
+                                <li class="flex items-start">
+                                    <span class="text-electric-blue mr-2">•</span>
+                                    Asimetría (Skewness)
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-electric-blue mr-2">•</span>
+                                    Curtosis
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-electric-blue mr-2">•</span>
+                                    Distribución normal
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-electric-blue mr-2">•</span>
+                                    Simetría
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-light rounded-lg p-6 border border-medium-gray">
+                        <h3 class="font-semibold text-primary mb-3">Tipos de Variables</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="text-electric-blue font-medium mb-2">Cualitativas</h4>
+                                <ul class="text-secondary text-sm space-y-1">
+                                    <li>• Nominales (sin orden)</li>
+                                    <li>• Ordinales (con orden)</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-electric-blue font-medium mb-2">Cuantitativas</h4>
+                                <ul class="text-secondary text-sm space-y-1">
+                                    <li>• Discretas (valores enteros)</li>
+                                    <li>• Continuas (valores decimales)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="mb-12 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        <span class="title-accent">Ejemplos Resueltos</span>
+                    </h2>
+                    
+                    <div class="mb-8 bg-dark-gray rounded-xl overflow-hidden border border-medium-gray">
+                        <div class="flex border-b border-medium-gray">
+                            <button class="tab-button active py-3 px-6 font-medium text-electric-blue border-b-2 border-electric-blue" onclick="openExampleTab('example1', 'tab1')">
+                                Datos
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example1', 'tab2')">
+                                Solución
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example1', 'tab3')">
+                                Interpretación
+                            </button>
+                        </div>
+                        
+                        <div id="example1-tab1" class="tab-content active p-6">
+                            <p class="mb-4 text-secondary">Calcular las medidas de tendencia central y dispersión para el siguiente conjunto de calificaciones:</p>
+                            <div class="text-center text-lg my-4 p-4 bg-light rounded-lg border border-medium-gray">
+                                <p class="text-pale-blue font-mono">85, 90, 78, 92, 88, 85, 95, 82, 89, 91</p>
+                            </div>
+                            <p class="text-light-gray text-sm">Encuentra: media, mediana, moda, varianza y desviación estándar.</p>
+                        </div>
+                        
+                        <div id="example1-tab2" class="tab-content p-6">
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 1: Ordenar los datos</h4>
+                                <p class="text-secondary">Datos ordenados:</p>
+                                <div class="text-center my-2 font-mono text-pale-blue">78, 82, 85, 85, 88, 89, 90, 91, 92, 95</div>
+                            </div>
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 2: Media aritmética</h4>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$\large \bar{x} = \frac{\sum x_i}{n} = \frac{875}{10} = 87.5$$
+                                </div>
+                            </div>
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 3: Mediana</h4>
+                                <p class="text-secondary">Con n=10 (par), la mediana es el promedio de los valores centrales:</p>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$\large Me = \frac{88 + 89}{2} = 88.5$$
+                                </div>
+                            </div>
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 4: Moda</h4>
+                                <p class="text-secondary">El valor que más se repite es:</p>
+                                <div class="text-center my-2 font-bold text-electric-blue text-lg">Mo = 85</div>
+                            </div>
+                            <div class="step-highlight p-4 rounded-lg">
+                                <h4 class="font-semibold text-primary mb-2">Paso 5: Varianza y Desviación Estándar</h4>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$\large s^2 = \frac{\sum (x_i - \bar{x})^2}{n-1} = 28.28$$
+                                </div>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$\large s = \sqrt{28.28} = 5.32$$
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="example1-tab3" class="tab-content p-6">
+                            <div class="bg-light p-4 rounded-lg border border-medium-gray">
+                                <h4 class="font-semibold text-primary mb-3">Interpretación de los Resultados</h4>
+                                <ul class="space-y-3 text-secondary">
+                                    <li class="flex items-start">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span><strong>Media (87.5):</strong> El promedio de las calificaciones es 87.5 puntos.</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span><strong>Mediana (88.5):</strong> El 50% de los estudiantes tiene 88.5 o menos puntos.</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span><strong>Moda (85):</strong> La calificación más frecuente es 85.</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span><strong>Desviación Estándar (5.32):</strong> Las calificaciones se dispersan aproximadamente 5.32 puntos alrededor de la media.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-dark-gray rounded-xl overflow-hidden border border-medium-gray">
+                        <div class="flex border-b border-medium-gray">
+                            <button class="tab-button active py-3 px-6 font-medium text-electric-blue border-b-2 border-electric-blue" onclick="openExampleTab('example2', 'tab1')">
+                                Tabla de Frecuencias
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example2', 'tab2')">
+                                Cálculos
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example2', 'tab3')">
+                                Gráficos
+                            </button>
+                        </div>
+                        
+                        <div id="example2-tab1" class="tab-content active p-6">
+                            <p class="mb-4 text-secondary">Distribución de frecuencias de edades en una muestra de 50 personas:</p>
+                            <div class="overflow-x-auto">
+                                <table class="my-4">
+                                    <thead>
+                                        <tr>
+                                            <th>Intervalo de Edad</th>
+                                            <th>Frecuencia (f<sub>i</sub>)</th>
+                                            <th>Frecuencia Relativa</th>
+                                            <th>Frecuencia Acumulada</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>18-25</td>
+                                            <td>8</td>
+                                            <td>0.16</td>
+                                            <td>8</td>
+                                        </tr>
+                                        <tr>
+                                            <td>26-33</td>
+                                            <td>12</td>
+                                            <td>0.24</td>
+                                            <td>20</td>
+                                        </tr>
+                                        <tr>
+                                            <td>34-41</td>
+                                            <td>15</td>
+                                            <td>0.30</td>
+                                            <td>35</td>
+                                        </tr>
+                                        <tr>
+                                            <td>42-49</td>
+                                            <td>10</td>
+                                            <td>0.20</td>
+                                            <td>45</td>
+                                        </tr>
+                                        <tr>
+                                            <td>50-57</td>
+                                            <td>5</td>
+                                            <td>0.10</td>
+                                            <td>50</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="text-light-gray text-sm mt-4">Analiza esta distribución para obtener información relevante.</p>
+                        </div>
+                        
+                        <div id="example2-tab2" class="tab-content p-6">
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 1: Calcular la marca de clase</h4>
+                                <p class="text-secondary">Para cada intervalo, calculamos el punto medio:</p>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$\large x_i = \frac{\text{Límite inferior} + \text{Límite superior}}{2}$$
+                                </div>
+                                <p class="text-secondary text-sm">Ejemplo: Para [18-25] → x₁ = (18+25)/2 = 21.5</p>
+                            </div>
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 2: Media ponderada</h4>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$\large \bar{x} = \frac{\sum f_i \cdot x_i}{\sum f_i} = \frac{1732.5}{50} = 34.65 \text{ años}$$
+                                </div>
+                            </div>
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 3: Clase modal</h4>
+                                <p class="text-secondary">La clase con mayor frecuencia es:</p>
+                                <div class="text-center my-2 font-bold text-electric-blue text-lg">Intervalo 34-41 con f = 15</div>
+                            </div>
+                            <div class="step-highlight p-4 rounded-lg">
+                                <h4 class="font-semibold text-primary mb-2">Paso 4: Desviación estándar</h4>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$\large s = \sqrt{\frac{\sum f_i(x_i - \bar{x})^2}{n-1}} \approx 10.82 \text{ años}$$
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="example2-tab3" class="tab-content p-6">
+                            <div class="bg-light p-4 rounded-lg border border-medium-gray mb-4">
+                                <h4 class="font-semibold text-primary mb-3">Histograma de Frecuencias</h4>
+                                <p class="text-secondary mb-3">Representación visual de la distribución:</p>
+                                <div class="bg-dark-gray p-4 rounded border border-medium-gray">
+                                    <svg viewBox="0 0 500 300" class="w-full">
+                                        <line x1="50" y1="250" x2="450" y2="250" stroke="#3b82f6" stroke-width="2"/>
+                                        <line x1="50" y1="250" x2="50" y2="50" stroke="#3b82f6" stroke-width="2"/>
+                                        
+                                        <rect x="60" y="197" width="70" height="53" fill="#60a5fa" opacity="0.7"/>
+                                        <rect x="135" y="170" width="70" height="80" fill="#60a5fa" opacity="0.7"/>
+                                        <rect x="210" y="150" width="70" height="100" fill="#3b82f6" opacity="0.8"/>
+                                        <rect x="285" y="183" width="70" height="67" fill="#60a5fa" opacity="0.7"/>
+                                        <rect x="360" y="217" width="70" height="33" fill="#60a5fa" opacity="0.7"/>
+                                        
+                                        <text x="85" y="270" fill="#94a3b8" font-size="12">18-25</text>
+                                        <text x="160" y="270" fill="#94a3b8" font-size="12">26-33</text>
+                                        <text x="235" y="270" fill="#94a3b8" font-size="12">34-41</text>
+                                        <text x="310" y="270" fill="#94a3b8" font-size="12">42-49</text>
+                                        <text x="385" y="270" fill="#94a3b8" font-size="12">50-57</text>
+                                        
+                                        <text x="20" y="255" fill="#94a3b8" font-size="12">0</text>
+                                        <text x="20" y="200" fill="#94a3b8" font-size="12">5</text>
+                                        <text x="15" y="150" fill="#94a3b8" font-size="12">10</text>
+                                        <text x="15" y="100" fill="#94a3b8" font-size="12">15</text>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="bg-light p-4 rounded-lg border border-medium-gray">
+                                <h4 class="font-semibold text-primary mb-2">Interpretación del Gráfico</h4>
+                                <p class="text-secondary">El histograma muestra que la distribución de edades tiene una concentración mayor en el intervalo 34-41 años, con una forma aproximadamente simétrica y una ligera asimetría hacia la derecha.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <div>
+                <section class="mb-8 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        <span class="title-accent">Fórmulas Esenciales</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Media Aritmética</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\large \bar{x} = \frac{\sum_{i=1}^{n} x_i}{n} = \frac{x_1 + x_2 + \cdots + x_n}{n}$$
+                            </div>
+                            <p class="text-sm text-light-gray">Promedio de todos los valores.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Mediana</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\large Me = \begin{cases} 
+                                x_{\frac{n+1}{2}} & \text{si } n \text{ es impar} \\
+                                \frac{x_{\frac{n}{2}} + x_{\frac{n}{2}+1}}{2} & \text{si } n \text{ es par}
+                                \end{cases}$$
+                            </div>
+                            <p class="text-sm text-light-gray">Valor central de los datos ordenados.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Varianza</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\large s^2 = \frac{\sum_{i=1}^{n} (x_i - \bar{x})^2}{n-1}$$
+                            </div>
+                            <p class="text-sm text-light-gray">Medida de dispersión cuadrática.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Desviación Estándar</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\large s = \sqrt{s^2} = \sqrt{\frac{\sum_{i=1}^{n} (x_i - \bar{x})^2}{n-1}}$$
+                            </div>
+                            <p class="text-sm text-light-gray">Raíz cuadrada de la varianza.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Coeficiente de Variación</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\large CV = \frac{s}{\bar{x}} \times 100\%$$
+                            </div>
+                            <p class="text-sm text-light-gray">Dispersión relativa en porcentaje.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Cuartiles</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\large Q_k = \text{Posición: } \frac{k(n+1)}{4}$$
+                            </div>
+                            <p class="text-sm text-light-gray">Q₁ (25%), Q₂ (50%), Q₃ (75%)</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Rango Intercuartílico</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\large IQR = Q_3 - Q_1$$
+                            </div>
+                            <p class="text-sm text-light-gray">Rango del 50% central de los datos.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Asimetría (Skewness)</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\large g_1 = \frac{n}{(n-1)(n-2)} \sum \left(\frac{x_i - \bar{x}}{s}\right)^3$$
+                            </div>
+                            <p class="text-sm text-light-gray">Mide la simetría de la distribución.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Curtosis</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\large g_2 = \frac{n(n+1)}{(n-1)(n-2)(n-3)} \sum \left(\frac{x_i - \bar{x}}{s}\right)^4 - \frac{3(n-1)^2}{(n-2)(n-3)}$$
+                            </div>
+                            <p class="text-sm text-light-gray">Mide el apuntamiento de la distribución.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <span class="title-accent">Recursos Adicionales</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">PDF: Tabla de Fórmulas Estadísticas</h3>
+                                <p class="text-sm text-light-gray mt-1">Descarga una guía completa con todas las fórmulas.</p>
+                            </div>
+                        </a>
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">Calculadora Estadística</h3>
+                                <p class="text-sm text-light-gray mt-1">Herramienta online para calcular todas las medidas.</p>
+                            </div>
+                        </a>
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">Generador de Gráficos</h3>
+                                <p class="text-sm text-light-gray mt-1">Crea histogramas, polígonos y diagramas de caja.</p>
+                            </div>
+                        </a>
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">Video Tutoriales</h3>
+                                <p class="text-sm text-light-gray mt-1">Aprende con explicaciones paso a paso.</p>
+                            </div>
+                        </a>
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">Ejercicios Resueltos</h3>
+                                <p class="text-sm text-light-gray mt-1">Practica con problemas de diferentes niveles.</p>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <div class="flex justify-center mt-12 mb-8">
+            <a href="/public/teoria.html" class="home-button text-white font-medium py-3 px-8 rounded-lg transition duration-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                Volver a Inicio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+        function openExampleTab(exampleId, tabId) {
+            ['tab1', 'tab2', 'tab3'].forEach(tabSuffix => {
+                const tabContentElement = document.getElementById(`${exampleId}-${tabSuffix}`);
+                if (tabContentElement) {
+                    tabContentElement.classList.remove('active');
+                }
+            });
+            const selectedTabContentElement = document.getElementById(`${exampleId}-${tabId}`);
+            if (selectedTabContentElement) {
+                selectedTabContentElement.classList.add('active');
+            }
+            document.querySelectorAll(`button[onclick^="openExampleTab('${exampleId}'"]`).forEach(btn => {
+                btn.classList.remove('active', 'text-electric-blue', 'border-electric-blue');
+                btn.classList.add('text-light-gray');
+            });
+            const activeTabButton = document.querySelector(`button[onclick="openExampleTab('${exampleId}', '${tabId}')"]`);
+            if (activeTabButton) {
+                activeTabButton.classList.add('active', 'text-electric-blue', 'border-electric-blue');
+                activeTabButton.classList.remove('text-light-gray');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            openExampleTab('example1', 'tab1');
+            openExampleTab('example2', 'tab1');
+            if (typeof MathJax !== 'undefined') {
+                MathJax.typesetPromise();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Herramientas</title>
+    <link rel="stylesheet" href="/styles/app/manager.css">
+
+    <link rel="stylesheet" href="/scripts/functions/limites.css">
+    <link rel="stylesheet" href="/scripts/functions/derivadas.css">
+    <link rel="stylesheet" href="/scripts/functions/integralesD.css">
+    <link rel="stylesheet" href="/scripts/functions/integralesI.css">
+
+    <link rel="stylesheet" href="/scripts/matrices/calculadora.css">
+    <link rel="stylesheet" href="/scripts/matrices/determinantes.css">
+    <link rel="stylesheet" href="/scripts/matrices/inversa.css">
+    <link rel="stylesheet" href="/scripts/matrices/iterativos.css">
+
+    <!-- TODO: Librerias de Js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://unpkg.com/mathlive" defer></script>
+</head>
+<body>
+
+    <div class="app__container">
+        <!-- Encabezado -->
+        <header class="app__header">
+            <div class="app__logo-container" id="app__logo">
+                <div class="app__logo-icon">IM</div>
+                <span class="app__logo-text">ISIMath</span>
+                <span class="app__breadcrumbs" id="app__breadcrumbs"></span>
+            </div>
+            
+            <nav class="app__nav-desktop">
+                <a class="app__nav-link" data-section="calculo">Cálculo</a>
+                <a class="app__nav-link" data-section="matrices">Matrices</a>
+            </nav>
+
+            <div class="app__header-actions">
+                <button class="app__theme-toggle" id="app__theme-toggle">
+                    <span class="app__icon-sun">☀️</span>
+                    <span class="app__icon-moon app__hidden">🌙</span>
+                </button>
+                <button class="app__mobile-menu-btn" id="app__mobile-menu-btn">☰</button>
+            </div>
+        </header>
+        
+        <!-- Menú de Navegación Móvil -->
+        <nav class="app__nav-mobile" id="app__nav-mobile">
+            <button class="app__mobile-close-btn" id="app__mobile-close-btn">&times;</button>
+            <div class="app__mobile-nav-links">
+                 <a class="app__nav-link" data-section="calculo">Cálculo</a>
+                 <a class="app__nav-link" data-section="matrices">Matrices</a>
+            </div>
+        </nav>
+
+
+        <!-- Contenido Principal -->
+        <main class="app__main-content" id="app__main-content">
+            
+            <!-- Vista Inicial -->
+            <div class="app__initial-view" id="app__initial-view">
+                <h2 class="app__welcome-title">Bienvenido a ISIMath</h2>
+                <p class="app__welcome-text">Tu plataforma de matemáticas. Selecciona una categoría del menú de navegación para explorar las herramientas.</p>
+                <div class="app__rotating-svg-container">
+                    <svg class="app__rotating-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="app-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--app-primary-light); stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--app-secondary-light); stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M 50,5 A 45,45 0 1 1 5,50" fill="none" stroke="url(#app-gradient)" stroke-width="4"/>
+                        <path d="M 50,95 A 45,45 0 1 1 95,50" fill="none" stroke="url(#app-gradient)" stroke-width="4" stroke-dasharray="10, 10"/>
+                        <circle cx="50" cy="50" r="10" fill="none" stroke="url(#app-gradient)" stroke-width="2"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Tarjetas de Cálculo -->
+            <div class="app__cards-container app__hidden" id="app__calculo-cards">
+                <div class="app__card" data-target="limites" data-name="Límites">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 12l6-6m-6 6l6 6"/><path d="M21 5h-6"/><path d="M21 19h-6"/><path d="m15 5 6 14"/></svg>
+                    <h3 class="app__card-title">Límites</h3>
+                    <p class="app__card-description">Calcula el límite de una función cuando la variable tiende a un número.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+                <div class="app__card" data-target="derivadas" data-name="Derivadas">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5.2C9 4 10.1 3 11.3 3s2.4.9 2.7 2.1L15 10"/><path d="M12 18h.01"/><path d="M6 18h.01"/><path d="M18 18h.01"/></svg>
+                    <h3 class="app__card-title">Derivadas</h3>
+                    <p class="app__card-description">Encuentra la razón de cambio instantánea de una función.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+                <div class="app__card" data-target="integrales-definidas" data-name="Integrales Definidas">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3l-6 6v6l6 6"/><path d="M18 21h-7"/><path d="M18 3h-7"/><path d="M15 3v18"/></svg>
+                    <h3 class="app__card-title">Integrales Definidas</h3>
+                    <p class="app__card-description">Calcula el área bajo la curva entre dos puntos específicos.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+                <div class="app__card" data-target="integrales-indefinidas" data-name="Integrales Indefinidas">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3l-6 6v6l6 6"/><path d="M18 3v18"/></svg>
+                    <h3 class="app__card-title">Integrales Indefinidas</h3>
+                    <p class="app__card-description">Encuentra la antiderivada o primitiva de una función.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+            </div>
+
+            <!-- Tarjetas de Matrices -->
+            <div class="app__cards-container app__hidden" id="app__matrices-cards">
+                <div class="app__card" data-target="calculadora-matrices" data-name="Calculadora de Matrices">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+                    <h3 class="app__card-title">Calculadora</h3>
+                    <p class="app__card-description">Realiza operaciones básicas como suma, resta y multiplicación.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+                <div class="app__card" data-target="determinantes" data-name="Determinantes">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18"/><path d="M19 3v18"/><rect x="9" y="7" width="6" height="10" rx="1"/></svg>
+                    <h3 class="app__card-title">Determinantes</h3>
+                    <p class="app__card-description">Calcula el valor escalar de una matriz cuadrada.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+                <div class="app__card" data-target="inversa" data-name="Inversa">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14h.01"/><path d="M11.5 10.5h.01"/><path d="M15 6h.01"/><path d="M8.5 6.5h.01"/><path d="M8.5 14.5h.01"/><path d="M7 10.5a3.5 3.5 0 0 0 3.5 3.5h.01"/><path d="M17 10.5a3.5 3.5 0 0 1-3.5 3.5h-.01"/><path d="M17 14a3.5 3.5 0 0 1-3.5-3.5h.01"/></svg>
+                    <h3 class="app__card-title">Inversa</h3>
+                    <p class="app__card-description">Encuentra la matriz inversa de una matriz invertible.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+                <div class="app__card" data-target="metodos-iterativos" data-name="Métodos Iterativos">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                    <h3 class="app__card-title">Métodos Iterativos</h3>
+                    <p class="app__card-description">Resuelve sistemas de ecuaciones lineales con Jacobi y Gauss-Seidel.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+            </div>
+
+            <!-- SVG Rotatorio para las secciones -->
+            <div class="app__rotating-svg-container app__hidden" id="app__rotating-svg-container">
+                <svg class="app__rotating-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="app-gradient-section" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--app-primary-light); stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--app-secondary-light); stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="url(#app-gradient-section)" stroke-width="4" stroke-dasharray="282.74" stroke-dashoffset="70"/>
+                    <ellipse cx="50" cy="50" rx="45" ry="20" fill="none" stroke="url(#app-gradient-section)" stroke-width="2" transform="rotate(45 50 50)"/>
+                    <ellipse cx="50" cy="50" rx="45" ry="20" fill="none" stroke="url(#app-gradient-section)" stroke-width="2" transform="rotate(-45 50 50)"/>
+                    <circle cx="50" cy="50" r="5" fill="url(#app-gradient-section)"/>
+                </svg>
+            </div>
+            
+<!-- ?Contenedores de Contenido Específico -->
+            <div id="app__content-sections">
+
+<!-- ! CALCULO -->
+<!-- TODO: Limites -->
+                <div id="app__limites-container" class="app__content-section app__hidden">
+                    <!-- Sección para la recolección de datos -->
+                    <div class="limites__input-section">
+                        <h3>Calcular Límite</h3>
+                        <div class="limites__form-group">
+                            <label for="limites__function-input">Función f(x):</label>
+                            <input type="text" id="limites__function-input" class="limites__input-text" placeholder="Ej: x^2 - 4 / (x - 2) o sin(x) / x">
+                            <small class="limites__error-message" id="limites__function-error"></small>
+                        </div>
+                        <div class="limites__form-group">
+                            <label for="limites__limit-point-input">Cuando x tiende a:</label>
+                            <input type="text" id="limites__limit-point-input" class="limites__input-text" placeholder="Ej: 2 o 0">
+                            <small class="limites__error-message" id="limites__limit-point-error"></small>
+                        </div>
+                        <button id="limites__solve-limit-btn" class="limites__button">Resolver Límite</button>
+                    </div>
+
+                    <!-- Sección para la respuesta y la gráfica -->
+                    <div class="limites__result-section">
+                        <h3>Resultado y Gráfica</h3>
+                        <div id="limites__limit-result" class="limites__result-display">
+                            El resultado del límite aparecerá aquí.
+                        </div>
+                        <canvas id="limites__function-graph" class="limites__graph-canvas"></canvas>
+                    </div>
+                </div>
+                
+<!-- TODO: Derivadas -->
+                <div id="app__derivadas-container" class="app__content-section app__hidden">
+                    <!-- Sección para la recolección de datos -->
+                    <div class="derivadas__input-section">
+                        <h3>Calcular Derivada</h3>
+                        <div class="derivadas__form-group">
+                            <label for="derivadas__function-input">Función f(x):</label>
+                            <input type="text" id="derivadas__function-input" class="derivadas__input-text" placeholder="Ej: x^2 o sin(x)">
+                            <small class="derivadas__error-message" id="derivadas__function-error"></small>
+                        </div>
+                        <div class="derivadas__form-group">
+                            <label for="derivadas__point-input">Punto x:</label>
+                            <input type="text" id="derivadas__point-input" class="derivadas__input-text" placeholder="Ej: 2 o 0">
+                            <small class="derivadas__error-message" id="derivadas__point-error"></small>
+                        </div>
+                        <button id="derivadas__solve-btn" class="derivadas__button">Resolver Derivada</button>
+                    </div>
+
+                    <!-- Sección para la respuesta y la gráfica -->
+                    <div class="derivadas__result-section">
+                        <h3>Resultado y Gráfica</h3>
+                        <div id="derivadas__result" class="derivadas__result-display">
+                            El resultado de la derivada aparecerá aquí.
+                        </div>
+                        <canvas id="derivadas__function-graph" class="derivadas__graph-canvas"></canvas>
+                    </div>
+                </div>
+
+<!-- TODO: Integrales Definidas -->
+                <div id="app__integrales-definidas-container" class="app__content-section app__hidden">
+                    <!-- Sección para la recolección de datos -->
+                    <div class="integralesD__input-section">
+                        <h3>Calcular Integral Definida</h3>
+                        <div class="integralesD__form-group">
+                            <label for="integralesD__function-input">Función f(x):</label>
+                            <input type="text" id="integralesD__function-input" class="integralesD__input-text" placeholder="Ej: x^2 o sin(x)">
+                            <small class="integralesD__error-message" id="integralesD__function-error"></small>
+                        </div>
+                        <div class="integralesD__form-group">
+                            <label for="integralesD__lower-limit-input">Límite Inferior (a):</label>
+                            <input type="text" id="integralesD__lower-limit-input" class="integralesD__input-text" placeholder="Ej: 0">
+                            <small class="integralesD__error-message" id="integralesD__lower-limit-error"></small>
+                        </div>
+                        <div class="integralesD__form-group">
+                            <label for="integralesD__upper-limit-input">Límite Superior (b):</label>
+                            <input type="text" id="integralesD__upper-limit-input" class="integralesD__input-text" placeholder="Ej: 1">
+                            <small class="integralesD__error-message" id="integralesD__upper-limit-error"></small>
+                        </div>
+                        <div class="integralesD__form-group">
+                            <label for="integralesD__subintervals-input">Número de Subintervalos (n - debe ser par):</label>
+                            <input type="number" id="integralesD__subintervals-input" class="integralesD__input-text" placeholder="Ej: 4">
+                            <small class="integralesD__error-message" id="integralesD__subintervals-error"></small>
+                        </div>
+                        <button id="integralesD__solve-btn" class="integralesD__button">Resolver Integral</button>
+                    </div>
+
+                    <!-- Sección para la respuesta y la gráfica -->
+                    <div class="integralesD__result-section">
+                        <h3>Resultado y Gráfica</h3>
+                        <div id="integralesD__result" class="integralesD__result-display">
+                            El resultado de la integral aparecerá aquí.
+                        </div>
+                        <canvas id="integralesD__function-graph" class="integralesD__graph-canvas"></canvas>
+                    </div>
+                </div>
+
+<!-- TODO: Integrales Indefinidas -->
+                <div id="app__integrales-indefinidas-container" class="app__content-section app__hidden">
+                        <!-- Sección de inputs -->
+                        <div class="integralesI__input-section">
+                            <h3>Calcular Integral Indefinida</h3>
+                            <div class="integralesI__form-group">
+                                <label for="integralesI__function-input">Función f(x):</label>
+                                <div class="integralesI__math-input">
+                                    <math-field id="integralesI__function-input" virtual-keyboard-mode="manual">x^2</math-field>
+                                </div>
+                                <div id="integralesI__function-error" class="integralesI__error-message hidden"></div>
+                            </div>
+                            <button id="integralesI__solve-btn" class="integralesI__button">Resolver Integral</button>
+                        </div>
+
+                        <!-- Sección de outputs -->
+                        <div class="integralesI__output-section">
+                            <h3>Resultado y Visualización</h3>
+                            
+                            <!-- Resultado -->
+                            <div id="integralesI__result" class="integralesI__result-display hidden">
+                                <h4>Resultado:</h4>
+                                <p>La integral indefinida de la función es:</p>
+                                <div id="integralesI__result-math-field" style="font-size: 1.2rem; margin: 1rem 0;"></div>
+                                <p class="integralesI__result-note">
+                                    Nota: Recuerda añadir la constante de integración "C".
+                                </p>
+                            </div>
+
+                            <!-- Pasos -->
+                            <div id="integralesI__steps-container" class="integralesI__steps-container hidden">
+                                <h4>Pasos de resolución:</h4>
+                                <button id="integralesI__toggle-steps-btn" class="integralesI__button">
+                                    Mostrar pasos detallados
+                                </button>
+                                <div id="integralesI__steps-content" class="integralesI__steps-content hidden">
+                                    <div id="integralesI__steps-list"></div>
+                                </div>
+                            </div>
+
+                            <!-- Gráfica -->
+                            <div id="integralesI__graph-container" class="integralesI__graph-container hidden">
+                                <div id="integralesI__plot" style="width: 100%; height: 100%;"></div>
+                            </div>
+                            
+                            <!-- Leyenda de la gráfica -->
+                            <div id="integralesI__graph-legend" class="integralesI__graph-legend hidden">
+                                <span class="integralesI__legend-item integralesI__legend-original">━━━ f(x) (función original)</span>
+                                <span class="integralesI__legend-item integralesI__legend-integral">━━━ ∫f(x)dx (integral)</span>
+                            </div>
+                        </div>
+                </div>
+
+<!-- ! MATRICES -->
+<!-- TODO: Calculadora de Matrices -->
+                <!-- Contenido de Matrices -->
+                <div id="app__calculadora-matrices-container" class="app__content-section app__hidden">
+                    <div id="calculadoraMatriz__container" class="calculadoraMatriz__content-section">
+                        <div class="calculadoraMatriz__main-container">
+                            <!-- Sección de entrada -->
+                            <div class="calculadoraMatriz__input-section">
+                                <h3>Calculadora de Matrices</h3>
+                                <div class="calculadoraMatriz__operation-buttons">
+                                    <button id="calculadoraMatriz__btn-suma" class="calculadoraMatriz__button">Suma</button>
+                                    <button id="calculadoraMatriz__btn-resta" class="calculadoraMatriz__button">Resta</button>
+                                    <button id="calculadoraMatriz__btn-multiplicacion" class="calculadoraMatriz__button">Multiplicación</button>
+                                    <button id="calculadoraMatriz__btn-traspuesta" class="calculadoraMatriz__button">Traspuesta</button>
+                                </div>
+
+                                <!-- Contenedor para inputs de Suma -->
+                                <div id="calculadoraMatriz__suma-inputs" class="calculadoraMatriz__operation-inputs calculadoraMatriz__hidden">
+                                    <h4>Suma de Matrices</h4>
+                                    <div class="calculadoraMatriz__form-group">
+                                        <label>Matriz A (Filas x Columnas):</label>
+                                        <input type="number" id="calculadoraMatriz__suma-a-rows" class="calculadoraMatriz__input-text" placeholder="Filas A" min="1" value="2">
+                                        <input type="number" id="calculadoraMatriz__suma-a-cols" class="calculadoraMatriz__input-text" placeholder="Cols A" min="1" value="2">
+                                        <button id="calculadoraMatriz__suma-generate-a" class="calculadoraMatriz__button">Generar Matriz A</button>
+                                        <small class="calculadoraMatriz__error-message" id="calculadoraMatriz__suma-a-error"></small>
+                                    </div>
+                                    <div id="calculadoraMatriz__suma-matrix-a-container" class="calculadoraMatriz__matrix-input-container"></div>
+
+                                    <div class="calculadoraMatriz__form-group">
+                                        <label>Matriz B (Filas x Columnas):</label>
+                                        <input type="number" id="calculadoraMatriz__suma-b-rows" class="calculadoraMatriz__input-text" placeholder="Filas B" min="1" value="2">
+                                        <input type="number" id="calculadoraMatriz__suma-b-cols" class="calculadoraMatriz__input-text" placeholder="Cols B" min="1" value="2">
+                                        <button id="calculadoraMatriz__suma-generate-b" class="calculadoraMatriz__button">Generar Matriz B</button>
+                                        <small class="calculadoraMatriz__error-message" id="calculadoraMatriz__suma-b-error"></small>
+                                    </div>
+                                    <div id="calculadoraMatriz__suma-matrix-b-container" class="calculadoraMatriz__matrix-input-container"></div>
+                                    <button id="calculadoraMatriz__solve-suma" class="calculadoraMatriz__button">Resolver Suma</button>
+                                </div>
+
+                                <!-- Contenedor para inputs de Resta -->
+                                <div id="calculadoraMatriz__resta-inputs" class="calculadoraMatriz__operation-inputs calculadoraMatriz__hidden">
+                                    <h4>Resta de Matrices</h4>
+                                    <div class="calculadoraMatriz__form-group">
+                                        <label>Matriz A (Filas x Columnas):</label>
+                                        <input type="number" id="calculadoraMatriz__resta-a-rows" class="calculadoraMatriz__input-text" placeholder="Filas A" min="1" value="2">
+                                        <input type="number" id="calculadoraMatriz__resta-a-cols" class="calculadoraMatriz__input-text" placeholder="Cols A" min="1" value="2">
+                                        <button id="calculadoraMatriz__resta-generate-a" class="calculadoraMatriz__button">Generar Matriz A</button>
+                                        <small class="calculadoraMatriz__error-message" id="calculadoraMatriz__resta-a-error"></small>
+                                    </div>
+                                    <div id="calculadoraMatriz__resta-matrix-a-container" class="calculadoraMatriz__matrix-input-container"></div>
+
+                                    <div class="calculadoraMatriz__form-group">
+                                        <label>Matriz B (Filas x Columnas):</label>
+                                        <input type="number" id="calculadoraMatriz__resta-b-rows" class="calculadoraMatriz__input-text" placeholder="Filas B" min="1" value="2">
+                                        <input type="number" id="calculadoraMatriz__resta-b-cols" class="calculadoraMatriz__input-text" placeholder="Cols B" min="1" value="2">
+                                        <button id="calculadoraMatriz__resta-generate-b" class="calculadoraMatriz__button">Generar Matriz B</button>
+                                        <small class="calculadoraMatriz__error-message" id="calculadoraMatriz__resta-b-error"></small>
+                                    </div>
+                                    <div id="calculadoraMatriz__resta-matrix-b-container" class="calculadoraMatriz__matrix-input-container"></div>
+                                    <button id="calculadoraMatriz__solve-resta" class="calculadoraMatriz__button">Resolver Resta</button>
+                                </div>
+
+                                <!-- Contenedor para inputs de Multiplicación -->
+                                <div id="calculadoraMatriz__multiplicacion-inputs" class="calculadoraMatriz__operation-inputs calculadoraMatriz__hidden">
+                                    <h4>Multiplicación de Matrices</h4>
+                                    <div class="calculadoraMatriz__form-group">
+                                        <label>Matriz A (Filas x Columnas):</label>
+                                        <input type="number" id="calculadoraMatriz__multiplicacion-a-rows" class="calculadoraMatriz__input-text" placeholder="Filas A" min="1" value="2">
+                                        <input type="number" id="calculadoraMatriz__multiplicacion-a-cols" class="calculadoraMatriz__input-text" placeholder="Cols A" min="1" value="2">
+                                        <button id="calculadoraMatriz__multiplicacion-generate-a" class="calculadoraMatriz__button">Generar Matriz A</button>
+                                        <small class="calculadoraMatriz__error-message" id="calculadoraMatriz__multiplicacion-a-error"></small>
+                                    </div>
+                                    <div id="calculadoraMatriz__multiplicacion-matrix-a-container" class="calculadoraMatriz__matrix-input-container"></div>
+
+                                    <div class="calculadoraMatriz__form-group">
+                                        <label>Matriz B (Filas x Columnas):</label>
+                                        <input type="number" id="calculadoraMatriz__multiplicacion-b-rows" class="calculadoraMatriz__input-text" placeholder="Filas B" min="1" value="2">
+                                        <input type="number" id="calculadoraMatriz__multiplicacion-b-cols" class="calculadoraMatriz__input-text" placeholder="Cols B" min="1" value="2">
+                                        <button id="calculadoraMatriz__multiplicacion-generate-b" class="calculadoraMatriz__button">Generar Matriz B</button>
+                                        <small class="calculadoraMatriz__error-message" id="calculadoraMatriz__multiplicacion-b-error"></small>
+                                    </div>
+                                    <div id="calculadoraMatriz__multiplicacion-matrix-b-container" class="calculadoraMatriz__matrix-input-container"></div>
+                                    <button id="calculadoraMatriz__solve-multiplicacion" class="calculadoraMatriz__button">Resolver Multiplicación</button>
+                                </div>
+
+                                <!-- Contenedor para inputs de Traspuesta -->
+                                <div id="calculadoraMatriz__traspuesta-inputs" class="calculadoraMatriz__operation-inputs calculadoraMatriz__hidden">
+                                    <h4>Traspuesta de Matriz</h4>
+                                    <div class="calculadoraMatriz__form-group">
+                                        <label>Matriz A (Filas x Columnas):</label>
+                                        <input type="number" id="calculadoraMatriz__traspuesta-a-rows" class="calculadoraMatriz__input-text" placeholder="Filas A" min="1" value="2">
+                                        <input type="number" id="calculadoraMatriz__traspuesta-a-cols" class="calculadoraMatriz__input-text" placeholder="Cols A" min="1" value="2">
+                                        <button id="calculadoraMatriz__traspuesta-generate-a" class="calculadoraMatriz__button">Generar Matriz A</button>
+                                        <small class="calculadoraMatriz__error-message" id="calculadoraMatriz__traspuesta-a-error"></small>
+                                    </div>
+                                    <div id="calculadoraMatriz__traspuesta-matrix-a-container" class="calculadoraMatriz__matrix-input-container"></div>
+                                    <button id="calculadoraMatriz__solve-traspuesta" class="calculadoraMatriz__button">Resolver Traspuesta</button>
+                                </div>
+
+                            </div>
+
+                            <!-- Sección de resultado -->
+                            <div class="calculadoraMatriz__result-section">
+                                <h3>Resultado</h3>
+                                <div id="calculadoraMatriz__result-display" class="calculadoraMatriz__matrix-display">
+                                    El resultado de la operación aparecerá aquí.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+<!-- TODO: Determinantes -->
+                <div id="app__determinantes-container" class="app__content-section app__hidden">
+                    <div id="determinantes__container" class="determinantes__content-section">
+                        <div class="determinantes__main-container">
+                            <!-- Sección de entrada -->
+                            <div class="determinantes__input-section">
+                                <h3>Calculadora de Determinantes</h3>
+                                <div class="determinantes__method-buttons">
+                                    <button id="determinantes__btn-sarrus" class="determinantes__button">Regla de Sarrus (2x2, 3x3)</button>
+                                    <button id="determinantes__btn-cofactor" class="determinantes__button">Expansión por Cofactores (NxN)</button>
+                                    <button id="determinantes__btn-gauss" class="determinantes__button">Eliminación Gaussiana (NxN)</button>
+                                </div>
+
+                                <!-- Contenedor para inputs del método de Sarrus -->
+                                <div id="determinantes__sarrus-inputs" class="determinantes__hidden determinantes__method-inputs">
+                                    <h4>Matriz para Sarrus</h4>
+                                    <div class="determinantes__form-group">
+                                        <label>Matriz (Filas x Columnas):</label>
+                                        <input type="number" id="determinantes__sarrus-rows" class="determinantes__input-text" placeholder="Filas" min="2" max="3" value="3">
+                                        <input type="number" id="determinantes__sarrus-cols" class="determinantes__input-text" placeholder="Cols" min="2" max="3" value="3">
+                                        <button id="determinantes__sarrus-generate" class="determinantes__button">Generar Matriz</button>
+                                        <small class="determinantes__error-message" id="determinantes__sarrus-error"></small>
+                                    </div>
+                                    <div id="determinantes__sarrus-matrix-container" class="determinantes__matrix-input-container"></div>
+                                    <button id="determinantes__solve-sarrus" class="determinantes__button">Calcular por Sarrus</button>
+                                </div>
+
+                                <!-- Contenedor para inputs del método de Cofactores -->
+                                <div id="determinantes__cofactor-inputs" class="determinantes__method-inputs determinantes__hidden">
+                                    <h4>Matriz para Expansión por Cofactores</h4>
+                                    <div class="determinantes__form-group">
+                                        <label>Matriz (Filas x Columnas):</label>
+                                        <input type="number" id="determinantes__cofactor-rows" class="determinantes__input-text" placeholder="Filas" min="1" value="3">
+                                        <input type="number" id="determinantes__cofactor-cols" class="determinantes__input-text" placeholder="Cols" min="1" value="3">
+                                        <button id="determinantes__cofactor-generate" class="determinantes__button">Generar Matriz</button>
+                                        <small class="determinantes__error-message" id="determinantes__cofactor-error"></small>
+                                    </div>
+                                    <div id="determinantes__cofactor-matrix-container" class="determinantes__matrix-input-container"></div>
+                                    <button id="determinantes__solve-cofactor" class="determinantes__button">Calcular por Cofactores</button>
+                                </div>
+
+                                <!-- Contenedor para inputs del método de Gauss -->
+                                <div id="determinantes__gauss-inputs" class="determinantes__method-inputs determinantes__hidden">
+                                    <h4>Matriz para Eliminación Gaussiana</h4>
+                                    <div class="determinantes__form-group">
+                                        <label>Matriz (Filas x Columnas):</label>
+                                        <input type="number" id="determinantes__gauss-rows" class="determinantes__input-text" placeholder="Filas" min="1" value="3">
+                                        <input type="number" id="determinantes__gauss-cols" class="determinantes__input-text" placeholder="Cols" min="1" value="3">
+                                        <button id="determinantes__gauss-generate" class="determinantes__button">Generar Matriz</button>
+                                        <small class="determinantes__error-message" id="determinantes__gauss-error"></small>
+                                    </div>
+                                    <div id="determinantes__gauss-matrix-container" class="determinantes__matrix-input-container"></div>
+                                    <div class="determinantes__checkbox-group">
+                                        <input type="checkbox" id="determinantes__gauss-show-steps">
+                                        <label for="determinantes__gauss-show-steps">Mostrar Pasos</label>
+                                    </div>
+                                    <button id="determinantes__solve-gauss" class="determinantes__button">Calcular por Gauss</button>
+                                </div>
+
+                            </div>
+
+                            <!-- Sección de resultado -->
+                            <div class="determinantes__result-section">
+                                <h3>Resultado del Determinante</h3>
+                                <div id="determinantes__result-display" class="determinantes__result-display">
+                                    El determinante aparecerá aquí.
+                                </div>
+                                <div id="determinantes__steps-display" class="determinantes__steps-container determinantes__hidden">
+                                    <h4>Pasos de la Operación:</h4>
+                                    <!-- Los pasos se insertarán aquí -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+<!-- TODO: Inversa -->
+                <div id="app__inversa-container" class="app__content-section app__hidden">
+                    <div id="inversa__container" class="inversa__content-section">
+                        <div class="inversa__main-container">
+                            <!-- Sección de entrada -->
+                            <div class="inversa__input-section">
+                                <h3>Calculadora de Inversas de Matrices</h3>
+                                <div class="inversa__method-buttons">
+                                    <button id="inversa__btn-gauss-jordan" class="inversa__button">Gauss-Jordan</button>
+                                    <button id="inversa__btn-adjunta" class="inversa__button">Matriz Adjunta</button>
+                                </div>
+
+                                <!-- Contenedor para inputs del método de Gauss-Jordan -->
+                                <div id="inversa__gauss-jordan-inputs" class="inversa__method-inputs inversa__hidden">
+                                    <h4>Matriz para Gauss-Jordan</h4>
+                                    <div class="inversa__form-group">
+                                        <label>Matriz (Filas x Columnas):</label>
+                                        <input type="number" id="inversa__gauss-jordan-rows" class="inversa__input-text" placeholder="Filas" min="1" value="3">
+                                        <input type="number" id="inversa__gauss-jordan-cols" class="inversa__input-text" placeholder="Cols" min="1" value="3">
+                                        <button id="inversa__gauss-jordan-generate" class="inversa__button">Generar Matriz</button>
+                                        <small class="inversa__error-message" id="inversa__gauss-jordan-error"></small>
+                                    </div>
+                                    <div id="inversa__gauss-jordan-matrix-container" class="inversa__matrix-input-container"></div>
+                                    <div class="inversa__checkbox-group">
+                                        <input type="checkbox" id="inversa__gauss-jordan-show-steps">
+                                        <label for="inversa__gauss-jordan-show-steps">Mostrar Pasos</label>
+                                    </div>
+                                    <button id="inversa__solve-gauss-jordan" class="inversa__button">Calcular por Gauss-Jordan</button>
+                                </div>
+
+                                <!-- Contenedor para inputs del método de la Adjunta -->
+                                <div id="inversa__adjunta-inputs" class="inversa__method-inputs inversa__hidden">
+                                    <h4>Matriz para Matriz Adjunta</h4>
+                                    <div class="inversa__form-group">
+                                        <label>Matriz (Filas x Columnas):</label>
+                                        <input type="number" id="inversa__adjunta-rows" class="inversa__input-text" placeholder="Filas" min="1" value="3">
+                                        <input type="number" id="inversa__adjunta-cols" class="inversa__input-text" placeholder="Cols" min="1" value="3">
+                                        <button id="inversa__adjunta-generate" class="inversa__button">Generar Matriz</button>
+                                        <small class="inversa__error-message" id="inversa__adjunta-error"></small>
+                                    </div>
+                                    <div id="inversa__adjunta-matrix-container" class="inversa__matrix-input-container"></div>
+                                    <div class="inversa__checkbox-group">
+                                        <input type="checkbox" id="inversa__adjunta-show-steps">
+                                        <label for="inversa__adjunta-show-steps">Mostrar Pasos</label>
+                                    </div>
+                                    <button id="inversa__solve-adjunta" class="inversa__button">Calcular por Adjunta</button>
+                                </div>
+
+                            </div>
+
+                            <!-- Sección de resultado -->
+                            <div class="inversa__result-section">
+                                <h3>Resultado de la Inversa</h3>
+                                <div id="inversa__result-display" class="inversa__result-display">
+                                    La matriz inversa aparecerá aquí.
+                                </div>
+                                <div id="inversa__steps-display" class="inversa__steps-container inversa__hidden">
+                                    <h4>Pasos de la Operación:</h4>
+                                    <!-- Los pasos se insertarán aquí -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+<!-- TODO: Metodos Iterativos -->
+                <div id="app__metodos-iterativos-container" class="app__content-section app__hidden">
+                    <div id="iterativos__container" class="iterativos__content-section">
+                        <div class="iterativos__main-container">
+                            <!-- Sección de entrada -->
+                            <div class="iterativos__input-section">
+                                <h3>Métodos Iterativos para Sistemas de Ecuaciones</h3>
+                                <div class="iterativos__method-buttons">
+                                    <button id="iterativos__btn-jacobi" class="iterativos__button">Jacobi</button>
+                                    <button id="iterativos__btn-gauss-seidel" class="iterativos__button">Gauss-Seidel</button>
+                                </div>
+
+                                <!-- Contenedor para inputs de Jacobi -->
+                                <div id="iterativos__jacobi-inputs" class="iterativos__method-inputs iterativos__hidden">
+                                    <h4>Método de Jacobi</h4>
+                                    <div class="iterativos__form-group">
+                                        <label for="iterativos__jacobi-size-input">Tamaño del Sistema (N x N):</label>
+                                        <input type="number" id="iterativos__jacobi-size-input" class="iterativos__input-text" placeholder="Ej: 3" min="2" value="3">
+                                        <button id="iterativos__jacobi-generate-system" class="iterativos__button">Generar Sistema</button>
+                                        <small class="iterativos__error-message" id="iterativos__jacobi-size-error"></small>
+                                    </div>
+
+                                    <div class="iterativos__form-group">
+                                        <label>Matriz de Coeficientes (A):</label>
+                                        <div id="iterativos__jacobi-matrix-a-container" class="iterativos__matrix-input-container"></div>
+                                        <small class="iterativos__error-message" id="iterativos__jacobi-matrix-a-error"></small>
+                                    </div>
+
+                                    <div class="iterativos__form-group">
+                                        <label>Vector de Términos Constantes (b):</label>
+                                        <div id="iterativos__jacobi-vector-b-container" class="iterativos__vector-input-container"></div>
+                                        <small class="iterativos__error-message" id="iterativos__jacobi-vector-b-error"></small>
+                                    </div>
+
+                                    <div class="iterativos__form-group">
+                                        <label>Vector de Estimación Inicial (x₀):</label>
+                                        <div id="iterativos__jacobi-vector-x0-container" class="iterativos__vector-input-container"></div>
+                                        <small class="iterativos__error-message" id="iterativos__jacobi-vector-x0-error"></small>
+                                    </div>
+
+                                    <div class="iterativos__form-group">
+                                        <label for="iterativos__jacobi-tolerance-input">Tolerancia (ε):</label>
+                                        <input type="number" id="iterativos__jacobi-tolerance-input" class="iterativos__input-text" placeholder="Ej: 0.0001" step="0.00001" value="0.0001">
+                                        <small class="iterativos__error-message" id="iterativos__jacobi-tolerance-error"></small>
+                                    </div>
+                                    <div class="iterativos__form-group">
+                                        <label for="iterativos__jacobi-max-iterations-input">Máx. Iteraciones:</label>
+                                        <input type="number" id="iterativos__jacobi-max-iterations-input" class="iterativos__input-text" placeholder="Ej: 100" min="1" value="100">
+                                        <small class="iterativos__error-message" id="iterativos__jacobi-max-iterations-error"></small>
+                                    </div>
+                                    <div class="iterativos__checkbox-group">
+                                        <input type="checkbox" id="iterativos__jacobi-show-steps">
+                                        <label for="iterativos__jacobi-show-steps">Mostrar Pasos</label>
+                                    </div>
+                                    <button id="iterativos__solve-jacobi" class="iterativos__button">Resolver por Jacobi</button>
+                                </div>
+
+                                <!-- Contenedor para inputs de Gauss-Seidel -->
+                                <div id="iterativos__gauss-seidel-inputs" class="iterativos__method-inputs iterativos__hidden">
+                                    <h4>Método de Gauss-Seidel</h4>
+                                    <div class="iterativos__form-group">
+                                        <label for="iterativos__gauss-seidel-size-input">Tamaño del Sistema (N x N):</label>
+                                        <input type="number" id="iterativos__gauss-seidel-size-input" class="iterativos__input-text" placeholder="Ej: 3" min="2" value="3">
+                                        <button id="iterativos__gauss-seidel-generate-system" class="iterativos__button">Generar Sistema</button>
+                                        <small class="iterativos__error-message" id="iterativos__gauss-seidel-size-error"></small>
+                                    </div>
+
+                                    <div class="iterativos__form-group">
+                                        <label>Matriz de Coeficientes (A):</label>
+                                        <div id="iterativos__gauss-seidel-matrix-a-container" class="iterativos__matrix-input-container"></div>
+                                        <small class="iterativos__error-message" id="iterativos__gauss-seidel-matrix-a-error"></small>
+                                    </div>
+
+                                    <div class="iterativos__form-group">
+                                        <label>Vector de Términos Constantes (b):</label>
+                                        <div id="iterativos__gauss-seidel-vector-b-container" class="iterativos__vector-input-container"></div>
+                                        <small class="iterativos__error-message" id="iterativos__gauss-seidel-vector-b-error"></small>
+                                    </div>
+
+                                    <div class="iterativos__form-group">
+                                        <label>Vector de Estimación Inicial (x₀):</label>
+                                        <div id="iterativos__gauss-seidel-vector-x0-container" class="iterativos__vector-input-container"></div>
+                                        <small class="iterativos__error-message" id="iterativos__gauss-seidel-vector-x0-error"></small>
+                                    </div>
+
+                                    <div class="iterativos__form-group">
+                                        <label for="iterativos__gauss-seidel-tolerance-input">Tolerancia (ε):</label>
+                                        <input type="number" id="iterativos__gauss-seidel-tolerance-input" class="iterativos__input-text" placeholder="Ej: 0.0001" step="0.00001" value="0.0001">
+                                        <small class="iterativos__error-message" id="iterativos__gauss-seidel-tolerance-error"></small>
+                                    </div>
+                                    <div class="iterativos__form-group">
+                                        <label for="iterativos__gauss-seidel-max-iterations-input">Máx. Iteraciones:</label>
+                                        <input type="number" id="iterativos__gauss-seidel-max-iterations-input" class="iterativos__input-text" placeholder="Ej: 100" min="1" value="100">
+                                        <small class="iterativos__error-message" id="iterativos__gauss-seidel-max-iterations-error"></small>
+                                    </div>
+                                    <div class="iterativos__checkbox-group">
+                                        <input type="checkbox" id="iterativos__gauss-seidel-show-steps">
+                                        <label for="iterativos__gauss-seidel-show-steps">Mostrar Pasos</label>
+                                    </div>
+                                    <button id="iterativos__solve-gauss-seidel" class="iterativos__button">Resolver por Gauss-Seidel</button>
+                                </div>
+
+                            </div>
+
+                            <!-- Sección de resultado -->
+                            <div class="iterativos__result-section">
+                                <h3>Resultado del Sistema</h3>
+                                <div id="iterativos__result-display" class="iterativos__result-display">
+                                    La solución del sistema aparecerá aquí.
+                                </div>
+                                <div id="iterativos__steps-display" class="iterativos__steps-container iterativos__hidden">
+                                    <h4>Pasos de la Operación:</h4>
+                                    <!-- Los pasos se insertarán aquí -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+    
+    <script src="/public/app.js"></script>
+
+    <script src="/scripts/functions/limites.js"></script>
+    <script src="/scripts/functions/derivadas.js"></script>
+    <script src="/scripts/functions/integralesD.js"></script>
+    <script src="/scripts/functions/integralesI.js"></script>
+
+    <script src="/scripts/matrices/calculadora.js"></script>
+    <script src="/scripts/matrices/determinantes.js"></script>
+    <script src="/scripts/matrices/inversa.js"></script>
+    <script src="/scripts/matrices/iterativos.js"></script>
+</body>
+</html>

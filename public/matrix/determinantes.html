@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Determinantes</title>
+    <style>
+        :root {
+            --light-bg-primary: #f8f9fa;
+            --section-bg: #ffffff;
+            --section-text: #2c3e50;
+            --section-description-text: #6c757d;
+            --button-text-color: #007bff;
+            --button-border-color: #007bff;
+            --button-hover-bg: #007bff;
+            --button-hover-text: #ffffff;
+            --future-projects-button-bg: #28a745;
+            --future-projects-button-text: #ffffff;
+            --input-bg: #ffffff;
+            --input-border: #dee2e6;
+            --input-text: #495057;
+            --error-color: #dc3545;
+            --success-color: #28a745;
+        }
+
+        body.dark {
+            --light-bg-primary: #1a1a1a;
+            --section-bg: #2d2d2d;
+            --section-text: #ffffff;
+            --section-description-text: #b0b0b0;
+            --button-text-color: #4dabf7;
+            --button-border-color: #4dabf7;
+            --button-hover-bg: #4dabf7;
+            --button-hover-text: #000000;
+            --future-projects-button-bg: #51cf66;
+            --future-projects-button-text: #000000;
+            --input-bg: #3d3d3d;
+            --input-border: #555555;
+            --input-text: #ffffff;
+            --error-color: #ff6b6b;
+            --success-color: #51cf66;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--light-bg-primary);
+            color: var(--section-text);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--section-text);
+        }
+
+        .header p {
+            color: var(--section-description-text);
+            font-size: 1.1rem;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--section-bg);
+            border: 2px solid var(--button-border-color);
+            border-radius: 25px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--button-text-color);
+            font-weight: 500;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            background: var(--button-hover-bg);
+            color: var(--button-hover-text);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: var(--section-bg);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .section h2 {
+            color: var(--section-text);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .method-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .method-btn {
+            background: transparent;
+            color: var(--button-text-color);
+            border: 2px solid var(--button-border-color);
+            border-radius: 25px;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: 500;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .method-btn:hover {
+            background: var(--button-hover-bg);
+            color: var(--button-hover-text);
+            border-color: var(--button-hover-bg);
+        }
+
+        .method-btn.active {
+            background: var(--button-hover-bg);
+            color: var(--button-hover-text);
+            border-color: var(--button-hover-bg);
+        }
+
+        .matrix-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .matrix-controls label {
+            color: var(--section-text);
+            font-weight: 500;
+        }
+
+        .matrix-controls input {
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--input-text);
+            width: 80px;
+            text-align: center;
+        }
+
+        .matrix-grid {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .matrix-cell {
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            color: var(--input-text);
+            width: 70px;
+            height: 50px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .matrix-cell:focus {
+            outline: none;
+            border-color: var(--button-border-color);
+        }
+
+        .calculate-btn {
+            background: var(--future-projects-button-bg);
+            color: var(--future-projects-button-text);
+            border: none;
+            border-radius: 25px;
+            padding: 15px 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .calculate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-display {
+            background: var(--section-bg);
+            border: 2px solid var(--success-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .result-display.show {
+            display: block;
+        }
+
+        .result-display.error {
+            border-color: var(--error-color);
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--success-color);
+            margin-bottom: 10px;
+        }
+
+        .result-value.error {
+            color: var(--error-color);
+        }
+
+        .result-label {
+            color: var(--section-description-text);
+            font-size: 1rem;
+        }
+
+        .steps-btn {
+            background: var(--future-projects-button-bg);
+            color: var(--future-projects-button-text);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            width: 100%;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .steps-btn.show {
+            display: block;
+        }
+
+        .steps-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .steps-display {
+            background: var(--section-bg);
+            border: 2px solid var(--button-border-color);
+            border-radius: 10px;
+            padding: 20px;
+            display: none;
+        }
+
+        .steps-display.show {
+            display: block;
+        }
+
+        .steps-display h3 {
+            color: var(--section-text);
+            margin-bottom: 15px;
+        }
+
+        .steps-display ol {
+            color: var(--section-description-text);
+            padding-left: 20px;
+        }
+
+        .steps-display li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .constraint-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+            display: none;
+        }
+
+        body.dark .constraint-warning {
+            background: #2d2d2d;
+            border-color: #f39c12;
+            color: #f39c12;
+        }
+
+        .constraint-warning.show {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .method-buttons {
+                flex-direction: column;
+            }
+            
+            .method-btn {
+                min-width: auto;
+            }
+            
+            .matrix-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .matrix-cell {
+                width: 60px;
+                height: 45px;
+                font-size: 0.9rem;
+            }
+            
+            .theme-toggle {
+                position: static;
+                margin-bottom: 20px;
+                align-self: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .matrix-cell {
+                width: 50px;
+                height: 40px;
+                font-size: 0.8rem;
+                padding: 8px;
+            }
+            
+            .result-value {
+                font-size: 1.5rem;
+            }
+        }
+        .app__hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="theme-toggle app__hidden" id="themeToggle">🌙 Modo Oscuro</button>
+        
+        <div class="header">
+            <h1>Calculadora de Determinantes</h1>
+            <p>Calcula determinantes usando diferentes métodos matemáticos</p>
+        </div>
+
+        <div class="main-content">
+            <div class="section" id="input-area">
+                <h2>Área de Entrada</h2>
+                
+                <div class="method-buttons">
+                    <button class="method-btn" data-method="gauss">Gauss</button>
+                    <button class="method-btn" data-method="cofactor">Cofactores</button>
+                    <button class="method-btn" data-method="sarrus">Sarrus</button>
+                </div>
+
+                <div class="constraint-warning" id="constraintWarning">
+                    <strong>Nota:</strong> La regla de Sarrus solo funciona para matrices 3×3.
+                </div>
+
+                <div class="matrix-controls">
+                    <label for="matrixSize">Tamaño de la matriz:</label>
+                    <input type="number" id="matrixSize" min="2" max="5" value="3">
+                    <span>×</span>
+                    <input type="number" id="matrixSize2" min="2" max="5" value="3" disabled>
+                </div>
+
+                <div class="matrix-grid" id="matrixGrid"></div>
+
+                <button class="calculate-btn" id="calculateBtn" disabled>Calcular Determinante</button>
+            </div>
+
+            <div class="section" id="output-area">
+                <h2>Área de Salida</h2>
+                
+                <div class="result-display" id="resultDisplay">
+                    <div class="result-value" id="resultValue">0</div>
+                    <div class="result-label">Determinante</div>
+                </div>
+
+                <button class="steps-btn" id="stepsBtn">Ver Pasos</button>
+
+                <div class="steps-display" id="stepsDisplay">
+                    <h3>Pasos del Cálculo</h3>
+                    <ol id="stepsList"></ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class DeterminantCalculator {
+            constructor() {
+                this.selectedMethod = null;
+                this.matrixSize = 3;
+                this.matrix = [];
+                this.initializeEventListeners();
+                this.initializeTheme();
+                this.createMatrixGrid();
+            }
+
+            initializeEventListeners() {
+                // Method selection
+                document.querySelectorAll('.method-btn').forEach(btn => {
+                    btn.addEventListener('click', () => this.selectMethod(btn.dataset.method));
+                });
+
+                // Matrix size control
+                document.getElementById('matrixSize').addEventListener('change', (e) => {
+                    this.matrixSize = parseInt(e.target.value);
+                    document.getElementById('matrixSize2').value = this.matrixSize;
+                    this.createMatrixGrid();
+                    this.updateConstraintWarning();
+                });
+
+                // Calculate button
+                document.getElementById('calculateBtn').addEventListener('click', () => {
+                    this.calculateDeterminant();
+                });
+
+                // Steps button
+                document.getElementById('stepsBtn').addEventListener('click', () => {
+                    this.toggleSteps();
+                });
+
+                // Theme toggle
+                document.getElementById('themeToggle').addEventListener('click', () => {
+                    this.toggleTheme();
+                });
+            }
+
+            initializeTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark');
+                    document.getElementById('themeToggle').textContent = '☀️ Modo Claro';
+                }
+            }
+
+            toggleTheme() {
+                const body = document.body;
+                const themeToggle = document.getElementById('themeToggle');
+                
+                if (body.classList.contains('dark')) {
+                    body.classList.remove('dark');
+                    themeToggle.textContent = '🌙 Modo Oscuro';
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    body.classList.add('dark');
+                    themeToggle.textContent = '☀️ Modo Claro';
+                    localStorage.setItem('theme', 'dark');
+                }
+            }
+
+            selectMethod(method) {
+                this.selectedMethod = method;
+                
+                // Update button states
+                document.querySelectorAll('.method-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-method="${method}"]`).classList.add('active');
+                
+                // Enable calculate button
+                document.getElementById('calculateBtn').disabled = false;
+                
+                // Update constraint warning
+                this.updateConstraintWarning();
+            }
+
+            updateConstraintWarning() {
+                const warning = document.getElementById('constraintWarning');
+                const matrixSizeInput = document.getElementById('matrixSize');
+                
+                if (this.selectedMethod === 'sarrus') {
+                    warning.classList.add('show');
+                    if (this.matrixSize !== 3) {
+                        matrixSizeInput.value = 3;
+                        this.matrixSize = 3;
+                        document.getElementById('matrixSize2').value = 3;
+                        this.createMatrixGrid();
+                    }
+                } else {
+                    warning.classList.remove('show');
+                }
+            }
+
+            createMatrixGrid() {
+                const grid = document.getElementById('matrixGrid');
+                grid.innerHTML = '';
+                grid.style.gridTemplateColumns = `repeat(${this.matrixSize}, 1fr)`;
+                
+                this.matrix = [];
+                for (let i = 0; i < this.matrixSize; i++) {
+                    this.matrix[i] = [];
+                    for (let j = 0; j < this.matrixSize; j++) {
+                        const input = document.createElement('input');
+                        input.type = 'number';
+                        input.className = 'matrix-cell';
+                        input.placeholder = '0';
+                        input.step = 'any';
+                        input.addEventListener('input', (e) => {
+                            const value = parseFloat(e.target.value) || 0;
+                            this.matrix[i][j] = value;
+                        });
+                        grid.appendChild(input);
+                        this.matrix[i][j] = 0;
+                    }
+                }
+            }
+
+            calculateDeterminant() {
+                try {
+                    let result;
+                    let steps = [];
+
+                    switch (this.selectedMethod) {
+                        case 'gauss':
+                            result = this.calculateGaussian(steps);
+                            break;
+                        case 'cofactor':
+                            result = this.calculateCofactor(steps);
+                            break;
+                        case 'sarrus':
+                            result = this.calculateSarrus(steps);
+                            break;
+                        default:
+                            throw new Error('Método no seleccionado');
+                    }
+
+                    this.displayResult(result, steps);
+                } catch (error) {
+                    this.displayError(error.message);
+                }
+            }
+
+            calculateGaussian(steps) {
+                const matrix = this.matrix.map(row => [...row]);
+                let det = 1;
+                let swaps = 0;
+
+                steps.push('Método de Eliminación Gaussiana');
+                steps.push('Convertir la matriz a forma triangular superior');
+
+                for (let i = 0; i < this.matrixSize; i++) {
+                    // Find pivot
+                    let maxRow = i;
+                    for (let k = i + 1; k < this.matrixSize; k++) {
+                        if (Math.abs(matrix[k][i]) > Math.abs(matrix[maxRow][i])) {
+                            maxRow = k;
+                        }
+                    }
+
+                    // Swap rows if needed
+                    if (maxRow !== i) {
+                        [matrix[i], matrix[maxRow]] = [matrix[maxRow], matrix[i]];
+                        swaps++;
+                        steps.push(`Intercambiar fila ${i + 1} con fila ${maxRow + 1}`);
+                    }
+
+                    // Check for zero pivot
+                    if (Math.abs(matrix[i][i]) < 1e-10) {
+                        steps.push('Elemento diagonal es cero, determinante = 0');
+                        return 0;
+                    }
+
+                    det *= matrix[i][i];
+
+                    // Eliminate column
+                    for (let k = i + 1; k < this.matrixSize; k++) {
+                        const factor = matrix[k][i] / matrix[i][i];
+                        for (let j = i; j < this.matrixSize; j++) {
+                            matrix[k][j] -= factor * matrix[i][j];
+                        }
+                    }
+                }
+
+                steps.push(`Multiplicar elementos diagonales: ${det.toFixed(4)}`);
+                steps.push(`Ajustar por intercambios de filas: ${swaps % 2 === 0 ? 'sin cambio' : 'cambiar signo'}`);
+
+                return swaps % 2 === 0 ? det : -det;
+            }
+
+            calculateCofactor(steps) {
+                steps.push('Método de Expansión por Cofactores');
+                steps.push('Expandir a lo largo de la primera fila');
+
+                const calculateDet = (matrix) => {
+                    const n = matrix.length;
+                    if (n === 1) return matrix[0][0];
+                    if (n === 2) return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+
+                    let det = 0;
+                    for (let j = 0; j < n; j++) {
+                        const minor = this.getMinor(matrix, 0, j);
+                        const cofactor = Math.pow(-1, j) * calculateDet(minor);
+                        det += matrix[0][j] * cofactor;
+                        
+                        if (matrix === this.matrix) {
+                            steps.push(`Término ${j + 1}: ${matrix[0][j]} × cofactor = ${matrix[0][j] * cofactor}`);
+                        }
+                    }
+                    return det;
+                };
+
+                return calculateDet(this.matrix);
+            }
+
+            calculateSarrus(steps) {
+                if (this.matrixSize !== 3) {
+                    throw new Error('La regla de Sarrus solo funciona para matrices 3×3');
+                }
+
+                steps.push('Método de Regla de Sarrus');
+                steps.push('Sumar productos de diagonales principales');
+                steps.push('Restar productos de diagonales secundarias');
+
+                const matrix = this.matrix;
+                
+                // Main diagonals
+                const main1 = matrix[0][0] * matrix[1][1] * matrix[2][2];
+                const main2 = matrix[0][1] * matrix[1][2] * matrix[2][0];
+                const main3 = matrix[0][2] * matrix[1][0] * matrix[2][1];
+                
+                // Secondary diagonals
+                const sec1 = matrix[0][2] * matrix[1][1] * matrix[2][0];
+                const sec2 = matrix[0][0] * matrix[1][2] * matrix[2][1];
+                const sec3 = matrix[0][1] * matrix[1][0] * matrix[2][2];
+
+                steps.push(`Diagonales principales: ${main1} + ${main2} + ${main3} = ${main1 + main2 + main3}`);
+                steps.push(`Diagonales secundarias: ${sec1} + ${sec2} + ${sec3} = ${sec1 + sec2 + sec3}`);
+
+                return (main1 + main2 + main3) - (sec1 + sec2 + sec3);
+            }
+
+            getMinor(matrix, row, col) {
+                const minor = [];
+                for (let i = 0; i < matrix.length; i++) {
+                    if (i === row) continue;
+                    const newRow = [];
+                    for (let j = 0; j < matrix[i].length; j++) {
+                        if (j === col) continue;
+                        newRow.push(matrix[i][j]);
+                    }
+                    minor.push(newRow);
+                }
+                return minor;
+            }
+
+            displayResult(result, steps) {
+                const resultDisplay = document.getElementById('resultDisplay');
+                const resultValue = document.getElementById('resultValue');
+                const stepsBtn = document.getElementById('stepsBtn');
+                const stepsList = document.getElementById('stepsList');
+
+                resultValue.textContent = result.toFixed(6);
+                resultValue.className = 'result-value';
+                resultDisplay.className = 'result-display show';
+                stepsBtn.classList.add('show');
+
+                // Store steps for display
+                this.currentSteps = steps;
+                
+                // Update steps display
+                stepsList.innerHTML = '';
+                steps.forEach(step => {
+                    const li = document.createElement('li');
+                    li.textContent = step;
+                    stepsList.appendChild(li);
+                });
+            }
+
+            displayError(message) {
+                const resultDisplay = document.getElementById('resultDisplay');
+                const resultValue = document.getElementById('resultValue');
+                const stepsBtn = document.getElementById('stepsBtn');
+
+                resultValue.textContent = message;
+                resultValue.className = 'result-value error';
+                resultDisplay.className = 'result-display show error';
+                stepsBtn.classList.remove('show');
+            }
+
+            toggleSteps() {
+                const stepsDisplay = document.getElementById('stepsDisplay');
+                const stepsBtn = document.getElementById('stepsBtn');
+                
+                if (stepsDisplay.classList.contains('show')) {
+                    stepsDisplay.classList.remove('show');
+                    stepsBtn.textContent = 'Ver Pasos';
+                } else {
+                    stepsDisplay.classList.add('show');
+                    stepsBtn.textContent = 'Ocultar Pasos';
+                }
+            }
+        }
+
+        // Initialize the calculator when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new DeterminantCalculator();
+        });
+    </script>
+</body>
+</html>

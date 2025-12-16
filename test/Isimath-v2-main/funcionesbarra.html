@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora de Cálculo</title>
+  <link rel="stylesheet" href="scripts/functions/limites.css">
+  <link rel="stylesheet" href="scripts/functions/derivadas.css">
+  <link rel="stylesheet" href="scripts/functions/integralesD.css">
+  <link rel="stylesheet" href="scripts/functions/integralesI.css">
+  <link rel="stylesheet" href="funcionesbarra.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800&display=swap" rel="stylesheet">
+      
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://unpkg.com/mathlive" defer></script>
+</head>
+<body>
+  <div class="main-content">
+    <div class="main-title">FUNCIONES</div>
+    <div class="main-desc">
+      Descubre y utiliza las herramientas esenciales del cálculo diferencial e integral. <br>
+      Aquí podrás calcular <b>límites</b>, <b>derivadas</b> e <b>integrales</b> de manera sencilla y rápida.<br>
+      Selecciona la función que necesitas y explora explicaciones, ejemplos y soluciones paso a paso para cada tema.
+    </div>
+  </div>
+  <div class="cards-row-wrapper">
+    <div class="cards-row">
+      <!-- Límites -->
+      <div class="card">
+        <div class="icon">
+          <!-- SVG Límites -->
+          <svg viewBox="0 0 48 48" stroke-width="3">
+            <polyline points="15,12 7,24 15,36" />
+            <polyline points="33,12 41,24 33,36" />
+            <line x1="7" y1="24" x2="41" y2="24" />
+          </svg>
+        </div>
+        <h3>Límites</h3>
+        <p>Calcula el límite de una función cuando la variable tiende a un número. Ideal para analizar el comportamiento de funciones en puntos críticos.</p>
+        <button>Explorar</button>
+      </div>
+      <!-- Derivadas -->
+      <div class="card">
+        <div class="icon">
+          <!-- SVG Derivadas -->
+          <svg viewBox="0 0 48 48" stroke-width="3">
+            <path d="M24 12 Q26 24 24 36" />
+            <circle cx="24" cy="40" r="2" fill="#3973F4" stroke="none"/>
+            <circle cx="20" cy="40" r="2" fill="#3973F4" stroke="none"/>
+            <circle cx="28" cy="40" r="2" fill="#3973F4" stroke="none"/>
+          </svg>
+        </div>
+        <h3>Derivadas</h3>
+        <p>Encuentra la razón de cambio instantánea de una función y resuelve problemas de optimización, tangentes y velocidad.</p>
+        <button>Explorar</button>
+      </div>
+      <!-- Integrales Definidas -->
+      <div class="card">
+        <div class="icon">
+          <!-- SVG Integrales Definidas -->
+          <svg viewBox="0 0 48 48" stroke-width="3">
+            <polyline points="34,12 14,12 14,36 34,36" />
+            <line x1="14" y1="24" x2="34" y2="24" />
+          </svg>
+        </div>
+        <h3>Integrales Definidas</h3>
+        <p>Calcula el área bajo la curva entre dos puntos específicos, útil en física, probabilidad, estadística y en el análisis de funciones.</p>
+      <a href="scripts/functions/integralesD.js" 
+        <button>Explorar</button> </a>
+      </div>
+      <!-- Integrales Indefinidas -->
+      <div class="card">
+        <div class="icon">
+          <!-- SVG Integrales Indefinidas -->
+          <svg viewBox="0 0 48 48" stroke-width="3">
+            <polyline points="34,12 14,12 14,36 34,36" />
+          </svg>
+          
+        </div>
+        <h3>Integrales Indefinidas</h3>
+        <p>Encuentra la antiderivada o primitiva de una función para resolver ecuaciones diferenciales y hallar funciones originales.</p>
+        <button>Explorar</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+
+
+
+
+

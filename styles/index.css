@@ -1,0 +1,58 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-size: 62.5%;
+}
+
+.hide {
+    display: none;
+}
+
+:root {
+    --landing-bg-light: #b2dbe6;
+    --landing-bg-dark: #001452;
+    --landing-surface-light: #a0e6d0;
+    --landing-surface-dark: #001a80;
+    --landing-primary-light: #0095b6; /* Morado similar a la imagen */
+    --landing-primary-dark: #709db6;
+    --landing-secondary-light: #6a8ca4; /* Teal similar a la imagen */
+    --landing-secondary-dark: #2f61aa;
+    --landing-text-light: black;
+    --landing-text-dark: white;
+    --landing-border-light: #0095b6;
+    --landing-border-dark: #709db6;
+    --landing-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --landing-shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.2);
+    --landing-error-light: #3c0000;
+    --landing-error-dark: #c30010;
+}
+
+/* 
+Azul RAF	        #6a8ca4
+Azul Bondi         	#0095b6
+Azul Tiffany     	#a0e6d0
+Celeste            	#c4ffff
+Azul Claro        	#b2dbe6
+Azul Bebe	        #a2ddf6
+Azul Maya       	#73c9f4
+Azul Capri	        #35c3ff
+Azur	            #1ca0ff
+Azul Francia     	#4e96f0
+Azul Royal	        #4d6edb
+TONALIDADES OSCURAS 
+Índigo	            #2f61aa
+Azul Grisáceo   	#709db6
+Azul Acero       	#5a87a8
+Azul Cobalto    	#004f9f
+Azul de Persia   	#345aa3
+Azul                 	#0000ff
+Azul Medio	        #000fd3
+Azul Oscuro      	#001a80
+Azul Marino	        #001452
+Azul Oxford	        #082539
+Azul de Prusia  	#0b2e4a
+*/

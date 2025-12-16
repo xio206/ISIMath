@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operaciones Básicas de Matrices - Álgebra Lineal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --midnight-blue: #0f172a;
+            --deep-blue: #1e293b;
+            --navy-blue: #1e3a8a;
+            --electric-blue: #3b82f6;
+            --light-blue: #60a5fa;
+            --pale-blue: #bfdbfe;
+            --dark-gray: #0f172a;
+            --medium-gray: #334155;
+            --light-gray: #94a3b8;
+            --white: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--midnight-blue);
+            color: var(--white);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .math-display {
+            font-size: 1.1rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            color: var(--pale-blue);
+        }
+        
+        .step-highlight {
+            border-left: 4px solid var(--electric-blue);
+            background-color: rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .step-highlight:hover {
+            background-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .formula-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+            overflow: hidden;
+            background-color: var(--deep-blue);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .formula-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 12px rgba(2, 6, 23, 0.5);
+            border-color: var(--electric-blue);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .content-container {
+            max-width: 95%;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, var(--navy-blue) 0%, #172554 100%);
+            padding: 3rem 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .header-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        
+        .resource-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid var(--electric-blue);
+            background-color: var(--deep-blue);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .resource-item:hover {
+            transform: translateX(5px);
+            border-color: var(--light-blue);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .home-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(2, 6, 23, 0.5);
+            background-color: var(--navy-blue);
+            border: 1px solid var(--electric-blue);
+        }
+        
+        .home-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(2, 6, 23, 0.7);
+            background-color: var(--electric-blue);
+        }
+        
+        .content-card {
+            background-color: var(--deep-blue);
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+            border: 1px solid var(--medium-gray);
+            border-radius: 0.75rem;
+        }
+        
+        .tab-button {
+            transition: all 0.2s ease;
+        }
+        
+        .title-accent {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .title-accent::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--electric-blue), transparent);
+            border-radius: 3px;
+        }
+        
+        .text-primary {
+            color: var(--white);
+        }
+        
+        .text-secondary {
+            color: var(--light-gray);
+        }
+        
+        .bg-light {
+            background-color: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--midnight-blue);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--navy-blue);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--electric-blue);
+        }
+        
+        .tab-button {
+            color: var(--light-gray);
+        }
+        
+        .tab-button.active {
+            color: var(--electric-blue);
+            border-bottom-color: var(--electric-blue);
+        }
+        
+        pre {
+            background-color: var(--dark-gray) !important;
+            border: 1px solid var(--medium-gray) !important;
+            border-radius: 0.5rem !important;
+            padding: 1rem !important;
+            overflow-x: auto !important;
+        }
+        
+        a {
+            color: var(--light-blue);
+            transition: color 0.2s;
+        }
+        
+        a:hover {
+            color: var(--electric-blue);
+        }
+        
+        .matrix {
+            display: inline-block;
+            border: 1px solid var(--medium-gray);
+            padding: 0.5rem;
+            margin: 0.5rem;
+            background-color: rgba(30, 41, 59, 0.5);
+            border-radius: 0.25rem;
+        }
+        
+        .matrix-bracket {
+            font-size: 1.5em;
+            vertical-align: middle;
+            color: var(--light-blue);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="header-content content-container">
+            <h1 class="text-4xl md:text-5xl font-bold font-poppins mb-4 title-accent">OPERACIONES BÁSICAS DE MATRICES</h1>
+            <div class="max-w-3xl bg-white/5 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+                <p class="text-lg text-white/90 leading-relaxed">
+                    Las matrices son arreglos rectangulares de números que permiten representar y manipular datos de manera estructurada. Las operaciones básicas como suma, resta, multiplicación y transposición son fundamentales en álgebra lineal, con aplicaciones en gráficos por computadora, inteligencia artificial y sistemas de ecuaciones.
+                </p>
+                <div class="mt-4 flex items-center text-white/80">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-electric-blue" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-sm font-medium">Concepto clave en álgebra lineal</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="content-container py-8">
+        <div class="main-grid">
+            <!-- Left Column - Theory -->
+            <div>
+                <section class="mb-12 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        <span class="title-accent">Conceptos Fundamentales</span>
+                    </h2>
+                    
+                    <div class="bg-light rounded-lg p-6 mb-6 border border-medium-gray">
+                        <p class="mb-4 text-secondary">Una matriz \( A \) de tamaño \( m \times n \) se representa como:</p>
+                        <div class="text-center my-4 math-display p-4 bg-dark-gray rounded-lg border border-medium-gray">
+                            $$A = \begin{bmatrix}
+                            a_{11} & a_{12} & \cdots & a_{1n} \\
+                            a_{21} & a_{22} & \cdots & a_{2n} \\
+                            \vdots & \vdots & \ddots & \vdots \\
+                            a_{m1} & a_{m2} & \cdots & a_{mn}
+                            \end{bmatrix}$$
+                        </div>
+                        <p class="text-secondary">Donde \( a_{ij} \) representa el elemento en la fila \( i \) y columna \( j \).</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card p-6">
+                            <h3 class="font-semibold text-primary mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                                </svg>
+                                Aplicaciones
+                            </h3>
+                            <ul class="space-y-2 text-secondary">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Sistemas de ecuaciones lineales
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Transformaciones gráficas 3D
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Algoritmos de machine learning
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="formula-card p-6">
+                            <h3 class="font-semibold text-primary mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                Operaciones Básicas
+                            </h3>
+                            <ul class="space-y-2 text-secondary">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Suma y resta de matrices
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Multiplicación por escalar
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Multiplicación de matrices
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Examples Section -->
+                <section class="mb-12 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        <span class="title-accent">Ejemplos Resueltos</span>
+                    </h2>
+                    
+                    <!-- Example 1 -->
+                    <div class="mb-8 bg-dark-gray rounded-xl overflow-hidden border border-medium-gray">
+                        <div class="flex border-b border-medium-gray">
+                            <button class="tab-button active py-3 px-6 font-medium text-electric-blue border-b-2 border-electric-blue" onclick="openExampleTab('example1', 'tab1')">
+                                Enunciado
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example1', 'tab2')">
+                                Solución
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example1', 'tab3')">
+                                Explicación
+                            </button>
+                        </div>
+                        
+                        <div id="example1-tab1" class="tab-content active p-6">
+                            <p class="mb-4 text-secondary">Realiza la suma de las siguientes matrices:</p>
+                            <div class="text-center my-4 math-display p-4 bg-light rounded-lg border border-medium-gray">
+                                $$
+                                \begin{bmatrix}
+                                2 & -1 \\
+                                3 & 4
+                                \end{bmatrix}
+                                +
+                                \begin{bmatrix}
+                                5 & 0 \\
+                                -2 & 3
+                                \end{bmatrix}
+                                $$
+                            </div>
+                            <p class="text-light-gray text-sm">Recuerda que solo se pueden sumar matrices del mismo tamaño.</p>
+                        </div>
+                        
+                        <div id="example1-tab2" class="tab-content p-6">
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 1: Verificar dimensiones</h4>
+                                <p class="text-secondary">Ambas matrices son de tamaño \( 2 \times 2 \), por lo que se pueden sumar.</p>
+                            </div>
+                            
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 2: Sumar elementos correspondientes</h4>
+                                <p class="text-secondary">Sumamos los elementos que ocupan la misma posición:</p>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$
+                                    \begin{bmatrix}
+                                    2+5 & -1+0 \\
+                                    3+(-2) & 4+3
+                                    \end{bmatrix}
+                                    $$
+                                </div>
+                            </div>
+                            
+                            <div class="step-highlight p-4 rounded-lg">
+                                <h4 class="font-semibold text-primary mb-2">Paso 3: Resultado final</h4>
+                                <div class="text-center my-2 font-bold math-display text-electric-blue">
+                                    $$
+                                    \begin{bmatrix}
+                                    7 & -1 \\
+                                    1 & 7
+                                    \end{bmatrix}
+                                    $$
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="example1-tab3" class="tab-content p-6">
+                            <div class="bg-light p-4 rounded-lg border border-medium-gray">
+                                <h4 class="font-semibold text-primary mb-2">Propiedades de la suma de matrices</h4>
+                                <ul class="list-disc pl-5 space-y-2 text-secondary">
+                                    <li><strong>Conmutativa:</strong> \( A + B = B + A \)</li>
+                                    <li><strong>Asociativa:</strong> \( (A + B) + C = A + (B + C) \)</li>
+                                    <li><strong>Elemento neutro:</strong> Existe la matriz cero \( 0 \) tal que \( A + 0 = A \)</li>
+                                    <li><strong>Elemento opuesto:</strong> Para toda matriz \( A \) existe \( -A \) tal que \( A + (-A) = 0 \)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Example 2 -->
+                    <div class="bg-dark-gray rounded-xl overflow-hidden border border-medium-gray">
+                        <div class="flex border-b border-medium-gray">
+                            <button class="tab-button active py-3 px-6 font-medium text-electric-blue border-b-2 border-electric-blue" onclick="openExampleTab('example2', 'tab1')">
+                                Enunciado
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example2', 'tab2')">
+                                Solución
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example2', 'tab3')">
+                                Explicación
+                            </button>
+                        </div>
+                        
+                        <div id="example2-tab1" class="tab-content active p-6">
+                            <p class="mb-4 text-secondary">Multiplica las siguientes matrices:</p>
+                            <div class="text-center my-4 math-display p-4 bg-light rounded-lg border border-medium-gray">
+                                $$
+                                \begin{bmatrix}
+                                1 & 2 & 3 \\
+                                4 & 5 & 6
+                                \end{bmatrix}
+                                \times
+                                \begin{bmatrix}
+                                7 & 8 \\
+                                9 & 10 \\
+                                11 & 12
+                                \end{bmatrix}
+                                $$
+                            </div>
+                            <p class="text-light-gray text-sm">Verifica que el número de columnas de la primera matriz coincida con el número de filas de la segunda.</p>
+                        </div>
+                        
+                        <div id="example2-tab2" class="tab-content p-6">
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 1: Verificar dimensiones</h4>
+                                <p class="text-secondary">Primera matriz: \( 2 \times 3 \), Segunda matriz: \( 3 \times 2 \). El producto es posible y resultará en una matriz \( 2 \times 2 \).</p>
+                            </div>
+                            
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 2: Calcular elementos</h4>
+                                <p class="text-secondary">Cada elemento \( c_{ij} \) se calcula como el producto punto de la fila \( i \) de la primera matriz con la columna \( j \) de la segunda:</p>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$c_{11} = 1\cdot7 + 2\cdot9 + 3\cdot11 = 7 + 18 + 33 = 58$$
+                                    $$c_{12} = 1\cdot8 + 2\cdot10 + 3\cdot12 = 8 + 20 + 36 = 64$$
+                                    $$c_{21} = 4\cdot7 + 5\cdot9 + 6\cdot11 = 28 + 45 + 66 = 139$$
+                                    $$c_{22} = 4\cdot8 + 5\cdot10 + 6\cdot12 = 32 + 50 + 72 = 154$$
+                                </div>
+                            </div>
+                            
+                            <div class="step-highlight p-4 rounded-lg">
+                                <h4 class="font-semibold text-primary mb-2">Paso 3: Resultado final</h4>
+                                <div class="text-center my-2 font-bold math-display text-electric-blue">
+                                    $$
+                                    \begin{bmatrix}
+                                    58 & 64 \\
+                                    139 & 154
+                                    \end{bmatrix}
+                                    $$
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="example2-tab3" class="tab-content p-6">
+                            <div class="bg-light p-4 rounded-lg border border-medium-gray">
+                                <h4 class="font-semibold text-primary mb-2">Propiedades de la multiplicación</h4>
+                                <ul class="list-disc pl-5 space-y-2 text-secondary">
+                                    <li><strong>Asociativa:</strong> \( (AB)C = A(BC) \)</li>
+                                    <li><strong>Distributiva:</strong> \( A(B + C) = AB + AC \)</li>
+                                    <li><strong>No conmutativa:</strong> En general, \( AB \neq BA \)</li>
+                                    <li><strong>Elemento neutro:</strong> La matriz identidad \( I \) cumple \( AI = IA = A \)</li>
+                                </ul>
+                                <p class="mt-3 text-secondary">La multiplicación de matrices representa la composición de transformaciones lineales.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Right Column - Formulas and Resources -->
+            <div>
+                <!-- Key Formulas -->
+                <section class="mb-8 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span class="title-accent">Fórmulas Esenciales</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Suma de matrices</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$(A + B){ij} = A{ij} + B_{ij}$$</div>
+                            <p class="text-sm text-light-gray">Elemento a elemento con mismas dimensiones.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Multiplicación por escalar</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$(kA){ij} = k \cdot A{ij}$$</div>
+                            <p class="text-sm text-light-gray">Cada elemento se multiplica por el escalar.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Multiplicación de matrices</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$(AB){ij} = \sum{k=1}^n A_{ik}B_{kj}$$</div>
+                            <p class="text-sm text-light-gray">Producto punto de filas por columnas.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Transposición</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$(A^T){ij} = A{ji}$$</div>
+                            <p class="text-sm text-light-gray">Intercambio de filas por columnas.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Traza de una matriz</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$\text{tr}(A) = \sum_{i=1}^n A_{ii}$$</div>
+                            <p class="text-sm text-light-gray">Suma de elementos en la diagonal principal.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Additional Resources -->
+                <section class="content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <span class="title-accent">Recursos Adicionales</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">PDF: Álgebra Matricial</h3>
+                                <p class="text-sm text-light-gray mt-1">Guía completa de operaciones con matrices</p>
+                            </div>
+                        </a>
+                        
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">Calculadora de Matrices</h3>
+                                <p class="text-sm text-light-gray mt-1">Herramienta para operaciones matriciales</p>
+                            </div>
+                        </a>
+
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">Video: Multiplicación de Matrices</h3>
+                                <p class="text-sm text-light-gray mt-1">Explicación visual del producto matricial</p>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <!-- Home Button -->
+        <div class="flex justify-center mt-12 mb-8">
+            <a href="/public/teoria.html" class="home-button text-white font-medium py-3 px-8 rounded-lg transition duration-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                Volver a Inicio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+        function openExampleTab(exampleId, tabId) {
+    // Ocultar todos los contenidos de pestañas del ejemplo dado
+    ['tab1', 'tab2', 'tab3'].forEach(tab => {
+        const content = document.getElementById(`${exampleId}-${tab}`);
+        if (content) content.classList.remove('active');
+    });
+
+    // Mostrar el contenido seleccionado
+    const activeContent = document.getElementById(`${exampleId}-${tabId}`);
+    if (activeContent) activeContent.classList.add('active');
+
+    // Actualizar clases de los botones de pestañas
+    // Primero desactiva todos los botones de este ejemplo
+    document.querySelectorAll(`button[onclick^="openExampleTab('${exampleId}'"]`).forEach(btn => {
+        btn.classList.remove('active', 'text-electric-blue', 'border-electric-blue');
+        btn.classList.add('text-light-gray');
+    });
+
+    // Luego activa el botón correspondiente a la pestaña seleccionada
+    const activeButton = document.querySelector(`button[onclick="openExampleTab('${exampleId}', '${tabId}')"]`);
+    if (activeButton) {
+        activeButton.classList.add('active', 'text-electric-blue', 'border-electric-blue');
+        activeButton.classList.remove('text-light-gray');
+    }
+}
+
+// Inicializar la primera pestaña como activa al cargar el DOM
+document.addEventListener('DOMContentLoaded', function() {
+    openExampleTab('example1', 'tab1');
+    openExampleTab('example2', 'tab1');
+
+    // Renderizar MathJax después de que el contenido sea cargado
+    if (typeof MathJax !== 'undefined') {
+        MathJax.typesetPromise();
+    }
+});
+
+    </script>
+</body>
+</html>

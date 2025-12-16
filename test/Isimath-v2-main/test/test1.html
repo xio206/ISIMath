@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Herramientas</title>
+    <style>
+        /* --- Variables de Color y Estilos Base --- */
+        :root {
+            --app-bg-light: #F0F2F5;
+            --app-bg-dark: #1a1a2e;
+            --app-surface-light: #FFFFFF;
+            --app-surface-dark: #16213E;
+            --app-primary-light: #6A5ACD; /* Morado similar a la imagen */
+            --app-primary-dark: #7B68EE;
+            --app-secondary-light: #20B2AA; /* Teal similar a la imagen */
+            --app-secondary-dark: #48D1CC;
+            --app-text-light: #0D0D0D;
+            --app-text-dark: #E0E0E0;
+            --app-text-muted-light: #6c757d;
+            --app-text-muted-dark: #a0a0a0;
+            --app-border-light: #dee2e6;
+            --app-border-dark: #495057;
+            --app-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --app-shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--app-bg-light);
+            color: var(--app-text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark {
+            background-color: var(--app-bg-dark);
+            color: var(--app-text-dark);
+        }
+
+        /* --- Clases de Utilidad --- */
+        .app__hidden {
+            display: none !important;
+        }
+
+        /* --- Estructura Principal --- */
+        .app__container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Encabezado --- */
+        .app__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background-color: var(--app-surface-light);
+            border-bottom: 1px solid var(--app-border-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        body.dark .app__header {
+            background-color: var(--app-surface-dark);
+            border-bottom: 1px solid var(--app-border-dark);
+        }
+
+        .app__logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+        }
+
+        .app__logo-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--app-primary-light), var(--app-secondary-light));
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        body.dark .app__logo-icon {
+             background: linear-gradient(45deg, var(--app-primary-dark), var(--app-secondary-dark));
+        }
+
+        .app__logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .app__breadcrumbs {
+            font-size: 1rem;
+            color: var(--app-text-muted-light);
+            font-weight: 500;
+        }
+        body.dark .app__breadcrumbs {
+            color: var(--app-text-muted-dark);
+        }
+
+        .app__nav-desktop {
+            display: none; /* Oculto en móvil */
+            gap: 1.5rem;
+        }
+
+        .app__nav-link {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--app-text-muted-light);
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .app__nav-link:hover, .app__nav-link.active {
+            color: var(--app-primary-light);
+        }
+        
+        body.dark .app__nav-link {
+            color: var(--app-text-muted-dark);
+        }
+        body.dark .app__nav-link:hover, body.dark .app__nav-link.active {
+            color: var(--app-primary-dark);
+        }
+
+        .app__header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .app__theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--app-text-muted-light);
+            transition: color 0.2s;
+        }
+        .app__theme-toggle:hover {
+            color: var(--app-primary-light);
+        }
+        body.dark .app__theme-toggle {
+            color: var(--app-text-muted-dark);
+        }
+        body.dark .app__theme-toggle:hover {
+            color: var(--app-primary-dark);
+        }
+
+        .app__mobile-menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.8rem;
+        }
+        
+        /* --- Menú Móvil --- */
+        .app__nav-mobile {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background-color: var(--app-surface-light);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            z-index: 1001;
+            transition: left 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+        }
+        .app__nav-mobile.open {
+            left: 0;
+        }
+        body.dark .app__nav-mobile {
+            background-color: var(--app-surface-dark);
+        }
+        .app__mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .app__mobile-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--app-text-light);
+        }
+        body.dark .app__mobile-close-btn {
+            color: var(--app-text-dark);
+        }
+
+
+        /* --- Contenido Principal --- */
+        .app__main-content {
+            flex-grow: 1;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- Vista Inicial --- */
+        .app__initial-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .app__welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--app-primary-light);
+        }
+        body.dark .app__welcome-title {
+            color: var(--app-primary-dark);
+        }
+
+        .app__welcome-text {
+            font-size: 1.1rem;
+            color: var(--app-text-muted-light);
+            max-width: 450px;
+            margin: 0.5rem 0 2rem 0;
+        }
+        body.dark .app__welcome-text {
+            color: var(--app-text-muted-dark);
+        }
+
+
+        .app__cards-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .app__card {
+            background-color: var(--app-surface-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--app-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 1px solid var(--app-border-light);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+        .app__card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        body.dark .app__card {
+            background-color: var(--app-surface-dark);
+            border: 1px solid var(--app-border-dark);
+            box-shadow: var(--app-shadow-dark);
+        }
+        body.dark .app__card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .app__card-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+            color: var(--app-primary-light);
+        }
+        body.dark .app__card-icon {
+            color: var(--app-primary-dark);
+        }
+
+        .app__card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .app__card-description {
+            color: var(--app-text-muted-light);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+        body.dark .app__card-description {
+            color: var(--app-text-muted-dark);
+        }
+
+        .app__card-button {
+            background-color: var(--app-primary-light);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            pointer-events: none; /* El click se maneja en la tarjeta padre */
+        }
+        body.dark .app__card-button {
+            background-color: var(--app-primary-dark);
+        }
+        
+        /* --- SVG Rotatorio --- */
+        .app__rotating-svg-container {
+            width: 100%;
+            max-width: 300px;
+            margin-top: 2rem;
+        }
+
+        .app__rotating-svg {
+            width: 100%;
+            height: auto;
+            animation: app-spin 20s linear infinite;
+        }
+
+        @keyframes app-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* --- Contenedores de Contenido Específico --- */
+        .app__content-section {
+            background-color: var(--app-surface-light);
+            padding: 2rem;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 900px;
+            margin-top: 2rem;
+            box-shadow: var(--app-shadow);
+            border: 1px solid var(--app-border-light);
+            text-align: center;
+        }
+        body.dark .app__content-section {
+            background-color: var(--app-surface-dark);
+            border: 1px solid var(--app-border-dark);
+            box-shadow: var(--app-shadow-dark);
+        }
+        .app__content-section h2 {
+            font-size: 2rem;
+            color: var(--app-primary-light);
+            margin-bottom: 1.5rem;
+        }
+        body.dark .app__content-section h2 {
+            color: var(--app-primary-dark);
+        }
+        .app__content-svg {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            color: var(--app-secondary-light);
+        }
+        body.dark .app__content-svg {
+            color: var(--app-secondary-dark);
+        }
+
+
+        /* --- Responsive: Tablet --- */
+        @media (min-width: 768px) {
+            .app__mobile-menu-btn {
+                display: none;
+            }
+            .app__nav-desktop {
+                display: flex;
+            }
+            .app__cards-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .app__main-content {
+                flex-direction: row;
+                align-items: flex-start;
+                gap: 2rem;
+            }
+            .app__cards-container.full-width {
+                flex-grow: 1;
+            }
+            .app__rotating-svg-container {
+                flex-shrink: 0;
+                width: 300px;
+                margin-top: 0;
+            }
+            .app__welcome-title {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* --- Responsive: Desktop --- */
+        @media (min-width: 1024px) {
+            .app__cards-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app__container">
+        <!-- Encabezado -->
+        <header class="app__header">
+            <div class="app__logo-container" id="app__logo">
+                <div class="app__logo-icon">IM</div>
+                <span class="app__logo-text">ISIMath</span>
+                <span class="app__breadcrumbs" id="app__breadcrumbs"></span>
+            </div>
+            
+            <nav class="app__nav-desktop">
+                <a class="app__nav-link" data-section="calculo">Cálculo</a>
+                <a class="app__nav-link" data-section="matrices">Matrices</a>
+            </nav>
+
+            <div class="app__header-actions">
+                <button class="app__theme-toggle" id="app__theme-toggle">
+                    <span class="app__icon-sun">☀️</span>
+                    <span class="app__icon-moon app__hidden">🌙</span>
+                </button>
+                <button class="app__mobile-menu-btn" id="app__mobile-menu-btn">☰</button>
+            </div>
+        </header>
+        
+        <!-- Menú de Navegación Móvil -->
+        <nav class="app__nav-mobile" id="app__nav-mobile">
+            <button class="app__mobile-close-btn" id="app__mobile-close-btn">&times;</button>
+            <div class="app__mobile-nav-links">
+                 <a class="app__nav-link" data-section="calculo">Cálculo</a>
+                 <a class="app__nav-link" data-section="matrices">Matrices</a>
+            </div>
+        </nav>
+
+
+        <!-- Contenido Principal -->
+        <main class="app__main-content" id="app__main-content">
+            
+            <!-- Vista Inicial -->
+            <div class="app__initial-view" id="app__initial-view">
+                <h2 class="app__welcome-title">Bienvenido a ISIMath</h2>
+                <p class="app__welcome-text">Tu plataforma de matemáticas. Selecciona una categoría del menú de navegación para explorar las herramientas.</p>
+                <div class="app__rotating-svg-container">
+                    <svg class="app__rotating-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="app-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--app-primary-light); stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--app-secondary-light); stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M 50,5 A 45,45 0 1 1 5,50" fill="none" stroke="url(#app-gradient)" stroke-width="4"/>
+                        <path d="M 50,95 A 45,45 0 1 1 95,50" fill="none" stroke="url(#app-gradient)" stroke-width="4" stroke-dasharray="10, 10"/>
+                        <circle cx="50" cy="50" r="10" fill="none" stroke="url(#app-gradient)" stroke-width="2"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Tarjetas de Cálculo -->
+            <div class="app__cards-container app__hidden" id="app__calculo-cards">
+                <div class="app__card" data-target="limites" data-name="Límites">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 12l6-6m-6 6l6 6"/><path d="M21 5h-6"/><path d="M21 19h-6"/><path d="m15 5 6 14"/></svg>
+                    <h3 class="app__card-title">Límites</h3>
+                    <p class="app__card-description">Calcula el límite de una función cuando la variable tiende a un número.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+                <div class="app__card" data-target="derivadas" data-name="Derivadas">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5.2C9 4 10.1 3 11.3 3s2.4.9 2.7 2.1L15 10"/><path d="M12 18h.01"/><path d="M6 18h.01"/><path d="M18 18h.01"/></svg>
+                    <h3 class="app__card-title">Derivadas</h3>
+                    <p class="app__card-description">Encuentra la razón de cambio instantánea de una función.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+                <div class="app__card" data-target="integrales-definidas" data-name="Integrales Definidas">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3l-6 6v6l6 6"/><path d="M18 21h-7"/><path d="M18 3h-7"/><path d="M15 3v18"/></svg>
+                    <h3 class="app__card-title">Integrales Definidas</h3>
+                    <p class="app__card-description">Calcula el área bajo la curva entre dos puntos específicos.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+                <div class="app__card" data-target="integrales-indefinidas" data-name="Integrales Indefinidas">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3l-6 6v6l6 6"/><path d="M18 3v18"/></svg>
+                    <h3 class="app__card-title">Integrales Indefinidas</h3>
+                    <p class="app__card-description">Encuentra la antiderivada o primitiva de una función.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+            </div>
+
+            <!-- Tarjetas de Matrices -->
+            <div class="app__cards-container app__hidden" id="app__matrices-cards">
+                <div class="app__card" data-target="calculadora-matrices" data-name="Calculadora de Matrices">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+                    <h3 class="app__card-title">Calculadora</h3>
+                    <p class="app__card-description">Realiza operaciones básicas como suma, resta y multiplicación.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+                <div class="app__card" data-target="determinantes" data-name="Determinantes">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18"/><path d="M19 3v18"/><rect x="9" y="7" width="6" height="10" rx="1"/></svg>
+                    <h3 class="app__card-title">Determinantes</h3>
+                    <p class="app__card-description">Calcula el valor escalar de una matriz cuadrada.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+                <div class="app__card" data-target="inversa" data-name="Inversa">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14h.01"/><path d="M11.5 10.5h.01"/><path d="M15 6h.01"/><path d="M8.5 6.5h.01"/><path d="M8.5 14.5h.01"/><path d="M7 10.5a3.5 3.5 0 0 0 3.5 3.5h.01"/><path d="M17 10.5a3.5 3.5 0 0 1-3.5 3.5h-.01"/><path d="M17 14a3.5 3.5 0 0 1-3.5-3.5h.01"/></svg>
+                    <h3 class="app__card-title">Inversa</h3>
+                    <p class="app__card-description">Encuentra la matriz inversa de una matriz invertible.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+                <div class="app__card" data-target="metodos-iterativos" data-name="Métodos Iterativos">
+                    <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                    <h3 class="app__card-title">Métodos Iterativos</h3>
+                    <p class="app__card-description">Resuelve sistemas de ecuaciones lineales con Jacobi y Gauss-Seidel.</p>
+                    <button class="app__card-button">Explorar</button>
+                </div>
+            </div>
+
+            <!-- SVG Rotatorio para las secciones -->
+            <div class="app__rotating-svg-container app__hidden" id="app__rotating-svg-container">
+                <svg class="app__rotating-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="app-gradient-section" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--app-primary-light); stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--app-secondary-light); stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="url(#app-gradient-section)" stroke-width="4" stroke-dasharray="282.74" stroke-dashoffset="70"/>
+                    <ellipse cx="50" cy="50" rx="45" ry="20" fill="none" stroke="url(#app-gradient-section)" stroke-width="2" transform="rotate(45 50 50)"/>
+                    <ellipse cx="50" cy="50" rx="45" ry="20" fill="none" stroke="url(#app-gradient-section)" stroke-width="2" transform="rotate(-45 50 50)"/>
+                    <circle cx="50" cy="50" r="5" fill="url(#app-gradient-section)"/>
+                </svg>
+            </div>
+            
+            <!-- Contenedores de Contenido Específico -->
+            <div id="app__content-sections">
+                <!-- Contenido de Cálculo -->
+                <div id="app__limites-container" class="app__content-section app__hidden">
+                    <h2>Hola Límites</h2>
+                    <svg class="app__content-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div id="app__derivadas-container" class="app__content-section app__hidden">
+                    <h2>Hola Derivadas</h2>
+                    <svg class="app__content-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div id="app__integrales-definidas-container" class="app__content-section app__hidden">
+                    <h2>Hola Integrales Definidas</h2>
+                    <svg class="app__content-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div id="app__integrales-indefinidas-container" class="app__content-section app__hidden">
+                    <h2>Hola Integrales Indefinidas</h2>
+                    <svg class="app__content-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <!-- Contenido de Matrices -->
+                <div id="app__calculadora-matrices-container" class="app__content-section app__hidden">
+                    <h2>Hola Calculadora de Matrices</h2>
+                    <svg class="app__content-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div id="app__determinantes-container" class="app__content-section app__hidden">
+                    <h2>Hola Determinantes</h2>
+                    <svg class="app__content-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div id="app__inversa-container" class="app__content-section app__hidden">
+                    <h2>Hola Inversa</h2>
+                    <svg class="app__content-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div id="app__metodos-iterativos-container" class="app__content-section app__hidden">
+                    <h2>Hola Métodos Iterativos</h2>
+                    <svg class="app__content-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Selectores de Elementos ---
+            const body = document.body;
+            const themeToggleButton = document.getElementById('app__theme-toggle');
+            const iconSun = document.querySelector('.app__icon-sun');
+            const iconMoon = document.querySelector('.app__icon-moon');
+            const navLinks = document.querySelectorAll('.app__nav-link');
+            const mainContent = document.getElementById('app__main-content');
+            const initialView = document.getElementById('app__initial-view');
+            const calculoCards = document.getElementById('app__calculo-cards');
+            const matricesCards = document.getElementById('app__matrices-cards');
+            const rotatingSvgContainer = document.getElementById('app__rotating-svg-container');
+            const allContentSections = document.querySelectorAll('.app__content-section');
+            const breadcrumbs = document.getElementById('app__breadcrumbs');
+            const logo = document.getElementById('app__logo');
+            const mobileMenuBtn = document.getElementById('app__mobile-menu-btn');
+            const mobileNav = document.getElementById('app__nav-mobile');
+            const mobileCloseBtn = document.getElementById('app__mobile-close-btn');
+
+            let currentSection = '';
+            let currentTool = '';
+
+            // --- Lógica del Tema (Oscuro/Claro) ---
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    body.classList.add('dark');
+                    iconSun.classList.add('app__hidden');
+                    iconMoon.classList.remove('app__hidden');
+                } else {
+                    body.classList.remove('dark');
+                    iconSun.classList.remove('app__hidden');
+                    iconMoon.classList.add('app__hidden');
+                }
+            };
+            
+            themeToggleButton.addEventListener('click', () => {
+                const newTheme = body.classList.contains('dark') ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            });
+
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
+
+            // --- Lógica de Navegación ---
+            
+            const resetView = () => {
+                initialView.classList.remove('app__hidden');
+                calculoCards.classList.add('app__hidden');
+                matricesCards.classList.add('app__hidden');
+                rotatingSvgContainer.classList.add('app__hidden');
+                allContentSections.forEach(sec => sec.classList.add('app__hidden'));
+                mainContent.classList.remove('app__hidden');
+                navLinks.forEach(l => l.classList.remove('active'));
+                currentSection = '';
+                currentTool = '';
+                updateBreadcrumbs();
+            };
+
+            const updateBreadcrumbs = () => {
+                let path = '';
+                if (currentSection) {
+                    path += ` / ${currentSection}`;
+                }
+                if (currentTool) {
+                    path += ` / ${currentTool}`;
+                }
+                breadcrumbs.textContent = path;
+            };
+
+            logo.addEventListener('click', resetView);
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const section = e.target.dataset.section;
+                    
+                    resetView();
+                    initialView.classList.add('app__hidden');
+                    
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll(`.app__nav-link[data-section="${section}"]`).forEach(l => l.classList.add('active'));
+
+                    if (section === 'calculo') {
+                        calculoCards.classList.remove('app__hidden');
+                        currentSection = 'Cálculo';
+                    } else if (section === 'matrices') {
+                        matricesCards.classList.remove('app__hidden');
+                        currentSection = 'Matrices';
+                    }
+                    
+                    rotatingSvgContainer.classList.remove('app__hidden');
+                    updateBreadcrumbs();
+
+                    mobileNav.classList.remove('open');
+                });
+            });
+
+            const showToolContent = (targetId, toolName) => {
+                initialView.classList.add('app__hidden');
+                calculoCards.classList.add('app__hidden');
+                matricesCards.classList.add('app__hidden');
+                rotatingSvgContainer.classList.add('app__hidden');
+
+                currentTool = toolName;
+                updateBreadcrumbs();
+                
+                // Ocultar todas las secciones de contenido
+                allContentSections.forEach(sec => sec.classList.add('app__hidden'));
+                
+                // Mostrar la sección correcta
+                const targetSection = document.getElementById(`app__${targetId}-container`);
+                if(targetSection) {
+                    targetSection.classList.remove('app__hidden');
+                }
+            };
+
+            // Delegación de eventos para las tarjetas
+            document.getElementById('app__calculo-cards').addEventListener('click', (e) => {
+                const card = e.target.closest('.app__card');
+                if (card) {
+                    const targetId = card.dataset.target;
+                    const toolName = card.dataset.name;
+                    showToolContent(targetId, toolName);
+                }
+            });
+
+            document.getElementById('app__matrices-cards').addEventListener('click', (e) => {
+                const card = e.target.closest('.app__card');
+                if (card) {
+                    const targetId = card.dataset.target;
+                    const toolName = card.dataset.name;
+                    showToolContent(targetId, toolName);
+                }
+            });
+
+            // --- Lógica del Menú Móvil ---
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileNav.classList.add('open');
+            });
+
+            mobileCloseBtn.addEventListener('click', () => {
+                mobileNav.classList.remove('open');
+            });
+
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Determinantes - Álgebra Lineal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --navy-blue: #0a2540;
+            --steel-blue: #5e7fa3;
+            --light-blue: #f0f7ff;
+            --white: #ffffff;
+            --gray-100: #f5f7fa;
+            --gray-200: #e5e9f0;
+            --gray-600: #4a5568;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-blue);
+            color: var(--navy-blue);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .math-display {
+            font-size: 1.1rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+        
+        .step-highlight {
+            border-left: 4px solid var(--primary);
+            background-color: rgba(59, 130, 246, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .step-highlight:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .formula-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(10, 37, 64, 0.05);
+            overflow: hidden;
+            background-color: var(--white);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .formula-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 12px rgba(10, 37, 64, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .content-container {
+            max-width: 95%;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, var(--navy-blue) 0%, var(--steel-blue) 100%);
+            padding: 3rem 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        
+        .resource-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid var(--primary);
+            background-color: var(--white);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .resource-item:hover {
+            transform: translateX(5px);
+            border-color: var(--primary);
+        }
+        
+        .home-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(10, 37, 64, 0.1);
+            background-color: var(--primary);
+        }
+        
+        .home-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(10, 37, 64, 0.15);
+            background-color: var(--primary-dark);
+        }
+        
+        .content-card {
+            background-color: var(--white);
+            box-shadow: 0 2px 4px rgba(10, 37, 64, 0.05);
+            border: 1px solid var(--gray-200);
+            border-radius: 0.75rem;
+        }
+        
+        .tab-button {
+            transition: all 0.2s ease;
+        }
+        
+        .title-accent {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .title-accent::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            border-radius: 3px;
+        }
+        
+        .text-primary {
+            color: var(--navy-blue);
+        }
+        
+        .text-secondary {
+            color: var(--gray-600);
+        }
+        
+        .bg-light {
+            background-color: var(--light-blue);
+        }
+
+
+
+
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="header-content content-container">
+            <h1 class="text-4xl md:text-5xl font-bold font-poppins mb-4 title-accent">DETERMINANTES</h1>
+            <div class="max-w-3xl bg-white/10 p-6 rounded-xl border border-white/20 backdrop-blur-sm">
+                <p class="text-lg text-white/90 leading-relaxed">
+                    El determinante es una función que asigna a cada matriz cuadrada un escalar, proporcionando información crucial sobre la matriz. Este concepto fundamental en álgebra lineal determina si una matriz es invertible, calcula volúmenes en transformaciones lineales y resuelve sistemas de ecuaciones lineales.
+                </p>
+                <div class="mt-4 flex items-center text-white/80">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-sm font-medium">Concepto clave en álgebra lineal</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="content-container py-8">
+        <div class="main-grid">
+            <!-- Left Column - Theory -->
+            <div>
+                <section class="mb-12 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        <span class="title-accent">Conceptos Fundamentales</span>
+                    </h2>
+                    
+                    <div class="bg-light rounded-lg p-6 mb-6 border border-gray-200">
+                        <p class="mb-4 text-secondary">El determinante de una matriz cuadrada \( A \) de orden \( n \times n \) se denota como \( \det(A) \) o \( |A| \) y se calcula mediante:</p>
+                        <div class="text-center text-xl font-math my-4 math-display text-primary p-4 bg-white rounded-lg border border-gray-200">
+                            Para \( 2 \times 2 \): $$\begin{vmatrix} a & b \\ c & d \end{vmatrix} = ad - bc$$
+                        </div>
+                        <p class="text-secondary">Para matrices mayores, se puede calcular mediante expansión por cofactores o reducción a forma triangular.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card p-6">
+                            <h3 class="font-semibold text-primary mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                                </svg>
+                                Aplicaciones
+                            </h3>
+                            <ul class="space-y-2 text-secondary">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Determinar si una matriz es invertible
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Resolver sistemas de ecuaciones (Regla de Cramer)
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Calcular áreas y volúmenes en transformaciones
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="formula-card p-6">
+                            <h3 class="font-semibold text-primary mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                Propiedades Clave
+                            </h3>
+                            <ul class="space-y-2 text-secondary">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    \( \det(I) = 1 \) (Matriz identidad)
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    \( \det(AB) = \det(A)\det(B) \)
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    \( \det(A^T) = \det(A) \)
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Examples Section -->
+                <section class="mb-12 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        <span class="title-accent">Ejemplos Resueltos</span>
+                    </h2>
+                    
+                    <!-- Example 1 -->
+                    <div class="mb-8 bg-white rounded-xl overflow-hidden border border-gray-200">
+                        <div class="flex border-b border-gray-200">
+                            <button class="tab-button active py-3 px-6 font-medium text-primary border-b-2 border-primary" onclick="openExampleTab('example1', 'tab1')">
+                                Enunciado
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-gray-600 hover:text-primary" onclick="openExampleTab('example1', 'tab2')">
+                                Solución
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-gray-600 hover:text-primary" onclick="openExampleTab('example1', 'tab3')">
+                                Explicación
+                            </button>
+                        </div>
+                        
+                        <div id="example1-tab1" class="tab-content active p-6">
+                            <p class="mb-4 text-secondary">Calcula el determinante de la siguiente matriz 2×2:</p>
+                            <div class="text-center text-xl my-4 p-4 bg-light rounded-lg math-display border border-gray-200">
+                                $$A = \begin{pmatrix} 3 & 5 \\ 2 & 4 \end{pmatrix}$$
+                            </div>
+                            <p class="text-gray-500 text-sm">Intenta resolverlo antes de ver la solución.</p>
+                        </div>
+                        
+                        <div id="example1-tab2" class="tab-content p-6">
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 1: Identificar la fórmula</h4>
+                                <p class="text-secondary">Para una matriz 2×2:</p>
+                                <div class="text-center my-2 math-display text-primary">$$\begin{vmatrix} a & b \\ c & d \end{vmatrix} = ad - bc$$</div>
+                            </div>
+                            
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 2: Aplicar la fórmula</h4>
+                                <p class="text-secondary">Identificamos los elementos:</p>
+                                <div class="text-center my-2 math-display text-primary">$$a=3, b=5, c=2, d=4$$</div>
+                                <p class="text-secondary">Calculamos el determinante:</p>
+                                <div class="text-center my-2 math-display text-primary">$$(3 \times 4) - (5 \times 2) = 12 - 10 = 2$$</div>
+                            </div>
+                            
+                            <div class="step-highlight p-4 rounded-lg">
+                                <h4 class="font-semibold text-primary mb-2">Paso 3: Resultado final</h4>
+                                <div class="text-center my-2 font-bold math-display text-primary">$$\det(A) = 2$$</div>
+                            </div>
+                        </div>
+                        
+                        <div id="example1-tab3" class="tab-content p-6">
+                            <div class="bg-light p-4 rounded-lg border border-gray-200">
+                                <h4 class="font-semibold text-primary mb-2">Interpretación geométrica</h4>
+                                <p class="mb-3 text-secondary">El determinante de una matriz 2×2 representa el área del paralelogramo formado por los vectores columna (o fila) de la matriz. En este caso, el área es 2 unidades cuadradas.</p>
+                                <p class="text-secondary">Un determinante diferente de cero (como en este caso) indica que la matriz es invertible y que los vectores que la componen son linealmente independientes.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Example 2 -->
+                    <div class="bg-white rounded-xl overflow-hidden border border-gray-200">
+                        <div class="flex border-b border-gray-200">
+                            <button class="tab-button active py-3 px-6 font-medium text-primary border-b-2 border-primary" onclick="openExampleTab('example2', 'tab1')">
+                                Enunciado
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-gray-600 hover:text-primary" onclick="openExampleTab('example2', 'tab2')">
+                                Solución
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-gray-600 hover:text-primary" onclick="openExampleTab('example2', 'tab3')">
+                                Explicación
+                            </button>
+                        </div>
+                        
+                        <div id="example2-tab1" class="tab-content active p-6">
+                            <p class="mb-4 text-secondary">Calcula el determinante de la siguiente matriz 3×3:</p>
+                            <div class="text-center text-xl my-4 p-4 bg-light rounded-lg math-display border border-gray-200">
+                                $$B = \begin{pmatrix} 1 & 2 & 3 \\ 0 & 4 & 5 \\ 1 & 0 & 6 \end{pmatrix}$$
+                            </div>
+                            <p class="text-gray-500 text-sm">Utiliza el método de expansión por cofactores.</p>
+                        </div>
+                        
+                        <div id="example2-tab2" class="tab-content p-6">
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 1: Elegir fila o columna</h4>
+                                <p class="text-secondary">Elegimos la primera fila para la expansión:</p>
+                                <div class="text-center my-2 math-display text-primary">$$\det(B) = 1 \cdot C_{11} - 2 \cdot C_{12} + 3 \cdot C_{13}$$</div>
+                                <p class="text-secondary">Donde \( C_{ij} \) son los cofactores.</p>
+                            </div>
+                            
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 2: Calcular cofactores</h4>
+                                <p class="text-secondary">Calculamos cada cofactor:</p>
+                                <div class="my-2 math-display text-primary">
+                                    $$C_{11} = (-1)^{1+1} \begin{vmatrix} 4 & 5 \\ 0 & 6 \end{vmatrix} = 1 \cdot (24 - 0) = 24$$
+                                    $$C_{12} = (-1)^{1+2} \begin{vmatrix} 0 & 5 \\ 1 & 6 \end{vmatrix} = -1 \cdot (0 - 5) = 5$$
+                                    $$C_{13} = (-1)^{1+3} \begin{vmatrix} 0 & 4 \\ 1 & 0 \end{vmatrix} = 1 \cdot (0 - 4) = -4$$
+                                </div>
+                            </div>
+                            
+                            <div class="step-highlight p-4 rounded-lg">
+                                <h4 class="font-semibold text-primary mb-2">Paso 3: Combinar resultados</h4>
+                                <p class="text-secondary">Sustituimos los cofactores:</p>
+                                <div class="text-center my-2 math-display text-primary">$$\det(B) = 1 \cdot 24 - 2 \cdot 5 + 3 \cdot (-4) = 24 - 10 - 12 = 2$$</div>
+                                <div class="text-center my-2 font-bold math-display text-primary">$$\det(B) = 2$$</div>
+                            </div>
+                        </div>
+                        
+                        <div id="example2-tab3" class="tab-content p-6">
+                            <div class="bg-light p-4 rounded-lg border border-gray-200">
+                                <h4 class="font-semibold text-primary mb-2">Estrategia de cálculo</h4>
+                                <p class="mb-3 text-secondary">La expansión por cofactores es un método sistemático para calcular determinantes de matrices de cualquier tamaño. Algunas estrategias importantes:</p>
+                                <ul class="list-disc pl-5 space-y-2 text-secondary">
+                                    <li>Elegir la fila o columna con más ceros para minimizar cálculos</li>
+                                    <li>Utilizar propiedades de determinantes para simplificar antes de calcular</li>
+                                    <li>Para matrices grandes, considerar métodos de reducción a forma triangular</li>
+                                </ul>
+                                <p class="mt-3 text-secondary">En este caso, podríamos haber elegido la segunda columna que tiene un cero, pero la primera fila también es una opción razonable.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Right Column - Formulas and Resources -->
+            <div>
+                <!-- Key Formulas -->
+                <section class="mb-8 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span class="title-accent">Fórmulas Esenciales</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Matriz 2×2</h3>
+                            <div class="text-center my-2 math-display text-primary">$$\begin{vmatrix} a & b \\ c & d \end{vmatrix} = ad - bc$$</div>
+                            <p class="text-sm text-gray-600">Fórmula directa para matrices pequeñas.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Expansión por cofactores</h3>
+                            <div class="text-center my-2 math-display text-primary">$$\det(A) = \sum_{j=1}^n (-1)^{i+j} a_{ij} \det(A_{ij})$$</div>
+                            <p class="text-sm text-gray-600">Para cualquier fila \( i \) o columna \( j \).</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Matriz triangular</h3>
+                            <div class="text-center my-2 math-display text-primary">$$\det(A) = \prod_{i=1}^n a_{ii}$$</div>
+                            <p class="text-sm text-gray-600">Producto de elementos diagonales.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Regla de Sarrus (3×3)</h3>
+                            <div class="text-center my-2 math-display text-primary">
+                                $$\begin{vmatrix} a & b & c \\ d & e & f \\ g & h & i \end{vmatrix} = aei + bfg + cdh - ceg - bdi - afh$$
+                            </div>
+                            <p class="text-sm text-gray-600">Mnemotécnica para matrices 3×3.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Determinante de producto</h3>
+                            <div class="text-center my-2 math-display text-primary">$$\det(AB) = \det(A)\det(B)$$</div>
+                            <p class="text-sm text-gray-600">Propiedad fundamental del determinante.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Additional Resources -->
+                <section class="content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <span class="title-accent">Recursos Adicionales</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">PDF: Propiedades de Determinantes</h3>
+                                <p class="text-sm text-gray-600 mt-1">Lista completa de propiedades con demostraciones</p>
+                            </div>
+                        </a>
+                        
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">Calculadora de Determinantes</h3>
+                                <p class="text-sm text-gray-600 mt-1">Herramienta interactiva para matrices hasta 5×5</p>
+                            </div>
+                        </a>
+
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">Video: Interpretación Geométrica</h3>
+                                <p class="text-sm text-gray-600 mt-1">Explicación visual del determinante como factor de escala</p>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <!-- Home Button -->
+        <div class="flex justify-center mt-12 mb-8">
+            <a href="/public/teoria.html" class="home-button text-white font-medium py-3 px-8 rounded-lg transition duration-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                Volver a Inicio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const darkMode = localStorage.getItem("theme");
+
+if (darkMode === "dark") {
+    // Aplica clase al body para activar modo oscuro
+    document.body.classList.add("dark");
+}
+        // Tab functionality
+        function openExampleTab(exampleId, tabId) {
+    // Hide all tab contents for this example
+    document.querySelectorAll(`#${exampleId}-tab1, #${exampleId}-tab2, #${exampleId}-tab3`).forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    // Show selected tab content
+    document.getElementById(`${exampleId}-${tabId}`).classList.add('active');
+
+    // Update tab buttons
+    // Selects buttons that would open the *currently selected* tab. This line might need re-evaluation
+    // if the goal is to select all buttons related to the example, then filter for the active one.
+    // For now, it's corrected to use template literals.
+    const tabButtons = document.querySelectorAll(`button[onclick="openExampleTab('${exampleId}', '${tabId.split('tab')[1]}')"]`);
+
+    // Selects all tab buttons for the current example
+    document.querySelectorAll(`button[onclick^="openExampleTab('${exampleId}'"]`).forEach(btn => {
+        btn.classList.remove('active', 'text-primary', 'border-primary');
+        btn.classList.add('text-gray-600');
+    });
+
+    tabButtons.forEach(btn => {
+        btn.classList.add('active', 'text-primary', 'border-primary');
+        btn.classList.remove('text-gray-600');
+    });
+}
+
+// Initialize first tab as active
+document.addEventListener('DOMContentLoaded', function() {
+    openExampleTab('example1', 'tab1');
+    openExampleTab('example2', 'tab1');
+
+    // Render MathJax after content is loaded
+    if (typeof MathJax !== 'undefined') {
+        MathJax.typesetPromise();
+    }
+});
+    </script>
+</body>
+</html>

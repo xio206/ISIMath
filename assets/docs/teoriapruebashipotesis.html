@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas de Hipótesis - Estadística Inferencial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --midnight-blue: #0f172a;
+            --deep-blue: #1e293b;
+            --navy-blue: #1e3a8a;
+            --electric-blue: #3b82f6;
+            --light-blue: #60a5fa;
+            --pale-blue: #bfdbfe;
+            --dark-gray: #0f172a;
+            --medium-gray: #334155;
+            --light-gray: #94a3b8;
+            --white: #f8fafc;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--midnight-blue);
+            color: var(--white);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .math-display {
+            font-size: 1.1rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            color: var(--pale-blue);
+        }
+        .step-highlight {
+            border-left: 4px solid var(--electric-blue);
+            background-color: rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+        .step-highlight:hover {
+            background-color: rgba(59, 130, 246, 0.2);
+        }
+        .formula-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+            overflow: hidden;
+            background-color: var(--deep-blue);
+            border: 1px solid var(--medium-gray);
+        }
+        .formula-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 12px rgba(2, 6, 23, 0.5);
+            border-color: var(--electric-blue);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .content-container {
+            max-width: 95%;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        .header-section {
+            background: linear-gradient(135deg, var(--navy-blue) 0%, #172554 100%);
+            padding: 3rem 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        .header-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        .resource-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid var(--electric-blue);
+            background-color: var(--deep-blue);
+            border: 1px solid var(--medium-gray);
+        }
+        .resource-item:hover {
+            transform: translateX(5px);
+            border-color: var(--light-blue);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .home-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(2, 6, 23, 0.5);
+            background-color: var(--navy-blue);
+            border: 1px solid var(--electric-blue);
+        }
+        .home-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(2, 6, 23, 0.7);
+            background-color: var(--electric-blue);
+        }
+        .content-card {
+            background-color: var(--deep-blue);
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+            border: 1px solid var(--medium-gray);
+            border-radius: 0.75rem;
+        }
+        .tab-button {
+            transition: all 0.2s ease;
+        }
+        .title-accent {
+            position: relative;
+            display: inline-block;
+        }
+        .title-accent::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--electric-blue), transparent);
+            border-radius: 3px;
+        }
+        .text-primary {
+            color: var(--white);
+        }
+        .text-secondary {
+            color: var(--light-gray);
+        }
+        .bg-light {
+            background-color: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--medium-gray);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--midnight-blue);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--navy-blue);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--electric-blue);
+        }
+        .tab-button {
+            color: var(--light-gray);
+        }
+        .tab-button.active {
+            color: var(--electric-blue);
+            border-bottom-color: var(--electric-blue);
+        }
+        pre {
+            background-color: var(--dark-gray) !important;
+            border: 1px solid var(--medium-gray) !important;
+            border-radius: 0.5rem !important;
+            padding: 1rem !important;
+            overflow-x: auto !important;
+        }
+        a {
+            color: var(--light-blue);
+            transition: color 0.2s;
+        }
+        a:hover {
+            color: var(--electric-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="header-section">
+        <div class="header-content content-container">
+            <h1 class="text-4xl md:text-5xl font-bold font-poppins mb-4 title-accent">PRUEBAS DE HIPÓTESIS</h1>
+            <div class="max-w-3xl bg-white/5 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+                <p class="text-lg text-white/90 leading-relaxed">
+                    Las pruebas de hipótesis son el pilar de la estadística inferencial. Permiten tomar decisiones sobre un parámetro poblacional (como la media o la proporción) basándose en la evidencia de una muestra, con un riesgo conocido de error.
+                </p>
+                <div class="mt-4 flex items-center text-white/80">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-electric-blue" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-sm font-medium">Concepto clave en la toma de decisiones estadísticas</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="content-container py-8">
+        <div class="main-grid">
+            <div>
+                <section class="mb-12 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7v6a2 2 0 01-2 2H8m8-8H8a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7z" />
+                        </svg>
+                        <span class="title-accent">Tipos y Proceso General</span>
+                    </h2>
+                    
+                    <div class="bg-light rounded-lg p-6 mb-6 border border-medium-gray">
+                        <p class="mb-4 text-secondary">El proceso de decisión estadística se basa en cinco pasos fundamentales. La hipótesis nula (\(H_0\)) es la afirmación que se asume verdadera y se intenta refutar:</p>
+                        <div class="text-center text-xl font-math my-4 math-display p-4 bg-dark-gray rounded-lg border border-medium-gray">$$H_0: \text{El parámetro es igual al valor hipotético}$$</div>
+                        <p class="text-secondary">Se compara el valor p con el nivel de significancia (\(\alpha\)), generalmente 0.05.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card p-6">
+                            <h3 class="font-semibold text-primary mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                                </svg>
+                                Pruebas Paramétricas
+                            </h3>
+                            <ul class="space-y-2 text-secondary">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Asumen distribución Normal de los datos.
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Usan parámetros como la media (\(\mu\)) y la varianza (\(\sigma^2\)).
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Ejemplos: Prueba Z, Prueba T, ANOVA.
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="formula-card p-6">
+                            <h3 class="font-semibold text-primary mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                Pruebas No Paramétricas
+                            </h3>
+                            <ul class="space-y-2 text-secondary">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    No requieren suponer una distribución específica (distribución libre).
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Usan rangos, medianas y frecuencias. Ideales para datos ordinales.
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Ejemplos: Mann-Whitney U, Wilcoxon, Chi-cuadrado (\(\chi^2\)).
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="mb-12 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7v6a2 2 0 01-2 2H8m8-8H8a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7z" />
+                        </svg>
+                        <span class="title-accent">Ejemplos Clave</span>
+                    </h2>
+                    
+                    <div class="mb-8 bg-dark-gray rounded-xl overflow-hidden border border-medium-gray">
+                        <div class="flex border-b border-medium-gray">
+                            <button class="tab-button active py-3 px-6 font-medium text-electric-blue border-b-2 border-electric-blue" onclick="openExampleTab('example1', 'tab1')">
+                                Media (Z-Test)
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example1', 'tab2')">
+                                Solución
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example1', 'tab3')">
+                                Explicación
+                            </button>
+                        </div>
+                        
+                        <div id="example1-tab1" class="tab-content active p-6">
+                            <p class="mb-4 text-secondary">Una fábrica afirma que el peso promedio de sus botellas es de 500 gramos. Se toma una muestra de \(n=35\) botellas, dando una media muestral (\(\bar{x}\)) de 495 gramos. Se sabe que la desviación estándar poblacional (\(\sigma\)) es de 10 gramos. ¿Hay evidencia de que el peso real es diferente a 500g? (\(\alpha = 0.05\))</p>
+                            <div class="text-center text-xl my-4 p-4 bg-light rounded-lg math-display border border-medium-gray">
+                                $$H_0: \mu = 500 \quad H_1: \mu \neq 500$$
+                            </div>
+                        </div>
+                        
+                        <div id="example1-tab2" class="tab-content p-6">
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 1: Identificar datos y fórmula</h4>
+                                <p class="text-secondary">Se utiliza la Prueba Z para la media, ya que la desviación estándar poblacional (\(\sigma\)) es conocida y \(n \ge 30\):</p>
+                                <div class="text-center my-2 math-display text-pale-blue">$$Z = \frac{\bar{x} - \mu_0}{\frac{\sigma}{\sqrt{n}}} = \frac{495 - 500}{\frac{10}{\sqrt{35}}}$$</div>
+                            </div>
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 2: Calcular el estadístico de prueba</h4>
+                                <p class="text-secondary">El error estándar es \(\frac{10}{\sqrt{35}} \approx 1.69\):</p>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$Z = \frac{-5}{1.69} \approx -2.96$$
+                                </div>
+                            </div>
+                            <div class="step-highlight p-4 rounded-lg">
+                                <h4 class="font-semibold text-primary mb-2">Paso 3: Conclusión</h4>
+                                <p class="text-secondary">El valor crítico para \(\alpha=0.05\) (bilateral) es \(\pm 1.96\). Como \(-2.96 < -1.96\), se rechaza \(H_0\):</p>
+                                <div class="text-center my-2 font-bold math-display text-electric-blue">
+                                    $$\text{Se rechaza } H_0$$
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="example1-tab3" class="tab-content p-6">
+                            <div class="bg-light p-4 rounded-lg border border-medium-gray">
+                                <h4 class="font-semibold text-primary mb-2">Uso del Z-Test (Paramétrico)</h4>
+                                <p class="mb-3 text-secondary">Este test se aplica cuando tenemos una muestra grande (\(n \ge 30\)) o cuando conocemos la desviación estándar poblacional (\(\sigma\)). Si \(\sigma\) fuera desconocida y \(n\) pequeña, se usaría la prueba T.</p>
+                                <ul class="list-disc pl-5 space-y-2 text-secondary">
+                                    <li>**Rechazo de H₀:** El valor $Z$ calculado (-2.96) cae en la región de rechazo (más allá de -1.96).</li>
+                                    <li>**Significado:** Existe evidencia estadística suficiente para concluir que el peso promedio de las botellas no es 500 gramos.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-dark-gray rounded-xl overflow-hidden border border-medium-gray">
+                        <div class="flex border-b border-medium-gray">
+                            <button class="tab-button active py-3 px-6 font-medium text-electric-blue border-b-2 border-electric-blue" onclick="openExampleTab('example2', 'tab1')">
+                                Proporción (Z-Test)
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example2', 'tab2')">
+                                Solución
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example2', 'tab3')">
+                                Explicación
+                            </button>
+                        </div>
+                        
+                        <div id="example2-tab1" class="tab-content active p-6">
+                            <p class="mb-4 text-secondary">Una encuesta reciente afirmó que el 60% de los votantes apoya al candidato A. En un nuevo sondeo de \(n=200\) personas, 130 manifestaron su apoyo. Pruebe si la proporción de apoyo es *mayor* al 60% (\(\alpha = 0.05\)).</p>
+                            <div class="text-center text-xl my-4 p-4 bg-light rounded-lg math-display border border-medium-gray">
+                                $$H_0: p \le 0.60 \quad H_1: p > 0.60$$
+                            </div>
+                            <p class="text-light-gray text-sm">Proporción muestral: \(\hat{p} = 130/200 = 0.65\).</p>
+                        </div>
+                        
+                        <div id="example2-tab2" class="tab-content p-6">
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 1: Aplicar la fórmula de Proporciones</h4>
+                                <p class="text-secondary">Se utiliza la fórmula Z para la proporción (\(\hat{p}=0.65\), \(p_0=0.60\), \(n=200\)):</p>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$Z = \frac{\hat{p} - p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}} = \frac{0.65 - 0.60}{\sqrt{\frac{0.60(0.40)}{200}}}$$
+                                </div>
+                            </div>
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 2: Calcular el estadístico de prueba</h4>
+                                <p class="text-secondary">El error estándar es \(\sqrt{\frac{0.24}{200}} \approx 0.0346\):</p>
+                                <div class="text-center my-2 math-display text-pale-blue">
+                                    $$Z = \frac{0.05}{0.0346} \approx 1.44$$
+                                </div>
+                            </div>
+                            <div class="step-highlight p-4 rounded-lg">
+                                <h4 class="font-semibold text-primary mb-2">Paso 3: Conclusión</h4>
+                                <p class="text-secondary">El valor crítico para \(\alpha=0.05\) (cola derecha) es \(Z_{crítico} = 1.645\). Como \(1.44 < 1.645\), no se rechaza \(H_0\):</p>
+                                <div class="text-center my-2 font-bold math-display text-electric-blue">
+                                    $$\text{No se rechaza } H_0$$
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="example2-tab3" class="tab-content p-6">
+                            <div class="bg-light p-4 rounded-lg border border-medium-gray">
+                                <h4 class="font-semibold text-primary mb-2">Interpretación del Z-Proporción</h4>
+                                <p class="mb-3 text-secondary">La prueba Z para proporciones se basa en la aproximación de la distribución binomial a la distribución normal, siempre y cuando \(n \cdot p_0 \ge 10\) y \(n \cdot (1-p_0) \ge 10\).</p>
+                                <ol class="list-decimal pl-5 space-y-2 text-secondary">
+                                    <li>El valor $\hat{p} = 0.65$ es mayor que $p_0 = 0.60$, pero la diferencia no es lo suficientemente grande para ser estadísticamente significativa.</li>
+                                    <li>No hay evidencia suficiente para concluir que el apoyo al candidato A sea mayor al 60%.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <div>
+                <section class="mb-8 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span class="title-accent">Fórmulas Esenciales</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Prueba Z para la Media ($\sigma$ conocida)</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\large Z = \frac{\bar{x} - \mu_0}{\frac{\sigma}{\sqrt{n}}}$$
+                            </div>
+                            <p class="text-sm text-light-gray">Donde $\bar{x}$ es la media muestral y $\sigma$ la desviación poblacional.</p>
+                        </div>
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Prueba T para la Media ($\sigma$ desconocida)</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\large T = \frac{\bar{x} - \mu_0}{\frac{s}{\sqrt{n}}}$$
+                            </div>
+                            <p class="text-sm text-light-gray">Donde $s$ es la desviación muestral y $GL = n-1$ grados de libertad.</p>
+                        </div>
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Prueba Z para la Proporción</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\large Z = \frac{\hat{p} - p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}}$$
+                            </div>
+                            <p class="text-sm text-light-gray">Donde $\hat{p}$ es la proporción muestral y $p_0$ la proporción hipotética.</p>
+                        </div>
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Prueba Chi-Cuadrado (No Paramétrica)</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">
+                                $$\large \chi^2 = \sum \frac{(O_i - E_i)^2}{E_i}$$
+                            </div>
+                            <p class="text-sm text-light-gray">Donde $O_i$ son frecuencias observadas y $E_i$ las esperadas.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <span class="title-accent">Recursos Adicionales</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">PDF: Tabla de distribución Z y T</h3>
+                                <p class="text-sm text-light-gray mt-1">Descarga las tablas de valores críticos para las pruebas.</p>
+                            </div>
+                        </a>
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">Calculadora de valor P</h3>
+                                <p class="text-sm text-light-gray mt-1">Herramienta interactiva para calcular el valor p y tomar decisiones.</p>
+                            </div>
+                        </a>
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">Video: Diferencia entre Z y T</h3>
+                                <p class="text-sm text-light-gray mt-1">Explicación visual de cuándo usar cada prueba paramétrica.</p>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <div class="flex justify-center mt-12 mb-8">
+            <a href="/public/teoria.html" class="home-button text-white font-medium py-3 px-8 rounded-lg transition duration-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                Volver a Inicio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+        function openExampleTab(exampleId, tabId) {
+            ['tab1', 'tab2', 'tab3'].forEach(tabSuffix => {
+                const tabContentElement = document.getElementById(`${exampleId}-${tabSuffix}`);
+                if (tabContentElement) {
+                    tabContentElement.classList.remove('active');
+                }
+            });
+            const selectedTabContentElement = document.getElementById(`${exampleId}-${tabId}`);
+            if (selectedTabContentElement) {
+                selectedTabContentElement.classList.add('active');
+            }
+            document.querySelectorAll(`button[onclick^="openExampleTab('${exampleId}'"]`).forEach(btn => {
+                btn.classList.remove('active', 'text-electric-blue', 'border-electric-blue');
+                btn.classList.add('text-light-gray');
+            });
+            const activeTabButton = document.querySelector(`button[onclick=\"openExampleTab('${exampleId}', '${tabId}')\"]`);
+            if (activeTabButton) {
+                activeTabButton.classList.add('active', 'text-electric-blue', 'border-electric-blue');
+                activeTabButton.classList.remove('text-light-gray');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            openExampleTab('example1', 'tab1');
+            openExampleTab('example2', 'tab1');
+            if (typeof MathJax !== 'undefined') {
+                MathJax.typesetPromise();
+            }
+        });
+    </script>
+</body>
+</html>

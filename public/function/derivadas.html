@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Derivadas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://unpkg.com/mathlive" defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/mathlive@0.95.0/dist/mathlive-static.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Variables de Color --- */
+        :root {
+            /* Colores modo claro */
+            --bg-light: #f8fafc;
+            --surface-light: #ffffff;
+            --text-light: #1e293b;
+            --primary-light: #3b82f6; /* Azul */
+            --primary-light-hover: #2563eb; /* Azul más oscuro */
+            --secondary-light: #10b981; /* Verde */
+            --secondary-light-hover: #0d9f76; /* Verde más oscuro */
+            --border-light: #e2e8f0;
+            --error-light: #ef4444; /* Rojo para texto de error */
+            --text-muted-light: #64748b;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            
+            /* Colores modo oscuro */
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --text-dark: #e2e8f0;
+            --primary-dark: #60a5fa; /* Azul más claro para oscuro */
+            --primary-dark-hover: #93c5fd; /* Azul aún más claro */
+            --secondary-dark: #10b981; /* Verde */
+            --secondary-dark-hover: #34d399; /* Verde más claro */
+            --border-dark: #334155;
+            --error-dark: #f87171; /* Rojo para texto de error */
+            --text-muted-dark: #94a3b8;
+            --shadow-sm-dark: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md-dark: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-lg-dark: 0 10px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- Estilos Base --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        body.dark {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        /* --- Layout Principal --- */
+        .app-container {
+            display: grid;
+            grid-template-columns: minmax(300px, 400px) 1fr;
+            gap: 2rem;
+            min-height: 100vh;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .app-container {
+                padding: 1rem;
+                gap: 1.5rem;
+            }
+        }
+
+        /* --- Panel de Entrada --- */
+        .input-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        @media (max-width: 1024px) {
+            .input-panel {
+                position: static;
+            }
+        }
+
+        .panel-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .panel-card {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+            box-shadow: var(--shadow-md-dark);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .panel-title {
+            color: var(--primary-dark);
+        }
+
+        .panel-title svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* --- Formulario --- */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        body.dark .form-label {
+            color: var(--text-dark);
+        }
+
+        .math-input-container {
+            width: 100%;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background-color: var(--surface-light);
+            transition: all 0.2s ease;
+            min-height: 60px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            display: flex; /* Make it a flex container */
+            align-items: center; /* Vertically align items */
+            gap: 0.5rem; /* Space between math-field and button */
+        }
+
+        body.dark .math-input-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .math-input-container:focus-within {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            outline: none;
+        }
+
+        body.dark .math-input-container:focus-within {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        /* --- Botones --- */
+        .btn-group {
+            display: flex;
+            gap: 1rem; /* Espacio entre botones */
+            margin-top: 1.5rem;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-light);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            width: 100%; /* Ocupa todo el ancho disponible en el grupo */
+            gap: 0.5rem;
+        }
+
+        body.dark .btn {
+            background-color: var(--primary-dark);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-light-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        body.dark .btn:hover {
+            background-color: var(--primary-dark-hover);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-light);
+        }
+
+        body.dark .btn-secondary {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-light-hover);
+        }
+
+        body.dark .btn-secondary:hover {
+            background-color: var(--secondary-dark-hover);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* New style for icon-only button inside math-input-container */
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem; /* Adjust padding to make it compact */
+            border-radius: 8px; /* Rounded corners */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted-light); /* Match existing icon color */
+            transition: all 0.2s ease;
+            flex-shrink: 0; /* Prevent it from shrinking */
+        }
+
+        body.dark .icon-btn {
+            color: var(--text-muted-dark);
+        }
+
+        .icon-btn:hover {
+            background-color: var(--border-light); /* Subtle hover effect */
+        }
+
+        body.dark .icon-btn:hover {
+            background-color: var(--border-dark);
+        }
+
+        .icon-btn svg {
+            width: 1.25rem; /* Match existing icon size */
+            height: 1.25rem;
+        }
+
+
+        /* --- Panel de Resultados --- */
+        .output-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* --- Resultado --- */
+        .result-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .result-card {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+        }
+
+        body.dark .result-title {
+            color: var(--primary-dark);
+        }
+
+        .result-content {
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        body.dark .result-content {
+            background-color: var(--bg-dark);
+            border-color: var(--border-dark);
+        }
+
+        /* --- Gráfica --- */
+        .graph-container {
+            width: 100%;
+            height: 400px;
+            background-color: var(--surface-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        body.dark .graph-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .graph-legend {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .legend-original {
+            color: var(--secondary-light);
+        }
+
+        .legend-derivative {
+            color: var(--primary-light);
+        }
+
+        body.dark .legend-original {
+            color: var(--secondary-dark);
+        }
+
+        body.dark .legend-derivative {
+            color: var(--primary-dark);
+        }
+
+        .legend-line {
+            width: 20px;
+            height: 2px;
+            border-radius: 1px;
+        }
+
+        .legend-original .legend-line {
+            background-color: var(--secondary-light);
+        }
+
+        .legend-derivative .legend-line {
+            background-color: var(--primary-light);
+        }
+
+        body.dark .legend-original .legend-line {
+            background-color: var(--secondary-dark);
+        }
+
+        body.dark .legend-derivative .legend-line {
+            background-color: var(--primary-dark);
+        }
+
+        /* --- Pasos --- */
+        .steps-container {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .steps-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .steps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .step-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-light);
+            transition: all 0.3s ease;
+        }
+
+        body.dark .step-item {
+            background-color: var(--bg-dark);
+            border-left-color: var(--primary-dark);
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .step-title {
+            color: var(--primary-dark);
+        }
+
+        .step-title svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .step-rule {
+            font-size: 0.875em;
+            color: var(--text-muted-light);
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        body.dark .step-rule {
+            color: var(--text-muted-dark);
+        }
+
+        /* --- Mensajes de error --- */
+        .error-message {
+            color: white; /* Texto blanco para ambos modos */
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            padding: 0.75rem;
+            background-color: #A00000; /* Rojo sangre para modo claro */
+            border-radius: 6px;
+            border: 1px solid #700000; /* Borde más oscuro */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .error-message {
+            color: white; /* Texto blanco para ambos modos */
+            background-color: #8B0000; /* Rojo más oscuro que combine para modo oscuro */
+            border-color: #6A0000; /* Borde aún más oscuro */
+        }
+
+        .error-message svg {
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* --- Toggle de tema --- */
+        .theme-toggle {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--surface-light);
+            color: var(--text-light);
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.dark .theme-toggle {
+            background-color: var(--surface-dark);
+            color: var(--text-dark);
+            box-shadow: var(--shadow-lg-dark);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- Estado oculto --- */
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- Estilos específicos para math-field --- */
+        math-field {
+            flex-grow: 1; /* Allow math-field to take available space */
+            font-size: 1.2rem;
+            border: none;
+            padding: 0;
+            background: transparent;
+            min-height: 40px;
+        }
+
+        body.dark math-field {
+            color: var(--text-dark);
+        }
+
+        math-field:focus {
+            outline: none;
+        }
+
+        .ML__frac-line {
+            border-top-width: 1.5px !important;
+        }
+
+        /* --- Iconos SVG --- */
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        /* --- Animaciones --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="input-panel">
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
+                        <path d="M8.5 8.5v.01"></path>
+                        <path d="M16 15.5v.01"></path>
+                        <path d="M12 12v.01"></path>
+                        <path d="M11 17v.01"></path>
+                        <path d="M7 14v.01"></path>
+                    </svg>
+                    Función a derivar
+                </h2>
+                <div class="form-group">
+                    <label for="function-input" class="form-label">Ingrese f(x):</label>
+                    <div class="math-input-container">
+                        <math-field id="function-input" virtual-keyboard-mode="manual"></math-field>
+                        </div>
+                    <div id="function-error" class="error-message hidden">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span id="error-text"></span>
+                    </div>
+                </div>
+                <button id="solve-btn" class="btn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
+                    </svg>
+                    Calcular Derivada
+                </button>
+                <div class="btn-group">
+                    <button id="clear-btn" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6L6 18"></path>
+                            <path d="M6 6L18 18"></path>
+                        </svg>
+                        Limpiar
+                    </button>
+                    <button id="theory-btn" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Ir a la Teoría
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Instrucciones
+                </h2>
+                <ul style="padding-left: 1.25rem; color: var(--text-muted-light);">
+                    <li style="margin-bottom: 0.5rem;">Ingrese una función matemática válida.</li>
+                    <li style="margin-bottom: 0.5rem;">Use el teclado matemático para símbolos especiales.</li>
+                    <li style="margin-bottom: 0.5rem;">Presione "Calcular Derivada" para ver resultados.</li>
+                    <li style="margin-bottom: 0.5rem;">Use "Limpiar" para borrar la entrada y la gráfica.</li>
+                    <li style="margin-bottom: 0.5rem;">"Ir a la Teoría" lo llevará a una página de recursos.</li>
+                    <li style="margin-bottom: 0.5rem;">Funciones soportadas: `sin()`, `cos()`, `tan()`, `sec()`, `csc()`, `cot()`, `ln()`, `exp()`, `sqrt()`, `abs()`, `log()`.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="output-panel">
+            <div id="result-card" class="result-card hidden fade-in">
+                <h2 class="result-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Resultado de la derivada
+                </h2>
+                <div class="result-content">
+                    <div id="result-math-field" style="font-size: 1.2rem; margin: 1rem 0;"></div>
+                </div>
+            </div>
+
+            <div id="graph-card" class="result-card fade-in"> <h2 class="result-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    Visualización gráfica
+                </h2>
+                <div id="graph-container" class="graph-container">
+                    <div id="plot" style="width: 100%; height: 100%;"></div>
+                </div>
+                <div id="graph-legend" class="graph-legend hidden">
+                    <div class="legend-item legend-original">
+                        <span class="legend-line"></span>
+                        <span>f(x) (función original)</span>
+                    </div>
+                    <div class="legend-item legend-derivative">
+                        <span class="legend-line"></span>
+                        <span>f'(x) (derivada)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="steps-card" class="steps-container hidden fade-in">
+                <div class="steps-header">
+                    <h2 class="result-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        Pasos de resolución
+                    </h2>
+                    <button id="toggle-steps-btn" class="btn btn-secondary btn-sm">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                        Mostrar detalle
+                    </button>
+                </div>
+                <div id="steps-content" class="hidden">
+                    <div id="steps-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="theme-toggle" class="theme-toggle">
+        <svg id="theme-icon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referencias a elementos del DOM con nombres más simples
+            const functionInput = document.getElementById('function-input');
+            const solveBtn = document.getElementById('solve-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const theoryBtn = document.getElementById('theory-btn');
+            const resultCard = document.getElementById('result-card');
+            const resultMathField = document.getElementById('result-math-field');
+            const functionError = document.getElementById('function-error');
+            const errorText = document.getElementById('error-text');
+            const stepsCard = document.getElementById('steps-card');
+            const stepsList = document.getElementById('steps-list');
+            const toggleStepsBtn = document.getElementById('toggle-steps-btn');
+            const stepsContent = document.getElementById('steps-content');
+            const graphCard = document.getElementById('graph-card');
+            const graphContainer = document.getElementById('graph-container');
+            const graphLegend = document.getElementById('graph-legend');
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+
+            // Variables para almacenar las funciones y pasos
+            let originalFunction = null;
+            let derivativeFunction = null;
+            let derivationSteps = [];
+
+            // Función para dibujar la gráfica
+            const drawGraph = (originalFunc, derivativeFunc) => {
+                const xMin = -5;
+                const xMax = 5;
+                const numPoints = 500;
+                const step = (xMax - xMin) / numPoints;
+                
+                const xValues = [];
+                const yOriginal = [];
+                const yDerivative = [];
+                
+                // Si no hay funciones, dibujar solo los ejes
+                if (!originalFunc && !derivativeFunc) {
+                    for (let i = 0; i <= numPoints; i++) {
+                        const x = xMin + i * step;
+                        xValues.push(x);
+                        yOriginal.push(null); // No data
+                        yDerivative.push(null); // No data
+                    }
+                } else {
+                    for (let i = 0; i <= numPoints; i++) {
+                        const x = xMin + i * step;
+                        xValues.push(x);
+                        
+                        try {
+                            const y = originalFunc ? originalFunc.evaluate({x: x}) : null;
+                            yOriginal.push(isFinite(y) && Math.abs(y) < 100 ? y : null);
+                        } catch (e) {
+                            yOriginal.push(null);
+                        }
+                        
+                        try {
+                            const derivative = derivativeFunc ? derivativeFunc.evaluate({x: x}) : null;
+                            yDerivative.push(isFinite(derivative) && Math.abs(derivative) < 100 ? derivative : null);
+                        } catch (e) {
+                            yDerivative.push(null);
+                        }
+                    }
+                }
+                
+                const isDarkMode = document.body.classList.contains('dark');
+                const bgColor = isDarkMode ? '#1E293B' : '#FFFFFF';
+                const gridColor = isDarkMode ? '#334155' : '#E2E8F0';
+                const textColor = isDarkMode ? '#E2E8F0' : '#1E293B';
+                // Colores de línea actualizados para la gráfica
+                const lineColors = isDarkMode ? ['#10B981', '#60a5fa'] : ['#10B981', '#3b82f6']; /* Verde y Azul */
+                
+                const data = [
+                    {
+                        x: xValues,
+                        y: yOriginal,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'f(x) (función original)',
+                        line: {
+                            color: lineColors[0],
+                            width: 2
+                        },
+                        connectgaps: false
+                    },
+                    {
+                        x: xValues,
+                        y: yDerivative,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: "f'(x) (derivada)",
+                        line: {
+                            color: lineColors[1],
+                            width: 2
+                        },
+                        connectgaps: false
+                    }
+                ];
+                
+                const layout = {
+                    title: {
+                        text: 'Función Original y Derivada',
+                        font: {
+                            size: 16,
+                            color: textColor
+                        }
+                    },
+                    xaxis: {
+                        title: 'x',
+                        zeroline: true,
+                        zerolinecolor: textColor,
+                        zerolinewidth: 1,
+                        gridcolor: gridColor,
+                        gridwidth: 0.5,
+                        color: textColor
+                    },
+                    yaxis: {
+                        title: 'y',
+                        zeroline: true,
+                        zerolinecolor: textColor,
+                        zerolinewidth: 1,
+                        gridcolor: gridColor,
+                        gridwidth: 0.5,
+                        color: textColor
+                    },
+                    plot_bgcolor: bgColor,
+                    paper_bgcolor: bgColor,
+                    font: {
+                        family: 'Inter, Arial, sans-serif',
+                        size: 12,
+                        color: textColor
+                    },
+                    showlegend: (originalFunc || derivativeFunc), // Mostrar leyenda solo si hay funciones
+                    legend: {
+                        x: 0.02,
+                        y: 0.98,
+                        bgcolor: isDarkMode ? 'rgba(30,41,59,0.8)' : 'rgba(255,255,255,0.8)',
+                        bordercolor: isDarkMode ? '#334155' : '#E2E8F0',
+                        borderwidth: 1,
+                        font: {
+                            color: textColor
+                        }
+                    },
+                    margin: {
+                        l: 50,
+                        r: 50,
+                        t: 50,
+                        b: 50
+                    }
+                };
+                
+                const config = {
+                    responsive: true,
+                    displayModeBar: true,
+                    displaylogo: false,
+                    modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d', 'autoScale2d', 'toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+                };
+                
+                Plotly.newPlot('plot', data, layout, config);
+            };
+
+            // Manejo del tema
+            function setTheme(isDark) {
+                console.log("setTheme llamado. isDark:", isDark);
+                document.body.classList.toggle('dark', isDark);
+                console.log("Body tiene la clase 'dark':", document.body.classList.contains('dark'));
+                localStorage.setItem('darkMode', isDark);
+                console.log("localStorage 'darkMode':", localStorage.getItem('darkMode'));
+                
+                // Actualizar icono
+                if (isDark) {
+                    themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+                } else {
+                    themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+                }
+                
+                // Actualizar gráfica si existe o dibujar una vacía al inicio
+                // Asegurarse de que drawGraph se llama para actualizar los colores de la gráfica
+                drawGraph(originalFunction, derivativeFunction);
+            }
+
+            // Verificar preferencia del sistema o localStorage
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const storedDarkMode = localStorage.getItem('darkMode') === 'true';
+            console.log("Carga inicial: prefersDark =", prefersDark, "storedDarkMode =", storedDarkMode);
+            setTheme(storedDarkMode || (localStorage.getItem('darkMode') === null && prefersDark));
+
+            themeToggle.addEventListener('click', () => {
+                const isDark = !document.body.classList.contains('dark');
+                console.log("Botón de tema clicado. El nuevo estado 'isDark' será:", isDark);
+                setTheme(isDark);
+            });
+
+            // Manejar el toggle de pasos
+            toggleStepsBtn.addEventListener('click', () => {
+                if (stepsContent.classList.contains('hidden')) {
+                    stepsContent.classList.remove('hidden');
+                    toggleStepsBtn.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>Ocultar detalle`;
+                } else {
+                    stepsContent.classList.add('hidden');
+                    toggleStepsBtn.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>Mostrar detalle`;
+                }
+            });
+
+            // Función para normalizar la entrada
+            const normalizeInput = (input) => {
+                let normalized = input;
+                console.log("normalizeInput: Initial input:", normalized);
+
+                // Remove \text{} wrappers first to expose raw function names/variables
+                normalized = normalized.replace(/\\text\{([^}]+)\}/g, '$1');
+                console.log("normalizeInput: After \\text{} removal:", normalized);
+
+                // Prioritize conversion of 'ln' and 'In' to 'log'
+                normalized = normalized.replace(/\\ln/g, 'log').replace(/ln/g, 'log');
+                normalized = normalized.replace(/In/g, 'log'); // Handle 'In' as a typo for 'ln'
+                console.log("normalizeInput: After ln/In to log conversion:", normalized);
+
+                // Handle \log_{base}{arg} or \log_{base}arg
+                const logBaseRegex = /\\log_\{([0-9]+)\}([^\\s()\*\/\\^,+-]+|\([^)]+\)|\{[^}]+\})/g;
+                normalized = normalized.replace(logBaseRegex, (match, base, arg) => {
+                    arg = arg.replace(/\{([^}]+)\}/g, '$1');
+                    if (!arg.startsWith('(') && !arg.endsWith(')')) {
+                        arg = `(${arg})`;
+                    }
+                    return `log(${arg}, ${base})`;
+                });
+                console.log("normalizeInput: After log base conversion:", normalized);
+
+                // Handle \log{arg} or \log arg (without base, assumed base 10)
+                const logNoBaseRegex = /\\log\s*([^{(\s]+|\{[^}]+\}|(\([^)]+\)))/g;
+                normalized = normalized.replace(logNoBaseRegex, (match, arg) => {
+                    arg = arg.replace(/\{([^}]+)\}/g, '$1');
+                    if (!arg.startsWith('(') && !arg.endsWith(')')) {
+                        arg = `(${arg})`;
+                    }
+                    return `log(${arg}, 10)`;
+                });
+                console.log("normalizeInput: After log no base conversion:", normalized);
+
+                // Now apply other replacements
+                normalized = normalized
+                    .replace(/\\cdot/g, '*')
+                    .replace(/\\left\(/g, '(')
+                    .replace(/\\right\)/g, ')')
+                    .replace(/\\sin/g, 'sin')
+                    .replace(/\\cos/g, 'cos')
+                    .replace(/\\tan/g, 'tan')
+                    // Convertir sec, csc, cot a su forma de sin/cos para derivación
+                    .replace(/\\sec\(([^)]+)\)/g, '(1/cos($1))')
+                    .replace(/\\csc\(([^)]+)\)/g, '(1/sin($1))')
+                    .replace(/\\cot\(([^)]+)\)/g, '(cos($1)/sin($1))')
+                    .replace(/\\exp/g, 'exp') // Math.js usa 'exp' para e^x
+                    .replace(/\\sqrt{([^}]+)}/g, 'sqrt($1)');
+                console.log("normalizeInput: After basic function/operator replacements:", normalized);
+
+                // **CRITICAL FIX: More robust \frac replacement**
+                // This regex handles \frac with or without curly braces for arguments
+                // It looks for \frac, then optional whitespace, then the numerator (either non-brace chars or braced),
+                // then optional whitespace, then the denominator (either non-brace chars or braced).
+                normalized = normalized.replace(/\\frac\s*([^{}\s]+|\{[^}]+\})\s*([^{}\s]+|\{[^}]+\})/g, (match, num, den) => {
+                    // Remove curly braces if present from captured groups
+                    num = num.replace(/\{([^}]+)\}/g, '$1');
+                    den = den.replace(/\{([^}]+)\}/g, '$1');
+                    return `(${num})/(${den})`;
+                });
+                console.log("normalizeInput: After \\frac conversion:", normalized);
+
+                // Remove remaining backslashes and excessive spaces
+                normalized = normalized
+                    .replace(/\\ /g, '') // Remove backslash space
+                    .replace(/\s+/g, ''); // Remove all other whitespace
+                console.log("normalizeInput: After whitespace removal:", normalized);
+                
+                // Add parentheses for common functions if missing around 'x' or a number.
+                // This is a last resort for functions like 'sinx' -> 'sin(x)'
+                const functionNames = ['sin', 'cos', 'tan', 'log', 'exp', 'sqrt', 'abs', 'sec', 'csc', 'cot'];
+                const functionWrapRegex = new RegExp(`(?<![a-zA-Z0-9])(${functionNames.join('|')})([a-zA-Z0-9]+)(?!\\()`, 'g');
+                normalized = normalized.replace(functionWrapRegex, '$1($2)');
+                console.log("normalizeInput: After function argument wrapping:", normalized);
+
+                return normalized;
+            };
+
+            // Función para verificar si un nodo es x
+            const isSymbolX = (node) => {
+                if (node.type === 'SymbolNode' && node.name === 'x') return true;
+                if (node.type === 'ParenthesisNode') return isSymbolX(node.content);
+                return false;
+            };
+
+            // Función para agregar pasos
+            const addStep = (description, formula, rule) => {
+                derivationSteps.push({
+                    description: description,
+                    formula: formatLatex(formula), // Aplicar formatLatex aquí
+                    rule: rule
+                });
+            };
+
+            // Función para mostrar pasos
+            const displaySteps = () => {
+                stepsList.innerHTML = '';
+                derivationSteps.forEach((step, index) => {
+                    const stepDiv = document.createElement('div');
+                    stepDiv.className = 'step-item fade-in';
+                    stepDiv.style.animationDelay = `${index * 0.1}s`;
+                    stepDiv.innerHTML = `
+                        <div class="step-title">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 8v4l3 3"></path>
+                            </svg>
+                            Paso ${index + 1}: ${step.description}
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <math-field read-only>${step.formula}</math-field>
+                        </div>
+                        <div class="step-rule">
+                            Regla aplicada: ${step.rule}
+                        </div>
+                    `;
+                    stepsList.appendChild(stepDiv);
+                });
+            };
+
+            // Función para mejorar la visualización de LaTeX
+            const formatLatex = (latexStr) => {
+                // Asegurarse de que latexStr sea una cadena antes de procesar
+                if (typeof latexStr !== 'string') {
+                    console.error("formatLatex recibió una entrada que no es una cadena:", latexStr);
+                    return String(latexStr); // Convertir a cadena para evitar errores, aunque la causa raíz debería corregirse antes
+                }
+                // Eliminar explícitamente \cdot si aparece
+                latexStr = latexStr.replace(/\\cdot/g, '');
+                return latexStr;
+            };
+
+            // Función para derivar un nodo
+            const deriveNode = (n, depth = 0) => {
+                // Simplifica el nodo antes de intentar derivar para mejor reconocimiento
+                n = math.simplify(n);
+
+                const toTexOptions = { implicit: 'hide' }; // Opciones para ocultar la multiplicación implícita
+
+                if (n.type === 'ConstantNode') {
+                    const result = new math.ConstantNode(0);
+                    addStep(
+                        "Derivada de una constante",
+                        `$$ \\frac{d}{dx}(${n.toTex(toTexOptions)}) = ${result.toTex(toTexOptions)} $$`,
+                        "d/dx [k] = 0"
+                    );
+                    return result;
+                } else if (isSymbolX(n)) {
+                    const result = new math.ConstantNode(1);
+                    addStep(
+                        "Derivada de la variable x",
+                        `$$ \\frac{d}{dx}(x) = ${result.toTex(toTexOptions)} $$`,
+                        "d/dx [x] = 1"
+                    );
+                    return result;
+                } else if (n.type === 'SymbolNode' && n.name !== 'x') { // NEW ADDITION
+                    // Treat other symbols (like 'a', 'b', 'cos', 'sin' if not followed by args) as constants
+                    const result = new math.ConstantNode(0);
+                    addStep(
+                        `Derivada de un símbolo tratado como constante (${n.name})`,
+                        `$$ \\frac{d}{dx}(${n.toTex(toTexOptions)}) = ${result.toTex(toTexOptions)} $$`,
+                        "d/dx [símbolo] = 0 (símbolo tratado como constante)"
+                    );
+                    return result;
+                }
+                else if (n.type === 'OperatorNode') {
+                    if (n.op === '/') {
+                        // REGLA DEL COCIENTE
+                        const numerator = n.args[0];
+                        const denominator = n.args[1];
+
+                        // Caso especial: constante en el denominador, e.g., x^2 / 9 -> (1/9) * x^2
+                        if (denominator.type === 'ConstantNode') {
+                            const one = new math.ConstantNode(1);
+                            const constantFactor = new math.OperatorNode('/', 'divide', [one, denominator]);
+                            
+                            addStep(
+                                "Reescribir término con denominador constante",
+                                `$$ \\frac{${numerator.toTex(toTexOptions)}}{${denominator.toTex(toTexOptions)}} = \\frac{1}{${denominator.toTex(toTexOptions)}} \\cdot ${numerator.toTex(toTexOptions)} $$`,
+                                "Reescritura algebraica"
+                            );
+                            const derivedNumerator = deriveNode(numerator, depth + 1);
+                            const result = math.simplify(new math.OperatorNode('*', 'multiply', [constantFactor, derivedNumerator]));
+                            addStep(
+                                "Aplicar regla de la constante por una función",
+                                `$$ \\frac{d}{dx}\\left(\\frac{1}{${denominator.toTex(toTexOptions)}} \\cdot ${numerator.toTex(toTexOptions)}\\right) = \\frac{1}{${denominator.toTex(toTexOptions)}} \\cdot \\frac{d}{dx}\\left(${numerator.toTex(toTexOptions)}\\right) = ${result.toTex(toTexOptions)} $$`,
+                                "d/dx [k·f(x)] = k·f'(x)"
+                            );
+                            return result;
+                        }
+                        
+                        addStep(
+                            "Identificada división de funciones - aplicando regla del cociente",
+                            `$$ \\frac{d}{dx}\\left(\\frac{u}{v}\\right) = \\frac{v \\cdot u' - u \\cdot v'}{v^2} $$ donde $u = ${numerator.toTex(toTexOptions)}$, $v = ${denominator.toTex(toTexOptions)}`,
+                            "Regla del cociente: d/dx[u/v] = (v·u' - u·v')/v²"
+                        );
+                        
+                        const numeratorDerived = deriveNode(numerator, depth + 1);
+                        const denominatorDerived = deriveNode(denominator, depth + 1);
+                        
+                        const term1 = new math.OperatorNode('*', 'multiply', [denominator, numeratorDerived]);
+                        const term2 = new math.OperatorNode('*', 'multiply', [numerator, denominatorDerived]);
+                        const numeratorExpr = new math.OperatorNode('-', 'subtract', [term1, term2]);
+                        const denominatorExpr = new math.OperatorNode('^', 'pow', [denominator, new math.ConstantNode(2)]);
+                        
+                        const result = new math.OperatorNode('/', 'divide', [numeratorExpr, denominatorExpr]);
+                        
+                        addStep(
+                            "Sustitución y aplicación de la regla del cociente",
+                            `$$ \\frac{d}{dx}\\left(\\frac{${numerator.toTex(toTexOptions)}}{${denominator.toTex(toTexOptions)}}\\right) = \\frac{${denominator.toTex(toTexOptions)} \\cdot ${numeratorDerived.toTex(toTexOptions)} - ${numerator.toTex(toTexOptions)} \\cdot ${denominatorDerived.toTex(toTexOptions)}}{(${denominator.toTex(toTexOptions)})^2} $$`,
+                            "Sustitución en la regla del cociente"
+                        );
+                        
+                        return result;
+
+                    } else if (n.op === '^') {
+                        const base = n.args[0];
+                        const exponent = n.args[1];
+                        
+                        if (exponent.type === 'ConstantNode') {
+                            const expValue = parseFloat(exponent.value);
+                            const newExp = new math.ConstantNode(expValue - 1);
+                            const coeff = new math.ConstantNode(expValue);
+                            let newPower;
+
+                            if (expValue - 1 === 0) {
+                                newPower = new math.ConstantNode(1);
+                            } else {
+                                newPower = new math.OperatorNode('^', 'pow', [base, newExp]);
+                            }
+
+                            const baseDerived = deriveNode(base, depth + 1);
+                            // Validar que baseDerived es un nodo válido antes de usarlo
+                            if (!math.isNode(baseDerived)) {
+                                console.error("Error: baseDerived no es un nodo válido.", baseDerived);
+                                throw new Error("Error interno de derivación: baseDerived no es un nodo válido.");
+                            }
+                            const result = math.simplify(new math.OperatorNode('*', 'multiply', [coeff, newPower, baseDerived]));
+
+                            addStep(
+                                `Derivada de una función elevada a una constante (Regla de la Cadena)`,
+                                `$$ \\frac{d}{dx}(u^{${exponent.toTex(toTexOptions)}}) = ${exponent.toTex(toTexOptions)}u^{${newExp.toTex(toTexOptions)}} \\cdot u' $$ donde $u = ${base.toTex(toTexOptions)}$, $u' = ${baseDerived.toTex(toTexOptions)}`,
+                                "d/dx [u^n] = n·u^(n-1)·u'"
+                            );
+                            return result;
+                        } else if (isSymbolX(base)) {
+                            if (exponent.toString().includes('x')) {
+                                throw new Error("Derivada de x^f(x) no soportada directamente por reglas básicas.");
+                            }
+                        } else if (base.type === 'ConstantNode') { // a^u
+                            const constantBase = base;
+                            const exponentDerived = deriveNode(exponent, depth + 1);
+                             // Validar que exponentDerived es un nodo válido antes de usarlo
+                            if (!math.isNode(exponentDerived)) {
+                                console.error("Error: exponentDerived no es un nodo válido.", exponentDerived);
+                                throw new Error("Error interno de derivación: exponentDerived no es un nodo válido.");
+                            }
+                            const result = math.simplify(new math.OperatorNode('*', 'multiply', [
+                                n, // The original a^u
+                                new math.FunctionNode('log', [constantBase]), // ln(a)
+                                exponentDerived
+                            ]));
+                            addStep(
+                                `Derivada de una constante elevada a una función (Regla de la Cadena)`,
+                                `$$ \\frac{d}{dx}(a^u) = a^u \\cdot \\ln(a) \\cdot u' $$ donde $a = ${constantBase.toTex(toTexOptions)}$, $u = ${exponent.toTex(toTexOptions)}$, $u' = ${exponentDerived.toTex(toTexOptions)}`,
+                                "d/dx [a^u] = a^u·ln(a)·u'"
+                            );
+                            return result;
+                        }
+                    } else if (n.op === '*') {
+                        const left = n.args[0];
+                        const right = n.args[1];
+                        
+                        const leftDerived = deriveNode(left, depth + 1);
+                        const rightDerived = deriveNode(right, depth + 1);
+
+                        // Validar que los términos derivados son nodos válidos
+                        if (!math.isNode(leftDerived) || !math.isNode(rightDerived)) {
+                            console.error("Error: leftDerived o rightDerived no son nodos válidos.", leftDerived, rightDerived);
+                            throw new Error("Error interno de derivación: los términos de la regla del producto no son nodos válidos.");
+                        }
+                        
+                        addStep(
+                            "Aplicando regla del producto",
+                            `$$ \\frac{d}{dx}[u \\cdot v] = u' \\cdot v + u \\cdot v' $$ donde $u = ${left.toTex(toTexOptions)}$, $v = ${right.toTex(toTexOptions)}`,
+                            "d/dx [u·v] = u'·v + u·v'"
+                        );
+                        
+                        const term1 = new math.OperatorNode('*', 'multiply', [leftDerived, right]);
+                        const term2 = new math.OperatorNode('*', 'multiply', [left, rightDerived]);
+                        const result = new math.OperatorNode('+', 'add', [term1, term2]);
+                        
+                        return result;
+                    } else if (n.op === '+' || n.op === '-') {
+                        addStep(
+                            `Aplicando regla de la ${n.op === '+' ? 'suma' : 'resta'}`,
+                            `$$ \\frac{d}{dx}[u ${n.op} v] = u' ${n.op} v' $$`,
+                            `d/dx [u ${n.op} v] = u' ${n.op} v'`
+                        );
+                        
+                        const derivedArgs = n.args.map(arg => {
+                            const derivedArg = deriveNode(arg, depth + 1);
+                            // Validar que cada argumento derivado es un nodo válido
+                            if (!math.isNode(derivedArg)) {
+                                console.error("Error: argumento derivado no es un nodo válido.", derivedArg);
+                                throw new Error("Error interno de derivación: un argumento derivado no es un nodo válido.");
+                            }
+                            return derivedArg;
+                        });
+                        
+                        // Reconstruye la expresión con los operadores originales
+                        let result = derivedArgs[0];
+                        for (let i = 1; i < derivedArgs.length; i++) {
+                            result = new math.OperatorNode(n.op, n.op === '+' ? 'add' : 'subtract', [result, derivedArgs[i]]);
+                        }
+                        return result;
+                    } else if (n.op === 'unaryMinus') {
+                        addStep(
+                            "Aplicando regla del factor constante (-1)",
+                            `$$ \\frac{d}{dx}[-f(x)] = -\\frac{d}{dx}[f(x)] $$`,
+                            "d/dx [-f(x)] = -f'(x)"
+                        );
+                        const derivedArg = deriveNode(n.args[0], depth + 1);
+                        // Validar que derivedArg es un nodo válido
+                        if (!math.isNode(derivedArg)) {
+                            console.error("Error: derivedArg no es un nodo válido.", derivedArg);
+                            throw new Error("Error interno de derivación: derivedArg no es un nodo válido.");
+                        }
+                        return new math.OperatorNode('-', 'unaryMinus', [derivedArg]);
+                    }
+                } else if (n.type === 'FunctionNode') {
+                    const arg = n.args[0]; // El argumento de la función (e.g., 'x' en sin(x))
+                    const innerDerivative = deriveNode(arg, depth + 1); // La derivada del argumento (u')
+                    // Validar que innerDerivative es un nodo válido
+                    if (!math.isNode(innerDerivative)) {
+                        console.error("Error: innerDerivative no es un nodo válido.", innerDerivative);
+                        throw new Error("Error interno de derivación: innerDerivative no es un nodo válido.");
+                    }
+                    
+                    switch (n.fn.name) {
+                        case 'sin':
+                            const cosU = new math.FunctionNode('cos', [arg]);
+                            addStep(
+                                "Derivada de función seno (Regla de la Cadena)",
+                                `$$ \\frac{d}{dx}(\\sin(u)) = \\cos(u) \\cdot u' $$ donde $u = ${arg.toTex(toTexOptions)}$, $u' = ${innerDerivative.toTex(toTexOptions)}`,
+                                "d/dx [sin(u)] = cos(u)·u'"
+                            );
+                            return math.simplify(new math.OperatorNode('*', 'multiply', [cosU, innerDerivative]));
+                            
+                        case 'cos':
+                            const negSinU = new math.OperatorNode('-', 'unaryMinus', [new math.FunctionNode('sin', [arg])]);
+                            addStep(
+                                "Derivada de función coseno (Regla de la Cadena)",
+                                `$$ \\frac{d}{dx}(\\cos(u)) = -\\sin(u) \\cdot u' $$ donde $u = ${arg.toTex(toTexOptions)}$, $u' = ${innerDerivative.toTex(toTexOptions)}`,
+                                "d/dx [cos(u)] = -sin(u)·u'"
+                            );
+                            return math.simplify(new math.OperatorNode('*', 'multiply', [negSinU, innerDerivative]));
+                            
+                        case 'tan':
+                            const secSquaredU = new math.OperatorNode('^', 'pow', [new math.FunctionNode('sec', [arg]), new math.ConstantNode(2)]);
+                            addStep(
+                                "Derivada de función tangente (Regla de la Cadena)",
+                                `$$ \\frac{d}{dx}(\\tan(u)) = \\sec^2(u) \\cdot u' $$ donde $u = ${arg.toTex(toTexOptions)}$, $u' = ${innerDerivative.toTex(toTexOptions)}`,
+                                "d/dx [tan(u)] = sec²(u)·u'"
+                            );
+                            return math.simplify(new math.OperatorNode('*', 'multiply', [secSquaredU, innerDerivative]));
+                            
+                        case 'log': // logaritmo natural (ln) en Math.js
+                            if (n.args.length === 1) { // ln(u)
+                                addStep(
+                                    "Derivada de logaritmo natural (Regla de la Cadena)",
+                                    `$$ \\frac{d}{dx}(\\ln(u)) = \\frac{u'}{u} $$ donde $u = ${arg.toTex(toTexOptions)}$, $u' = ${innerDerivative.toTex(toTexOptions)}`,
+                                    "d/dx [ln(u)] = u'/u"
+                                );
+                                return math.simplify(new math.OperatorNode('/', 'divide', [innerDerivative, arg]));
+                            } else if (n.args.length === 2) { // log_b(u)
+                                const base = n.args[1];
+                                // d/dx(log_b(u)) = (u' / (u * ln(b)))
+                                const denominator = new math.OperatorNode('*', 'multiply', [arg, new math.FunctionNode('log', [base])]);
+                                const result = new math.OperatorNode('/', 'divide', [innerDerivative, denominator]);
+                                addStep(
+                                    `Derivada de logaritmo base ${base.toTex(toTexOptions)} (Regla de la Cadena)`,
+                                    `$$ \\frac{d}{dx}(\\log_{${base.toTex(toTexOptions)}}(u)) = \\frac{u'}{u \\cdot \\ln(${base.toTex(toTexOptions)})} $$ donde $u = ${arg.toTex(toTexOptions)}$, $u' = ${innerDerivative.toTex(toTexOptions)}`,
+                                    "d/dx [log_b(u)] = u'/(u·ln(b))"
+                                );
+                                return math.simplify(result);
+                            }
+                            break;
+
+                        case 'exp': // e^u
+                            addStep(
+                                "Derivada de función exponencial (Regla de la Cadena)",
+                                `$$ \\frac{d}{dx}(e^u) = e^u \\cdot u' $$ donde $u = ${arg.toTex(toTexOptions)}$, $u' = ${innerDerivative.toTex(toTexOptions)}`,
+                                "d/dx [e^u] = e^u·u'"
+                            );
+                            return math.simplify(new math.OperatorNode('*', 'multiply', [n, innerDerivative])); // n es e^u
+                            
+                        case 'sqrt': // sqrt(u) = u^(1/2)
+                            // d/dx(sqrt(u)) = 1/(2*sqrt(u)) * u'
+                            const sqrtResult = new math.OperatorNode('*', 'multiply', [
+                                new math.OperatorNode('/', 'divide', [
+                                    new math.ConstantNode(1), 
+                                    new math.OperatorNode('*', 'multiply', [
+                                        new math.ConstantNode(2),
+                                        new math.FunctionNode('sqrt', [arg])
+                                    ])
+                                ]),
+                                innerDerivative
+                            ]);
+                            addStep(
+                                "Derivada de la raíz cuadrada (Regla de la Cadena)",
+                                `$$ \\frac{d}{dx}(\\sqrt{u}) = \\frac{1}{2\\sqrt{u}} \\cdot u' $$ donde $u = ${arg.toTex(toTexOptions)}$, $u' = ${innerDerivative.toTex(toTexOptions)}`,
+                                "d/dx [sqrt(u)] = (1/(2·sqrt(u)))·u'"
+                            );
+                            return math.simplify(sqrtResult);
+                        
+                        case 'abs': // |u|, derivada es u/|u| * u'
+                            // d/dx(|u|) = u/|u| * u'  (assuming u != 0)
+                            const absResult = new math.OperatorNode('*', 'multiply', [
+                                new math.OperatorNode('/', 'divide', [arg, n]), // u / |u|
+                                innerDerivative
+                            ]);
+                             addStep(
+                                "Derivada del valor absoluto (Regla de la Cadena)",
+                                `$$ \\frac{d}{dx}(|u|) = \\frac{u}{|u|} \\cdot u' $$ donde $u = ${arg.toTex(toTexOptions)}$, $u' = ${innerDerivative.toTex(toTexOptions)}`,
+                                "d/dx [|u|] = (u/|u|)·u' (para u ≠ 0)"
+                            );
+                            return math.simplify(absResult);
+
+                        default:
+                            throw new Error(`Función '${n.fn.name}' no soportada para derivación.`);
+                    }
+                } else if (n.type === 'ParenthesisNode') {
+                    // Si es solo un paréntesis, deriva su contenido
+                    return deriveNode(n.content, depth + 1);
+                }
+                
+                // Si llegamos aquí, el tipo de nodo no está soportado por nuestras reglas de derivación
+                console.warn("No se pudo derivar el término:", n.toString(), "Tipo de nodo:", n.type);
+                throw new Error(`No se puede derivar el término: ${n.toTex(toTexOptions)}. Tipo de elemento no reconocido o regla de derivación no implementada.`);
+            };
+
+            // Función principal para calcular derivada
+            const calculateDerivative = (funcText) => {
+                resultCard.classList.add('hidden');
+                functionError.classList.add('hidden');
+                errorText.textContent = '';
+                stepsCard.classList.add('hidden');
+                graphCard.classList.remove('hidden'); // Asegura que la gráfica esté visible
+                graphLegend.classList.add('hidden');
+                derivationSteps = [];
+
+                try {
+                    const cleanInput = normalizeInput(funcText);
+                    console.log("Input after normalization:", cleanInput); // Para depuración
+                    const node = math.parse(cleanInput);
+                    
+                    originalFunction = math.compile(cleanInput);
+                    
+                    addStep(
+                        "Función original a derivar",
+                        `$$ f(x) = ${node.toTex({ implicit: 'hide' })} $$`,
+                        "Identificación de la función"
+                    );
+
+                    const derivedNode = deriveNode(node);
+
+                    if (derivedNode) {
+                        const simplifiedNode = math.simplify(derivedNode);
+                        
+                        if (derivedNode.toString() !== simplifiedNode.toString()) {
+                            addStep(
+                                "Simplificación del resultado",
+                                `$$ ${derivedNode.toTex({ implicit: 'hide' })} = ${simplifiedNode.toTex({ implicit: 'hide' })} $$`,
+                                "Simplificación algebraica"
+                            );
+                        }
+                        
+                        derivativeFunction = math.compile(simplifiedNode.toString());
+                        
+                        const originalLatex = formatLatex(node.toTex({
+                            parenthesis: 'auto',
+                            implicit: 'hide' // Asegura que no se muestre el punto de multiplicación
+                        }));
+                        
+                        const derivativeLatex = formatLatex(simplifiedNode.toTex({
+                            parenthesis: 'auto',
+                            implicit: 'hide' // Asegura que no se muestre el punto de multiplicación
+                        }));
+
+                        resultMathField.innerHTML = `
+                            <math-field read-only>
+                                \\frac{d}{dx}\\left(${originalLatex}\\right) = ${derivativeLatex}
+                            </math-field>
+                        `;
+                        resultCard.classList.remove('hidden');
+                        
+                        stepsCard.classList.remove('hidden');
+                        displaySteps();
+                        
+                        // Mostrar y dibujar la gráfica
+                        graphLegend.classList.remove('hidden');
+                        drawGraph(originalFunction, derivativeFunction);
+                    } else {
+                        errorText.textContent = `No se pudo derivar la función. Tipo de nodo no soportado o sintaxis compleja.`;
+                        functionError.classList.remove('hidden');
+                        // Asegurarse de que la gráfica se dibuje vacía si no hay entrada
+                        drawGraph(null, null);
+                    }
+                } catch (error) {
+                    errorText.textContent = 'Error al procesar la función. Asegúrate de que la sintaxis es correcta o que la función es derivable con las reglas implementadas. Mensaje: ' + error.message;
+                    functionError.classList.remove('hidden');
+                    console.error("Error al calcular la derivada:", error);
+                    // Asegurarse de que la gráfica se dibuje vacía si hay un error
+                    drawGraph(null, null);
+                }
+            };
+
+            // Función para limpiar la interfaz
+            const clearInterface = () => {
+                functionInput.setValue('');
+                resultCard.classList.add('hidden');
+                functionError.classList.add('hidden');
+                errorText.textContent = '';
+                stepsCard.classList.add('hidden');
+                stepsList.innerHTML = '';
+                graphLegend.classList.add('hidden');
+                originalFunction = null;
+                derivativeFunction = null;
+                derivationSteps = [];
+                drawGraph(null, null); // Dibuja la gráfica vacía
+            };
+
+            // Event listener para el botón de resolver
+            solveBtn.addEventListener('click', () => {
+                const functionText = functionInput.getValue();
+                
+                if (!functionText) {
+                    errorText.textContent = 'Por favor, introduce una función para derivar.';
+                    functionError.classList.remove('hidden');
+                    // Asegurarse de que la gráfica se dibuje vacía si no hay entrada
+                    drawGraph(null, null);
+                    return;
+                }
+
+                calculateDerivative(functionText);
+            });
+
+            // Event listener para el botón de limpiar
+            clearBtn.addEventListener('click', clearInterface);
+
+            // Event listener para el botón "Ir a la Teoría"
+            theoryBtn.addEventListener('click', () => {
+                // Abre una nueva pestaña con la página de Wikipedia sobre derivadas
+                window.open('https://es.wikipedia.org/wiki/Derivada', '_blank'); 
+            });
+
+            // Permitir calcular con Enter
+            functionInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    solveBtn.click();
+                }
+            });
+
+            // Dibujar la gráfica vacía al cargar la página para que se previsualice
+            drawGraph(null, null);
+        });
+    </script>
+</body>
+</html>

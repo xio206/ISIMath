@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Estadística: Calculadoras</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light theme colors */
+            --light-bg: #f8fafc;
+            --light-surface: #ffffff;
+            --light-surface-alt: #f1f5f9;
+            --light-text-primary: #1e293b;
+            --light-text-secondary: #475569;
+            --light-border: #e2e8f0;
+            --light-shadow: rgba(0, 0, 0, 0.1);
+            
+            /* Dark theme colors */
+            --dark-bg: #0f172a;
+            --dark-surface: #1e293b;
+            --dark-surface-alt: #334155;
+            --dark-text-primary: #f8fafc;
+            --dark-text-secondary: #94a3b8;
+            --dark-border: #334155;
+            --dark-shadow: rgba(2, 6, 23, 0.3);
+            
+            /* Accent colors (consistent across themes) */
+            --midnight-blue: #0f172a;
+            --deep-blue: #1e293b;
+            --navy-blue: #1e3a8a;
+            --electric-blue: #3b82f6;
+            --light-blue: #60a5fa;
+            --pale-blue: #bfdbfe;
+            
+            /* Default to light theme */
+            --bg-primary: var(--light-bg);
+            --bg-surface: var(--light-surface);
+            --bg-surface-alt: var(--light-surface-alt);
+            --text-primary: var(--light-text-primary);
+            --text-secondary: var(--light-text-secondary);
+            --border-color: var(--light-border);
+            --shadow-color: var(--light-shadow);
+        }
+        
+        /* Dark theme */
+        .dark {
+            --bg-primary: var(--dark-bg);
+            --bg-surface: var(--dark-surface);
+            --bg-surface-alt: var(--dark-surface-alt);
+            --text-primary: var(--dark-text-primary);
+            --text-secondary: var(--dark-text-secondary);
+            --border-color: var(--dark-border);
+            --shadow-color: var(--dark-shadow);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Header Section */
+        .header-section {
+            background: linear-gradient(135deg, var(--navy-blue) 0%, #172554 100%);
+            padding: 3rem 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .header-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .title-section h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .title-section h1::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--electric-blue), transparent);
+            border-radius: 3px;
+        }
+        
+        .title-section p {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            line-height: 1.6;
+        }
+        
+        /* Main Content */
+        .app__main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Cards Container */
+        .app__cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .app__card {
+            background: var(--bg-surface);
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px var(--shadow-color);
+        }
+        
+        .app__card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--electric-blue), var(--light-blue));
+            border-radius: 1rem 1rem 0 0;
+        }
+        
+        .app__card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px var(--shadow-color);
+            border-color: var(--electric-blue);
+        }
+        
+        .app__card-icon {
+            width: 3rem;
+            height: 3rem;
+            color: var(--electric-blue);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .app__card:hover .app__card-icon {
+            transform: scale(1.1);
+            color: var(--light-blue);
+        }
+        
+        .app__card-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .app__card-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        
+        .app__card-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--electric-blue);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .app__card-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .app__card-button:hover::before {
+            left: 100%;
+        }
+        
+        .app__card-button:hover {
+            background: var(--light-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Back Button */
+        .app__back {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 100;
+            background: var(--bg-surface);
+            padding: 0.75rem;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            text-decoration: none;
+        }
+        
+        .app__back:hover {
+            background: var(--electric-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px var(--shadow-color);
+        }
+        
+        .app__return {
+            width: 1.5rem;
+            height: 1.5rem;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+        }
+        
+        .app__back:hover .app__return {
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .title-section h1 {
+                font-size: 2.5rem;
+            }
+            
+            .app__cards-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .app__main-content {
+                padding: 1rem;
+            }
+            
+            .app__back {
+                top: 1rem;
+                left: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .title-section h1 {
+                font-size: 2rem;
+            }
+            
+            .app__card {
+                padding: 1.5rem;
+            }
+            
+            .header-section {
+                padding: 2rem 1rem;
+            }
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--electric-blue);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--light-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <a href="/public/app/index.html" class="app__back">
+        <svg class="app__return" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+    </a>
+
+    <div class="header-section">
+        <div class="header-content">
+            <div class="title-section">
+                <h1>Estadística</h1>
+                <p>Calculadoras y herramientas para el análisis, la inferencia y la visualización de datos. Domina los conceptos clave de la ciencia de los datos.</p>
+            </div>
+        </div>
+    </div>
+
+    <main class="app__main-content">
+        <div class="app__cards-container">
+            
+            <div class="app__card" data-target="descriptiva" data-name="Estadística Descriptiva">
+                <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20V10M18 20V4M6 20v-4"/>
+                </svg>
+                <h3 class="app__card-title">Estadística Descriptiva</h3>
+                <p class="app__card-description">Calcula y visualiza medidas de posición (media, mediana), dispersión (desviación estándar, varianza), forma, y genera tablas y gráficos de datos.</p>
+                <a class="app__card-button" href="/public/estadistica/descriptiva.html">
+                    Explorar
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+            
+            <div class="app__card" data-target="correlacion" data-name="Correlación y Regresión">
+                <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 20V10M12 20V14M6 20v-4M3 3h18M3 18l18-8"/>
+                </svg>
+                <h3 class="app__card-title">Correlación y regresión</h3>
+                <p class="app__card-description">Analiza la relación entre variables. Calcula el coeficiente de correlación y la línea de regresión lineal simple para hacer predicciones.</p>
+                <a class="app__card-button" href="/public/estadistica/correlacionyregresion.html">
+                    Explorar
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+            
+            <div class="app__card" data-target="probabilidad" data-name="Probabilidades">
+                <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M8 8h.01M16 8h.01M8 16h.01M16 16h.01"/>
+                </svg>
+                <h3 class="app__card-title">Probabilidades</h3>
+                <p class="app__card-description">Calcula probabilidades de eventos. Incluye distribuciones discretas como Binomial y Poisson, y continuas como la Normal.</p>
+                <a class="app__card-button" href="/public/estadistica/probabilidades.html">
+                    Explorar
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+            
+            <div class="app__card" data-target="intervalos" data-name="Intervalos de Confianza">
+                <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12h20M7 7v10M17 7v10M10 12h4"/>
+                </svg>
+                <h3 class="app__card-title">Intervalos de Confianza</h3>
+                <p class="app__card-description">Estima el rango de valores que contiene un parámetro poblacional con un nivel de confianza específico, como la media o la proporción.</p>
+                <a class="app__card-button" href="/public/estadistica/intervalosdeconfianza.html">
+                    Explorar
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Script para manejar el tema (copiado de funcionesApp.html)
+        const body = document.body;
+
+        // Check for saved theme preference or default to light mode
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        
+        // Apply saved theme
+        if (savedTheme === 'dark') {
+            body.classList.add('dark');
+        }
+
+        // Script de ejemplo para interacción de tarjetas (se puede eliminar si no se usa)
+        document.querySelectorAll('.app__card').forEach(card => {
+            card.addEventListener('click', function() {
+                const target = this.getAttribute('data-target');
+                const name = this.getAttribute('data-name');
+                console.log(`Clicked on ${name} card with target: ${target}`);
+            });
+        });
+    </script>
+</body>
+</html>

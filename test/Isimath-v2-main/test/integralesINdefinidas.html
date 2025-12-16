@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Integrales Indefinidas</title>
+    <style>
+        /* --- Variables de Color y Estilos Base --- */
+        :root {
+            --integralesI-bg-light: #F0F2F5;
+            --integralesI-bg-dark: #1a1a2e;
+            --integralesI-surface-light: #FFFFFF;
+            --integralesI-surface-dark: #16213E;
+            --integralesI-primary-light: #6A5ACD; /* Morado similar a la imagen */
+            --integralesI-primary-dark: #7B68EE;
+            --integralesI-secondary-light: #20B2AA; /* Teal similar a la imagen */
+            --integralesI-secondary-dark: #48D1CC;
+            --integralesI-text-light: #0D0D0D;
+            --integralesI-text-dark: #E0E0E0;
+            --integralesI-text-muted-light: #6c757d;
+            --integralesI-text-muted-dark: #a0a0a0;
+            --integralesI-border-light: #dee2e6;
+            --integralesI-border-dark: #495057;
+            --integralesI-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --integralesI-shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--integralesI-bg-light);
+            color: var(--integralesI-text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark {
+            background-color: var(--integralesI-bg-dark);
+            color: var(--integralesI-text-dark);
+        }
+
+        /* Contenedor principal de la aplicación de integrales */
+        .integralesI__main-container {
+            display: flex;
+            flex-direction: column; /* Vertical en móvil */
+            gap: 1.5rem;
+            padding: 1.5rem;
+            max-width: 1200px;
+            margin: 2rem auto;
+            background-color: var(--integralesI-surface-light);
+            border-radius: 12px;
+            box-shadow: var(--integralesI-shadow);
+            border: 1px solid var(--integralesI-border-light);
+        }
+
+        body.dark .integralesI__main-container {
+            background-color: var(--integralesI-surface-dark);
+            border: 1px solid var(--integralesI-border-dark);
+            box-shadow: var(--integralesI-shadow-dark);
+        }
+
+        /* Contenedores de entrada y resultado */
+        .integralesI__input-section, .integralesI__result-section {
+            flex: 1; /* Para que ocupen el espacio disponible */
+            padding: 1.5rem;
+            background-color: var(--integralesI-bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--integralesI-border-light);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        body.dark .integralesI__input-section, body.dark .integralesI__result-section {
+            background-color: var(--integralesI-bg-dark);
+            border: 1px solid var(--integralesI-border-dark);
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.05);
+        }
+
+        .integralesI__input-section h3, .integralesI__result-section h3 {
+            color: var(--integralesI-primary-light);
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        body.dark .integralesI__input-section h3, body.dark .integralesI__result-section h3 {
+            color: var(--integralesI-primary-dark);
+        }
+
+        .integralesI__form-group {
+            margin-bottom: 1rem;
+        }
+
+        .integralesI__form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--integralesI-text-light);
+        }
+        body.dark .integralesI__form-group label {
+            color: var(--integralesI-text-dark);
+        }
+
+        .integralesI__input-text {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid var(--integralesI-border-light);
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: var(--integralesI-surface-light);
+            color: var(--integralesI-text-light);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        body.dark .integralesI__input-text {
+            background-color: var(--integralesI-surface-dark);
+            color: var(--integralesI-text-dark);
+            border: 1px solid var(--integralesI-border-dark);
+        }
+        .integralesI__input-text:focus {
+            outline: none;
+            border-color: var(--integralesI-primary-light);
+            box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.2);
+        }
+        body.dark .integralesI__input-text:focus {
+            border-color: var(--integralesI-primary-dark);
+            box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.2);
+        }
+
+        .integralesI__button {
+            background-color: var(--integralesI-primary-light);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            align-self: flex-start; /* Alinea el botón a la izquierda */
+            margin-top: 1rem;
+        }
+        body.dark .integralesI__button {
+            background-color: var(--integralesI-primary-dark);
+        }
+        .integralesI__button:hover {
+            background-color: #5A4EBF; /* Un tono más oscuro */
+            transform: translateY(-1px);
+        }
+        body.dark .integralesI__button:hover {
+            background-color: #6A5ACD; /* Un tono más oscuro */
+        }
+        .integralesI__button:active {
+            transform: translateY(0);
+        }
+
+        /* Área de resultados */
+        .integralesI__result-display {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--integralesI-surface-light);
+            border-radius: 8px;
+            border: 1px solid var(--integralesI-border-light);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--integralesI-text-light);
+            text-align: center;
+        }
+        body.dark .integralesI__result-display {
+            background-color: var(--integralesI-surface-dark);
+            border: 1px solid var(--integralesI-border-dark);
+            color: var(--integralesI-text-dark);
+        }
+
+        /* Canvas para la gráfica */
+        .integralesI__graph-canvas {
+            width: 100%;
+            height: 300px; /* Altura fija para el canvas */
+            background-color: white; /* Fondo blanco para la gráfica */
+            border-radius: 8px;
+            border: 1px solid var(--integralesI-border-light);
+            margin-top: 1rem;
+        }
+        body.dark .integralesI__graph-canvas {
+            background-color: #2a2a3e; /* Un fondo oscuro para la gráfica en modo oscuro */
+            border: 1px solid var(--integralesI-border-dark);
+        }
+
+        /* Mensajes de error */
+        .integralesI__error-message {
+            color: #dc3545; /* Rojo para errores */
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive: Escritorio */
+        @media (min-width: 768px) {
+            .integralesI__main-container {
+                flex-direction: row; /* Horizontal en escritorio */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- El div que el usuario especificó como contenedor -->
+    <div id="integralesI__container" class="integralesI__content-section">
+        <div class="integralesI__main-container">
+            <!-- Sección para la recolección de datos -->
+            <div class="integralesI__input-section">
+                <h3>Calcular Integral Indefinida</h3>
+                <div class="integralesI__form-group">
+                    <label for="integralesI__function-input">Función f(x):</label>
+                    <input type="text" id="integralesI__function-input" class="integralesI__input-text" placeholder="Ej: x^2 o sin(x)">
+                    <small class="integralesI__error-message" id="integralesI__function-error"></small>
+                </div>
+                <button id="integralesI__solve-btn" class="integralesI__button">Resolver Integral</button>
+            </div>
+
+            <!-- Sección para la respuesta y la gráfica -->
+            <div class="integralesI__result-section">
+                <h3>Resultado y Gráfica de f(x)</h3>
+                <div id="integralesI__result" class="integralesI__result-display">
+                    El resultado de la integral (simbólico) aparecerá aquí.
+                    <br><small>(La integración simbólica no es posible con JavaScript puro. Se mostrará la función original).</small>
+                </div>
+                <canvas id="integralesI__function-graph" class="integralesI__graph-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referencias a elementos del DOM con los nuevos IDs
+            const integralesI__functionInput = document.getElementById('integralesI__function-input');
+            const integralesI__solveBtn = document.getElementById('integralesI__solve-btn');
+            const integralesI__resultDiv = document.getElementById('integralesI__result');
+            const integralesI__functionGraphCanvas = document.getElementById('integralesI__function-graph');
+            const integralesI__ctx = integralesI__functionGraphCanvas.getContext('2d');
+
+            const integralesI__functionError = document.getElementById('integralesI__function-error');
+
+            // Configuración inicial del canvas
+            let integralesI__scaleX = 50; // Píxeles por unidad en el eje X
+            let integralesI__scaleY = 50; // Píxeles por unidad en el eje Y
+            let integralesI__originX = integralesI__functionGraphCanvas.width / 2;
+            let integralesI__originY = integralesI__functionGraphCanvas.height / 2;
+
+            // Función para limpiar el canvas
+            const integralesI__clearCanvas = () => {
+                integralesI__ctx.clearRect(0, 0, integralesI__functionGraphCanvas.width, integralesI__functionGraphCanvas.height);
+                integralesI__drawAxes();
+            };
+
+            // Función para dibujar los ejes
+            const integralesI__drawAxes = () => {
+                integralesI__ctx.beginPath();
+                // Obtener el color de la variable CSS para el modo claro/oscuro
+                integralesI__ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--integralesI-text-muted-light');
+                if (document.body.classList.contains('dark')) {
+                    integralesI__ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--integralesI-text-muted-dark');
+                }
+                integralesI__ctx.lineWidth = 1;
+
+                // Eje X
+                integralesI__ctx.moveTo(0, integralesI__originY);
+                integralesI__ctx.lineTo(integralesI__functionGraphCanvas.width, integralesI__originY);
+                // Eje Y
+                integralesI__ctx.moveTo(integralesI__originX, 0);
+                integralesI__ctx.lineTo(integralesI__originX, integralesI__functionGraphCanvas.height);
+                integralesI__ctx.stroke();
+
+                // Dibujar marcas en los ejes
+                integralesI__ctx.font = '10px Arial';
+                integralesI__ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--integralesI-text-light');
+                if (document.body.classList.contains('dark')) {
+                    integralesI__ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--integralesI-text-dark');
+                }
+                integralesI__ctx.textAlign = 'center';
+                integralesI__ctx.textBaseline = 'top';
+
+                // Marcas en X
+                for (let i = -Math.floor(integralesI__originX / integralesI__scaleX); i * integralesI__scaleX < integralesI__functionGraphCanvas.width - integralesI__originX; i++) {
+                    if (i === 0) continue;
+                    integralesI__ctx.fillText(i, integralesI__originX + i * integralesI__scaleX, integralesI__originY + 5);
+                    integralesI__ctx.beginPath();
+                    integralesI__ctx.moveTo(integralesI__originX + i * integralesI__scaleX, integralesI__originY - 3);
+                    integralesI__ctx.lineTo(integralesI__originX + i * integralesI__scaleX, integralesI__originY + 3);
+                    integralesI__ctx.stroke();
+                }
+
+                integralesI__ctx.textAlign = 'right';
+                integralesI__ctx.textBaseline = 'middle';
+                // Marcas en Y
+                for (let i = -Math.floor(integralesI__originY / integralesI__scaleY); i * integralesI__scaleY < integralesI__functionGraphCanvas.height - integralesI__originY; i++) {
+                    if (i === 0) continue;
+                    integralesI__ctx.fillText(-i, integralesI__originX - 5, integralesI__originY + i * integralesI__scaleY);
+                    integralesI__ctx.beginPath();
+                    integralesI__ctx.moveTo(integralesI__originX - 3, integralesI__originY + i * integralesI__scaleY);
+                    integralesI__ctx.lineTo(integralesI__originX + 3, integralesI__originY + i * integralesI__scaleY);
+                    integralesI__ctx.stroke();
+                }
+            };
+
+            // Ajustar el tamaño del canvas al contenedor
+            const integralesI__resizeCanvas = () => {
+                const integralesI__container = integralesI__functionGraphCanvas.parentElement;
+                integralesI__functionGraphCanvas.width = integralesI__container.clientWidth - 30; // Ajustar por padding
+                integralesI__functionGraphCanvas.height = 300; // Mantener altura fija
+                integralesI__originX = integralesI__functionGraphCanvas.width / 2;
+                integralesI__originY = integralesI__functionGraphCanvas.height / 2;
+                integralesI__clearCanvas(); // Redibujar los ejes al cambiar el tamaño
+            };
+
+            // Event listener para redimensionar el canvas
+            window.addEventListener('resize', integralesI__resizeCanvas);
+            integralesI__resizeCanvas(); // Llamar al inicio para establecer el tamaño inicial
+
+            // Función para parsear y evaluar la función de forma segura
+            const integralesI__evaluateFunction = (funcStr, xVal) => {
+                try {
+                    let parsedFunc = funcStr
+                        .replace(/sin\(/g, 'Math.sin(')
+                        .replace(/cos\(/g, 'Math.cos(')
+                        .replace(/tan\(/g, 'Math.tan(')
+                        .replace(/log\(/g, 'Math.log(')
+                        .replace(/exp\(/g, 'Math.exp(')
+                        .replace(/sqrt\(/g, 'Math.sqrt(')
+                        .replace(/pow\(/g, 'Math.pow(')
+                        .replace(/\^/g, '**');
+
+                    parsedFunc = parsedFunc.replace(/([0-9.]+)\s*([a-zA-Z])/g, '$1*$2');
+                    parsedFunc = parsedFunc.replace(/([a-zA-Z])\s*([0-9.]+)/g, '$1*$2');
+                    parsedFunc = parsedFunc.replace(/([a-zA-Z])([a-zA-Z])/g, '$1*$2');
+                    
+                    const x = xVal;
+                    return eval(parsedFunc);
+                } catch (e) {
+                    console.error("Error al evaluar la función:", e);
+                    return NaN;
+                }
+            };
+
+            // Función para dibujar la gráfica de la función original
+            const integralesI__drawGraph = (funcStr) => {
+                integralesI__clearCanvas(); // Limpiar y redibujar ejes
+
+                integralesI__ctx.beginPath();
+                integralesI__ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--integralesI-secondary-light');
+                if (document.body.classList.contains('dark')) {
+                    integralesI__ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--integralesI-secondary-dark');
+                }
+                integralesI__ctx.lineWidth = 2;
+
+                const step = 0.1; // Incremento para dibujar la curva
+                const minX = -integralesI__originX / integralesI__scaleX;
+                const maxX = (integralesI__functionGraphCanvas.width - integralesI__originX) / integralesI__scaleX;
+
+                let firstPoint = true;
+
+                for (let x = minX; x <= maxX; x += step) {
+                    const y = integralesI__evaluateFunction(funcStr, x);
+
+                    if (isNaN(y) || !isFinite(y)) {
+                        firstPoint = true; // Reiniciar la línea si hay un valor inválido
+                        continue;
+                    }
+
+                    const canvasX = integralesI__originX + x * integralesI__scaleX;
+                    const canvasY = integralesI__originY - y * integralesI__scaleY; // Y en canvas es invertido
+
+                    if (firstPoint) {
+                        integralesI__ctx.moveTo(canvasX, canvasY);
+                        firstPoint = false;
+                    } else {
+                        integralesI__ctx.lineTo(canvasX, canvasY);
+                    }
+                }
+                integralesI__ctx.stroke();
+            };
+
+            // Event listener para el botón de resolver
+            integralesI__solveBtn.addEventListener('click', () => {
+                const funcStr = integralesI__functionInput.value.trim();
+
+                // Limpiar errores previos
+                integralesI__functionError.textContent = '';
+                integralesI__resultDiv.innerHTML = 'Calculando...';
+                integralesI__clearCanvas();
+
+                if (!funcStr) {
+                    integralesI__functionError.textContent = 'Por favor, introduce una función.';
+                    integralesI__resultDiv.innerHTML = 'Error: Falta la función.';
+                    return;
+                }
+
+                // Mostrar un resultado simbólico conceptual
+                integralesI__resultDiv.innerHTML = `La antiderivada de $f(x) = ${funcStr}$ es $F(x) + C$.<br><small>(La integración simbólica no es posible con JavaScript puro. Se muestra la función original).</small>`;
+                
+                // Dibujar la gráfica de la función original
+                integralesI__drawGraph(funcStr);
+            });
+
+            // Lógica para el tema oscuro/claro (tomada de tu documento original)
+            const integralesI__applyTheme = (theme) => {
+                const body = document.body;
+                const integralesI__iconSun = document.querySelector('.integralesI__icon-sun');
+                const integralesI__iconMoon = document.querySelector('.integralesI__icon-moon');
+                if (theme === 'dark') {
+                    body.classList.add('dark');
+                    if (integralesI__iconSun) integralesI__iconSun.classList.add('integralesI__hidden');
+                    if (integralesI__iconMoon) integralesI__iconMoon.classList.remove('integralesI__hidden');
+                } else {
+                    body.classList.remove('dark');
+                    if (integralesI__iconSun) integralesI__iconSun.classList.remove('integralesI__hidden');
+                    if (integralesI__iconMoon) integralesI__iconMoon.classList.add('integralesI__hidden');
+                }
+                // Redibujar la gráfica para actualizar los colores de los ejes
+                const funcStr = integralesI__functionInput.value.trim();
+                if (funcStr) {
+                    integralesI__drawGraph(funcStr);
+                } else {
+                    integralesI__clearCanvas(); // Solo redibujar ejes
+                }
+            };
+
+            // Cargar tema guardado
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            integralesI__applyTheme(savedTheme);
+
+            // Listener para el botón de cambio de tema (si existe en el HTML padre)
+            const themeToggleButton = document.getElementById('app__theme-toggle'); // Mantener el ID original si está fuera
+            if (themeToggleButton) {
+                themeToggleButton.addEventListener('click', () => {
+                    const newTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
+                    localStorage.setItem('theme', newTheme);
+                    integralesI__applyTheme(newTheme);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

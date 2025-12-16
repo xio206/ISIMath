@@ -1,0 +1,429 @@
+/* --- Variables de Color y Estilos Base --- */
+
+        /* body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--integralesI-bg-light);
+            color: var(--integralesI-text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+        }
+
+        body.dark {
+            background-color: var(--integralesI-bg-dark);
+            color: var(--integralesI-text-dark);
+        } */
+
+        /* Contenedor principal */
+        .integralesI__main-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            max-width: 1400px;
+            margin: 2rem auto;
+            background-color: var(--integralesI-surface-light);
+            border-radius: 12px;
+            box-shadow: var(--integralesI-shadow);
+            border: 1px solid var(--integralesI-border-light);
+        }
+
+        body.dark .integralesI__main-container {
+            background-color: var(--integralesI-surface-dark);
+            border: 1px solid var(--integralesI-border-dark);
+            box-shadow: var(--integralesI-shadow-dark);
+        }
+
+        /* Botón de tema */
+        .integralesI__theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--integralesI-primary-light);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: var(--integralesI-shadow);
+        }
+
+        body.dark .integralesI__theme-toggle {
+            background-color: var(--integralesI-primary-dark);
+        }
+
+        .integralesI__theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Sección de inputs */
+        .integralesI__input-section {
+            padding: 1.5rem 3rem 1.5rem 1.5rem;
+            background-color: var(--integralesI-bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--integralesI-border-light);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        body.dark .integralesI__input-section {
+            background-color: var(--integralesI-bg-dark);
+            border: 1px solid var(--integralesI-border-dark);
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.05);
+        }
+
+        .integralesI__input-section h3 {
+            color: var(--integralesI-primary-light);
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        body.dark .integralesI__input-section h3 {
+            color: var(--integralesI-primary-dark);
+        }
+
+        .integralesI__form-group {
+            margin-bottom: 1rem;
+        }
+
+        .integralesI__form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--integralesI-text-light);
+        }
+
+        body.dark .integralesI__form-group label {
+            color: var(--integralesI-text-dark);
+        }
+
+        .integralesI__math-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--integralesI-border-light);
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: var(--integralesI-surface-light);
+            color: var(--integralesI-text-light);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            min-height: 40px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        body.dark .integralesI__math-input {
+            background-color: var(--integralesI-surface-dark);
+            color: var(--integralesI-text-dark);
+            border: 2px solid var(--integralesI-border-dark);
+        }
+
+        .integralesI__math-input:focus-within {
+            border-color: var(--integralesI-primary-light);
+            box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.2);
+        }
+
+        body.dark .integralesI__math-input:focus-within {
+            border-color: var(--integralesI-primary-dark);
+            box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.2);
+        }
+
+        .integralesI__button {
+            background-color: var(--integralesI-primary-light);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+            font-size: 1rem;
+        }
+
+        body.dark .integralesI__button {
+            background-color: var(--integralesI-primary-dark);
+        }
+
+        .integralesI__button:hover {
+            background-color: #5A4EBF;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(106, 90, 205, 0.3);
+        }
+
+        body.dark .integralesI__button:hover {
+            background-color: #6A5ACD;
+        }
+
+        .integralesI__button:active {
+            transform: translateY(0);
+        }
+
+        /* Sección de outputs */
+        .integralesI__output-section {
+            padding: 1.5rem;
+            background-color: var(--integralesI-bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--integralesI-border-light);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        body.dark .integralesI__output-section {
+            background-color: var(--integralesI-bg-dark);
+            border: 1px solid var(--integralesI-border-dark);
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.05);
+        }
+
+        .integralesI__output-section h3 {
+            color: var(--integralesI-primary-light);
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        body.dark .integralesI__output-section h3 {
+            color: var(--integralesI-primary-dark);
+        }
+
+        /* Área de resultados */
+        .integralesI__result-display {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: var(--integralesI-surface-light);
+            border-radius: 8px;
+            border: 1px solid var(--integralesI-border-light);
+            min-height: 50px;
+            font-size: 1.1rem;
+            color: var(--integralesI-text-light);
+        }
+
+        body.dark .integralesI__result-display {
+            background-color: var(--integralesI-surface-dark);
+            border: 1px solid var(--integralesI-border-dark);
+            color: var(--integralesI-text-dark);
+        }
+
+        .integralesI__result-display.hidden {
+            display: none;
+        }
+
+        .integralesI__result-display h4 {
+            color: var(--integralesI-primary-light);
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark .integralesI__result-display h4 {
+            color: var(--integralesI-primary-dark);
+        }
+
+        .integralesI__result-note {
+            font-size: 0.9rem;
+            color: var(--integralesI-text-muted-light);
+            margin-top: 1rem;
+        }
+
+        body.dark .integralesI__result-note {
+            color: var(--integralesI-text-muted-dark);
+        }
+
+        /* Contenedor de pasos */
+        .integralesI__steps-container {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: var(--integralesI-surface-light);
+            border-radius: 8px;
+            border: 1px solid var(--integralesI-border-light);
+        }
+
+        body.dark .integralesI__steps-container {
+            background-color: var(--integralesI-surface-dark);
+            border: 1px solid var(--integralesI-border-dark);
+        }
+
+        .integralesI__steps-container.hidden {
+            display: none;
+        }
+
+        .integralesI__steps-container h4 {
+            color: var(--integralesI-primary-light);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        body.dark .integralesI__steps-container h4 {
+            color: var(--integralesI-primary-dark);
+        }
+
+        .integralesI__steps-content {
+            background: var(--integralesI-bg-light);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--integralesI-primary-light);
+            margin-top: 10px;
+        }
+
+        body.dark .integralesI__steps-content {
+            background: var(--integralesI-bg-dark);
+            border-left-color: var(--integralesI-primary-dark);
+        }
+
+        .integralesI__steps-content.hidden {
+            display: none;
+        }
+
+        .integralesI__step-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: var(--integralesI-surface-light);
+            border-radius: 6px;
+            border: 1px solid var(--integralesI-border-light);
+        }
+
+        body.dark .integralesI__step-item {
+            background-color: var(--integralesI-surface-dark);
+            border: 1px solid var(--integralesI-border-dark);
+        }
+
+        .integralesI__step-title {
+            font-weight: bold;
+            color: var(--integralesI-primary-light);
+            margin-bottom: 5px;
+        }
+
+        body.dark .integralesI__step-title {
+            color: var(--integralesI-primary-dark);
+        }
+
+        .integralesI__step-rule {
+            font-size: 0.9em;
+            color: var(--integralesI-text-muted-light);
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        body.dark .integralesI__step-rule {
+            color: var(--integralesI-text-muted-dark);
+        }
+
+        /* Gráfica */
+        .integralesI__graph-container {
+            width: 100%;
+            height: 400px;
+            background-color: var(--integralesI-surface-light);
+            border-radius: 8px;
+            border: 1px solid var(--integralesI-border-light);
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        body.dark .integralesI__graph-container {
+            background-color: var(--integralesI-surface-dark);
+            border: 1px solid var(--integralesI-border-dark);
+        }
+
+        .integralesI__graph-container.hidden {
+            display: none;
+        }
+
+        /* Mensajes de error */
+        .integralesI__error-message {
+            color: var(--integralesI-error-light);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            padding: 0.5rem;
+            background-color: rgba(220, 53, 69, 0.1);
+            border-radius: 4px;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        body.dark .integralesI__error-message {
+            color: var(--integralesI-error-dark);
+            background-color: rgba(248, 81, 73, 0.1);
+            border-color: rgba(248, 81, 73, 0.3);
+        }
+
+        .integralesI__error-message.hidden {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .integralesI__main-container {
+                flex-direction: row;
+                gap: 2rem;
+            }
+            
+            .integralesI__input-section {
+                flex: 1;
+                max-width: 400px;
+            }
+            
+            .integralesI__output-section {
+                flex: 1;
+                max-width: 800px;
+            }
+            #app__integrales-indefinidas-container {
+                display: flex;
+                flex-direction: row;
+                width: 80vw;
+
+            }
+        }
+
+
+
+        /* Estilos específicos para math-field */
+        math-field {
+            font-size: 1.1rem;
+            border: none;
+            padding: 0;
+            background: transparent;
+        }
+        body.dark math-field {
+            color: var(--integralesI-text-dark);
+        }
+
+        math-field:focus {
+            outline: none;
+        }
+
+        /* Leyenda de la gráfica */
+        .integralesI__graph-legend {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: var(--integralesI-surface-light);
+            border-radius: 6px;
+            border: 1px solid var(--integralesI-border-light);
+            font-size: 0.9rem;
+        }
+
+        body.dark .integralesI__graph-legend {
+            background-color: var(--integralesI-surface-dark);
+            border: 1px solid var(--integralesI-border-dark);
+        }
+
+        .integralesI__legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            font-weight: bold;
+        }
+
+        .integralesI__legend-original {
+            color: var(--integralesI-secondary-light);
+        }
+
+        .integralesI__legend-integral {
+            color: var(--integralesI-primary-light);
+        }
+
+        body.dark .integralesI__legend-original {
+            color: var(--integralesI-secondary-dark);
+        }
+
+        body.dark .integralesI__legend-integral {
+            color: var(--integralesI-primary-dark);
+        }

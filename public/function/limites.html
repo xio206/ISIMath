@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Límites</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://unpkg.com/mathlive" defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/mathlive@0.95.0/dist/mathlive-static.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Variables de Color --- */
+        :root {
+            /* Colores modo claro */
+            --bg-light: #f8fafc;
+            --surface-light: #ffffff;
+            --text-light: #1e293b;
+            --primary-light: #3b82f6; /* Azul */
+            --primary-light-hover: #2563eb; /* Azul más oscuro */
+            --secondary-light: #10b981; /* Verde */
+            --secondary-light-hover: #0d9f76; /* Verde más oscuro */
+            --border-light: #e2e8f0;
+            --error-light: #ef4444; /* Rojo para texto de error */
+            --text-muted-light: #64748b;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            
+            /* Colores modo oscuro */
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --text-dark: #e2e8f0;
+            --primary-dark: #60a5fa; /* Azul más claro para oscuro */
+            --primary-dark-hover: #93c5fd; /* Azul aún más claro */
+            --secondary-dark: #10b981; /* Verde */
+            --secondary-dark-hover: #34d399; /* Verde más claro */
+            --border-dark: #334155;
+            --error-dark: #f87171; /* Rojo para texto de error */
+            --text-muted-dark: #94a3b8;
+            --shadow-sm-dark: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md-dark: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-lg-dark: 0 10px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- Estilos Base --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        body.dark {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        /* --- Layout Principal --- */
+        .app-container {
+            display: grid;
+            grid-template-columns: minmax(300px, 400px) 1fr;
+            gap: 2rem;
+            min-height: 100vh;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .app-container {
+                padding: 1rem;
+                gap: 1.5rem;
+            }
+        }
+
+        /* --- Panel de Entrada --- */
+        .input-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        @media (max-width: 1024px) {
+            .input-panel {
+                position: static;
+            }
+        }
+
+        .panel-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .panel-card {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+            box-shadow: var(--shadow-md-dark);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .panel-title {
+            color: var(--primary-dark);
+        }
+
+        .panel-title svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* --- Formulario --- */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        body.dark .form-label {
+            color: var(--text-dark);
+        }
+
+        .math-input-container {
+            width: 100%;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background-color: var(--surface-light);
+            transition: all 0.2s ease;
+            min-height: 60px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            display: flex; /* Make it a flex container */
+            align-items: center; /* Vertically align items */
+            gap: 0.5rem; /* Space between math-field and button */
+        }
+
+        body.dark .math-input-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .math-input-container:focus-within {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            outline: none;
+        }
+
+        body.dark .math-input-container:focus-within {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        /* --- Select/Dropdown --- */
+        .select-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .select-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        body.dark .select-label {
+            color: var(--text-dark);
+        }
+
+        .custom-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background-color: var(--surface-light);
+            color: var(--text-light);
+            font-size: 1rem;
+            appearance: none; /* Remove default arrow */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.25rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        body.dark .custom-select {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        }
+
+        .custom-select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            outline: none;
+        }
+
+        body.dark .custom-select:focus {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+
+        /* --- Botones --- */
+        .btn-group {
+            display: flex;
+            gap: 1rem; /* Espacio entre botones */
+            margin-top: 1.5rem;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-light);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            width: 100%; /* Ocupa todo el ancho disponible en el grupo */
+            gap: 0.5rem;
+        }
+
+        body.dark .btn {
+            background-color: var(--primary-dark);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-light-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        body.dark .btn:hover {
+            background-color: var(--primary-dark-hover);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-light);
+        }
+
+        body.dark .btn-secondary {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-light-hover);
+        }
+
+        body.dark .btn-secondary:hover {
+            background-color: var(--secondary-dark-hover);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* New style for icon-only button inside math-input-container */
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem; /* Adjust padding to make it compact */
+            border-radius: 8px; /* Rounded corners */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted-light); /* Match existing icon color */
+            transition: all 0.2s ease;
+            flex-shrink: 0; /* Prevent it from shrinking */
+        }
+
+        body.dark .icon-btn {
+            color: var(--text-muted-dark);
+        }
+
+        .icon-btn:hover {
+            background-color: var(--border-light); /* Subtle hover effect */
+        }
+
+        body.dark .icon-btn:hover {
+            background-color: var(--border-dark);
+        }
+
+        .icon-btn svg {
+            width: 1.25rem; /* Match existing icon size */
+            height: 1.25rem;
+        }
+
+
+        /* --- Panel de Resultados --- */
+        .output-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* --- Resultado --- */
+        .result-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .result-card {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+        }
+
+        body.dark .result-title {
+            color: var(--primary-dark);
+        }
+
+        .result-content {
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        body.dark .result-content {
+            background-color: var(--bg-dark);
+            border-color: var(--border-dark);
+        }
+
+        /* --- Gráfica --- */
+        .graph-container {
+            width: 100%;
+            height: 400px;
+            background-color: var(--surface-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        body.dark .graph-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .graph-legend {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .legend-original {
+            color: var(--secondary-light);
+        }
+
+        .legend-limit {
+            color: var(--primary-light);
+        }
+
+        body.dark .legend-original {
+            color: var(--secondary-dark);
+        }
+
+        body.dark .legend-limit {
+            color: var(--primary-dark);
+        }
+
+        .legend-line {
+            width: 20px;
+            height: 2px;
+            border-radius: 1px;
+        }
+
+        .legend-original .legend-line {
+            background-color: var(--secondary-light);
+        }
+
+        .legend-limit .legend-line {
+            background-color: var(--primary-light);
+        }
+
+        body.dark .legend-original .legend-line {
+            background-color: var(--secondary-dark);
+        }
+
+        body.dark .legend-limit .legend-line {
+            background-color: var(--primary-dark);
+        }
+
+        /* --- Pasos --- */
+        .steps-container {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .steps-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .steps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .step-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-light);
+            transition: all 0.3s ease;
+        }
+
+        body.dark .step-item {
+            background-color: var(--bg-dark);
+            border-left-color: var(--primary-dark);
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .step-title {
+            color: var(--primary-dark);
+        }
+
+        .step-title svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .step-rule {
+            font-size: 0.875em;
+            color: var(--text-muted-light);
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        body.dark .step-rule {
+            color: var(--text-muted-dark);
+        }
+
+        /* --- Mensajes de error --- */
+        .error-message {
+            color: white; /* Texto blanco para ambos modos */
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            padding: 0.75rem;
+            background-color: #A00000; /* Rojo sangre para modo claro */
+            border-radius: 6px;
+            border: 1px solid #700000; /* Borde más oscuro */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .error-message {
+            color: white; /* Texto blanco para ambos modos */
+            background-color: #8B0000; /* Rojo más oscuro que combine para modo oscuro */
+            border-color: #6A0000; /* Borde aún más oscuro */
+        }
+
+        .error-message svg {
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* --- Toggle de tema --- */
+        .theme-toggle {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--surface-light);
+            color: var(--text-light);
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.dark .theme-toggle {
+            background-color: var(--surface-dark);
+            color: var(--text-dark);
+            box-shadow: var(--shadow-lg-dark);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- Estado oculto --- */
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- Estilos específicos para math-field --- */
+        math-field {
+            flex-grow: 1; /* Allow math-field to take available space */
+            font-size: 1.2rem;
+            border: none;
+            padding: 0;
+            background: transparent;
+            min-height: 40px;
+        }
+
+        body.dark math-field {
+            color: var(--text-dark);
+        }
+
+        math-field:focus {
+            outline: none;
+        }
+
+        .ML__frac-line {
+            border-top-width: 1.5px !important;
+        }
+
+        /* --- Iconos SVG --- */
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        /* --- Animaciones --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="input-panel">
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
+                        <path d="M8.5 8.5v.01"></path>
+                        <path d="M16 15.5v.01"></path>
+                        <path d="M12 12v.01"></path>
+                        <path d="M11 17v.01"></path>
+                        <path d="M7 14v.01"></path>
+                    </svg>
+                    Función y Límite
+                </h2>
+                <div class="form-group">
+                    <label for="function-input" class="form-label">Ingrese f(x):</label>
+                    <div class="math-input-container">
+                        <math-field id="function-input" virtual-keyboard-mode="manual"></math-field>
+                    </div>
+                    <div id="function-error" class="error-message hidden">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span id="error-text"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="limit-value-input" class="form-label">Límite cuando x tiende a:</label>
+                    <div class="math-input-container">
+                        <math-field id="limit-value-input" virtual-keyboard-mode="manual"></math-field>
+                    </div>
+                </div>
+
+                <div class="select-group">
+                    <label for="limit-type-select" class="select-label">Tipo de Límite:</label>
+                    <select id="limit-type-select" class="custom-select">
+                        <option value="bilateral">Bilateral (x → a)</option>
+                        <option value="left">Por la Izquierda (x → a⁻)</option>
+                        <option value="right">Por la Derecha (x → a⁺)</option>
+                        <option value="positive_infinity">Al Infinito Positivo (x → ∞)</option>
+                        <option value="negative_infinity">Al Infinito Negativo (x → -∞)</option>
+                    </select>
+                </div>
+
+                <button id="solve-btn" class="btn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
+                    </svg>
+                    Calcular Límite
+                </button>
+                <div class="btn-group">
+                    <button id="clear-btn" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6L6 18"></path>
+                            <path d="M6 6L18 18"></path>
+                        </svg>
+                        Limpiar
+                    </button>
+                    <button id="theory-btn" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Ir a la Teoría
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Instrucciones
+                </h2>
+                <ul style="padding-left: 1.25rem; color: var(--text-muted-light);">
+                    <li style="margin-bottom: 0.5rem;">Ingrese una función matemática válida en f(x).</li>
+                    <li style="margin-bottom: 0.5rem;">Ingrese el valor al que x tiende (número, `Infinity`, `-Infinity`).</li>
+                    <li style="margin-bottom: 0.5rem;">Seleccione el tipo de límite (bilateral, por la izquierda/derecha, al infinito).</li>
+                    <li style="margin-bottom: 0.5rem;">Use el teclado matemático para símbolos especiales.</li>
+                    <li style="margin-bottom: 0.5rem;">Presione "Calcular Límite" para ver resultados.</li>
+                    <li style="margin-bottom: 0.5rem;">Funciones soportadas: `sin()`, `cos()`, `tan()`, `ln()`, `log()`, `exp()`, `sqrt()`, `abs()`.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="output-panel">
+            <div id="result-card" class="result-card hidden fade-in">
+                <h2 class="result-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Resultado del Límite
+                </h2>
+                <div class="result-content">
+                    <div id="result-math-field" style="font-size: 1.2rem; margin: 1rem 0;"></div>
+                </div>
+            </div>
+
+            <div id="graph-card" class="result-card fade-in">
+                <h2 class="result-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    Visualización gráfica
+                </h2>
+                <div id="graph-container" class="graph-container">
+                    <div id="plot" style="width: 100%; height: 100%;"></div>
+                </div>
+                <div id="graph-legend" class="graph-legend hidden">
+                    <div class="legend-item legend-original">
+                        <span class="legend-line"></span>
+                        <span>f(x) (función)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="steps-card" class="steps-container hidden fade-in">
+                <div class="steps-header">
+                    <h2 class="result-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        Pasos de resolución
+                    </h2>
+                    <button id="toggle-steps-btn" class="btn btn-secondary btn-sm">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                        Mostrar detalle
+                    </button>
+                </div>
+                <div id="steps-content" class="hidden">
+                    <div id="steps-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="theme-toggle" class="theme-toggle">
+        <svg id="theme-icon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referencias a elementos del DOM
+            const functionInput = document.getElementById('function-input');
+            const limitValueInput = document.getElementById('limit-value-input');
+            const limitTypeSelect = document.getElementById('limit-type-select');
+            const solveBtn = document.getElementById('solve-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const theoryBtn = document.getElementById('theory-btn');
+            const resultCard = document.getElementById('result-card');
+            const resultMathField = document.getElementById('result-math-field');
+            const functionError = document.getElementById('function-error');
+            const errorText = document.getElementById('error-text');
+            const stepsCard = document.getElementById('steps-card');
+            const stepsList = document.getElementById('steps-list');
+            const toggleStepsBtn = document.getElementById('toggle-steps-btn');
+            const stepsContent = document.getElementById('steps-content');
+            const graphCard = document.getElementById('graph-card');
+            const graphContainer = document.getElementById('graph-container');
+            const graphLegend = document.getElementById('graph-legend');
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+
+            let originalFunction = null;
+            let limitSteps = [];
+            const MAX_L_HOPITAL_ITERATIONS = 5; // Límite para evitar bucles infinitos en L'Hôpital
+
+            // Función para dibujar la gráfica
+            const drawGraph = (func) => {
+                const xMin = -10;
+                const xMax = 10;
+                const numPoints = 500;
+                const step = (xMax - xMin) / numPoints;
+                
+                const xValues = [];
+                const yValues = [];
+                
+                if (func) {
+                    for (let i = 0; i <= numPoints; i++) {
+                        const x = xMin + i * step;
+                        xValues.push(x);
+                        try {
+                            const y = func.evaluate({x: x});
+                            yValues.push(isFinite(y) && Math.abs(y) < 100 ? y : null);
+                        } catch (e) {
+                            yValues.push(null);
+                        }
+                    }
+                } else {
+                     for (let i = 0; i <= numPoints; i++) {
+                        const x = xMin + i * step;
+                        xValues.push(x);
+                        yValues.push(null); 
+                    }
+                }
+                
+                const isDarkMode = document.body.classList.contains('dark');
+                const bgColor = isDarkMode ? '#1E293B' : '#FFFFFF';
+                const gridColor = isDarkMode ? '#334155' : '#E2E8F0';
+                const textColor = isDarkMode ? '#E2E8F0' : '#1E293B';
+                const lineColor = isDarkMode ? '#10B981' : '#10B981'; /* Verde */
+                
+                const data = [
+                    {
+                        x: xValues,
+                        y: yValues,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'f(x)',
+                        line: {
+                            color: lineColor,
+                            width: 2
+                        },
+                        connectgaps: false
+                    }
+                ];
+                
+                const layout = {
+                    title: {
+                        text: 'Gráfica de f(x)',
+                        font: {
+                            size: 16,
+                            color: textColor
+                        }
+                    },
+                    xaxis: {
+                        title: 'x',
+                        zeroline: true,
+                        zerolinecolor: textColor,
+                        zerolinewidth: 1,
+                        gridcolor: gridColor,
+                        gridwidth: 0.5,
+                        color: textColor
+                    },
+                    yaxis: {
+                        title: 'y',
+                        zeroline: true,
+                        zerolinecolor: textColor,
+                        zerolinewidth: 1,
+                        gridcolor: gridColor,
+                        gridwidth: 0.5,
+                        color: textColor
+                    },
+                    plot_bgcolor: bgColor,
+                    paper_bgcolor: bgColor,
+                    font: {
+                        family: 'Inter, Arial, sans-serif',
+                        size: 12,
+                        color: textColor
+                    },
+                    showlegend: (func !== null), // Mostrar leyenda solo si hay una función
+                    legend: {
+                        x: 0.02,
+                        y: 0.98,
+                        bgcolor: isDarkMode ? 'rgba(30,41,59,0.8)' : 'rgba(255,255,255,0.8)',
+                        bordercolor: isDarkMode ? '#334155' : '#E2E8F0',
+                        borderwidth: 1,
+                        font: {
+                            color: textColor
+                        }
+                    },
+                    margin: {
+                        l: 50,
+                        r: 50,
+                        t: 50,
+                        b: 50
+                    }
+                };
+                
+                const config = {
+                    responsive: true,
+                    displayModeBar: true,
+                    displaylogo: false,
+                    modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d', 'autoScale2d', 'toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+                };
+                
+                Plotly.newPlot('plot', data, layout, config);
+            };
+
+            // Manejo del tema
+            function setTheme(isDark) {
+                document.body.classList.toggle('dark', isDark);
+                localStorage.setItem('darkMode', isDark);
+                
+                if (isDark) {
+                    themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+                } else {
+                    themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+                }
+                // Asegurarse de que la gráfica se redibuje con el tema correcto
+                if (originalFunction) {
+                    drawGraph(originalFunction);
+                } else {
+                    drawGraph(null); // Si no hay función, dibujar vacía
+                }
+            }
+
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const storedDarkMode = localStorage.getItem('darkMode') === 'true';
+            setTheme(storedDarkMode || (localStorage.getItem('darkMode') === null && prefersDark));
+
+            themeToggle.addEventListener('click', () => {
+                const isDark = !document.body.classList.contains('dark');
+                setTheme(isDark);
+            });
+
+            // Manejar el toggle de pasos
+            toggleStepsBtn.addEventListener('click', () => {
+                if (stepsContent.classList.contains('hidden')) {
+                    stepsContent.classList.remove('hidden');
+                    toggleStepsBtn.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>Ocultar detalle`;
+                } else {
+                    stepsContent.classList.add('hidden');
+                    toggleStepsBtn.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>Mostrar detalle`;
+                }
+            });
+
+            // Función para normalizar la entrada (similar a la derivada)
+            const normalizeInput = (input) => {
+                let normalized = input;
+                normalized = normalized.replace(/\\text\{([^}]+)\}/g, '$1');
+                normalized = normalized.replace(/\\ln/g, 'log').replace(/ln/g, 'log');
+                normalized = normalized.replace(/In/g, 'log');
+
+                const logBaseRegex = /\\log_\{([0-9]+)\}([^\\s()\*\/\\^,+-]+|\([^)]+\)|\{[^}]+\})/g;
+                normalized = normalized.replace(logBaseRegex, (match, base, arg) => {
+                    arg = arg.replace(/\{([^}]+)\}/g, '$1');
+                    if (!arg.startsWith('(') && !arg.endsWith(')')) {
+                        arg = `(${arg})`;
+                    }
+                    return `log(${arg}, ${base})`;
+                });
+
+                const logNoBaseRegex = /\\log\s*([^{(\s]+|\{[^}]+\}|(\([^)]+\)))/g;
+                normalized = normalized.replace(logNoBaseRegex, (match, arg) => {
+                    arg = arg.replace(/\{([^}]+)\}/g, '$1');
+                    if (!arg.startsWith('(') && !arg.endsWith(')')) {
+                        arg = `(${arg})`;
+                    }
+                    return `log(${arg}, 10)`;
+                });
+
+                normalized = normalized
+                    .replace(/\\cdot/g, '*')
+                    .replace(/\\left\(/g, '(')
+                    .replace(/\\right\)/g, ')')
+                    .replace(/\\sin/g, 'sin')
+                    .replace(/\\cos/g, 'cos')
+                    .replace(/\\tan/g, 'tan')
+                    // Convertir sec, csc, cot a su forma de sin/cos para derivación
+                    .replace(/\\sec\(([^)]+)\)/g, '(1/cos($1))')
+                    .replace(/\\csc\(([^)]+)\)/g, '(1/sin($1))')
+                    .replace(/\\cot\(([^)]+)\)/g, '(cos($1)/sin($1))')
+                    .replace(/\\exp/g, 'exp')
+                    .replace(/\\sqrt{([^}]+)}/g, 'sqrt($1)');
+
+                normalized = normalized.replace(/\\frac\s*([^{}\s]+|\{[^}]+\})\s*([^{}\s]+|\{[^}]+\})/g, (match, num, den) => {
+                    num = num.replace(/\{([^}]+)\}/g, '$1');
+                    den = den.replace(/\{([^}]+)\}/g, '$1');
+                    return `(${num})/(${den})`;
+                });
+                
+                normalized = normalized
+                    .replace(/\\ /g, '')
+                    .replace(/\s+/g, '');
+                
+                const functionNames = ['sin', 'cos', 'tan', 'log', 'exp', 'sqrt', 'abs', 'sec', 'csc', 'cot'];
+                const functionWrapRegex = new RegExp(`(?<![a-zA-Z0-9])(${functionNames.join('|')})([a-zA-Z0-9]+)(?!\\()`, 'g');
+                normalized = normalized.replace(functionWrapRegex, '$1($2)');
+
+                return normalized;
+            };
+
+            // Función para agregar pasos
+            const addStep = (description, formula, rule) => {
+                limitSteps.push({
+                    description: description,
+                    formula: formatLatex(formula),
+                    rule: rule
+                });
+            };
+
+            // Función para mostrar pasos
+            const displaySteps = () => {
+                stepsList.innerHTML = '';
+                limitSteps.forEach((step, index) => {
+                    const stepDiv = document.createElement('div');
+                    stepDiv.className = 'step-item fade-in';
+                    stepDiv.style.animationDelay = `${index * 0.1}s`;
+                    stepDiv.innerHTML = `
+                        <div class="step-title">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 8v4l3 3"></path>
+                            </svg>
+                            Paso ${index + 1}: ${step.description}
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <math-field read-only>${step.formula}</math-field>
+                        </div>
+                        <div class="step-rule">
+                            Regla aplicada: ${step.rule}
+                        </div>
+                    `;
+                    stepsList.appendChild(stepDiv);
+                });
+            };
+
+            // Función para mejorar la visualización de LaTeX
+            const formatLatex = (latexStr) => {
+                if (typeof latexStr !== 'string') {
+                    return String(latexStr);
+                }
+                latexStr = latexStr.replace(/\\cdot/g, '');
+                return latexStr;
+            };
+
+            // Función para verificar si un nodo es x
+            const isSymbolX = (node) => {
+                if (node.type === 'SymbolNode' && node.name === 'x') return true;
+                if (node.type === 'ParenthesisNode') return isSymbolX(node.content);
+                return false;
+            };
+
+            // Función para derivar un nodo (copiada de derivadascalculadora.html)
+            const deriveNode = (n, depth = 0) => {
+                n = math.simplify(n);
+                const toTexOptions = { implicit: 'hide' };
+
+                if (n.type === 'ConstantNode') {
+                    const result = new math.ConstantNode(0);
+                    // No se añade paso de derivación de constante aquí para evitar duplicidad en L'Hopital
+                    return result;
+                } else if (isSymbolX(n)) {
+                    const result = new math.ConstantNode(1);
+                    // No se añade paso de derivación de x aquí para evitar duplicidad en L'Hopital
+                    return result;
+                } else if (n.type === 'SymbolNode' && n.name !== 'x') {
+                    const result = new math.ConstantNode(0);
+                    // No se añade paso de derivación de símbolo aquí para evitar duplicidad en L'Hopital
+                    return result;
+                }
+                else if (n.type === 'OperatorNode') {
+                    if (n.op === '/') {
+                        const numerator = n.args[0];
+                        const denominator = n.args[1];
+
+                        if (denominator.type === 'ConstantNode') {
+                            const one = new math.ConstantNode(1);
+                            const constantFactor = new math.OperatorNode('/', 'divide', [one, denominator]);
+                            const derivedNumerator = deriveNode(numerator, depth + 1);
+                            const result = math.simplify(new math.OperatorNode('*', 'multiply', [constantFactor, derivedNumerator]));
+                            return result;
+                        }
+                        
+                        const numeratorDerived = deriveNode(numerator, depth + 1);
+                        const denominatorDerived = deriveNode(denominator, depth + 1);
+                        
+                        const term1 = new math.OperatorNode('*', 'multiply', [denominator, numeratorDerived]);
+                        const term2 = new math.OperatorNode('*', 'multiply', [numerator, denominatorDerived]);
+                        const numeratorExpr = new math.OperatorNode('-', 'subtract', [term1, term2]);
+                        const denominatorExpr = new math.OperatorNode('^', 'pow', [denominator, new math.ConstantNode(2)]);
+                        
+                        const result = new math.OperatorNode('/', 'divide', [numeratorExpr, denominatorExpr]);
+                        return result;
+
+                    } else if (n.op === '^') {
+                        const base = n.args[0];
+                        const exponent = n.args[1];
+                        
+                        if (exponent.type === 'ConstantNode') {
+                            const expValue = parseFloat(exponent.value);
+                            const newExp = new math.ConstantNode(expValue - 1);
+                            const coeff = new math.ConstantNode(expValue);
+                            let newPower;
+
+                            if (expValue - 1 === 0) {
+                                newPower = new math.ConstantNode(1);
+                            } else {
+                                newPower = new math.OperatorNode('^', 'pow', [base, newExp]);
+                            }
+
+                            const baseDerived = deriveNode(base, depth + 1);
+                            if (!math.isNode(baseDerived)) {
+                                throw new Error("Error interno de derivación: baseDerived no es un nodo válido.");
+                            }
+                            const result = math.simplify(new math.OperatorNode('*', 'multiply', [coeff, newPower, baseDerived]));
+                            return result;
+                        } else if (isSymbolX(base)) {
+                            if (exponent.toString().includes('x')) {
+                                throw new Error("Derivada de x^f(x) no soportada directamente por reglas básicas.");
+                            }
+                        } else if (base.type === 'ConstantNode') { // a^u
+                            const constantBase = base;
+                            const exponentDerived = deriveNode(exponent, depth + 1);
+                            if (!math.isNode(exponentDerived)) {
+                                throw new Error("Error interno de derivación: exponentDerived no es un nodo válido.");
+                            }
+                            const result = math.simplify(new math.OperatorNode('*', 'multiply', [
+                                n, // The original a^u
+                                new math.FunctionNode('log', [constantBase]), // ln(a)
+                                exponentDerived
+                            ]));
+                            return result;
+                        }
+                    } else if (n.op === '*') {
+                        const left = n.args[0];
+                        const right = n.args[1];
+                        
+                        const leftDerived = deriveNode(left, depth + 1);
+                        const rightDerived = deriveNode(right, depth + 1);
+
+                        if (!math.isNode(leftDerived) || !math.isNode(rightDerived)) {
+                            throw new Error("Error interno de derivación: los términos de la regla del producto no son nodos válidos.");
+                        }
+                        
+                        const term1 = new math.OperatorNode('*', 'multiply', [leftDerived, right]);
+                        const term2 = new math.OperatorNode('*', 'multiply', [left, rightDerived]);
+                        const result = new math.OperatorNode('+', 'add', [term1, term2]);
+                        return result;
+                    } else if (n.op === '+' || n.op === '-') {
+                        const derivedArgs = n.args.map(arg => {
+                            const derivedArg = deriveNode(arg, depth + 1);
+                            if (!math.isNode(derivedArg)) {
+                                throw new Error("Error interno de derivación: un argumento derivado no es un nodo válido.");
+                            }
+                            return derivedArg;
+                        });
+                        
+                        let result = derivedArgs[0];
+                        for (let i = 1; i < derivedArgs.length; i++) {
+                            result = new math.OperatorNode(n.op, n.op === '+' ? 'add' : 'subtract', [result, derivedArgs[i]]);
+                        }
+                        return result;
+                    } else if (n.op === 'unaryMinus') {
+                        const derivedArg = deriveNode(n.args[0], depth + 1);
+                        if (!math.isNode(derivedArg)) {
+                            throw new Error("Error interno de derivación: derivedArg no es un nodo válido.");
+                        }
+                        return new math.OperatorNode('-', 'unaryMinus', [derivedArg]);
+                    }
+                } else if (n.type === 'FunctionNode') {
+                    const arg = n.args[0];
+                    const innerDerivative = deriveNode(arg, depth + 1);
+                    if (!math.isNode(innerDerivative)) {
+                        throw new Error("Error interno de derivación: innerDerivative no es un nodo válido.");
+                    }
+                    
+                    switch (n.fn.name) {
+                        case 'sin':
+                            const cosU = new math.FunctionNode('cos', [arg]);
+                            return math.simplify(new math.OperatorNode('*', 'multiply', [cosU, innerDerivative]));
+                            
+                        case 'cos':
+                            const negSinU = new math.OperatorNode('-', 'unaryMinus', [new math.FunctionNode('sin', [arg])]);
+                            return math.simplify(new math.OperatorNode('*', 'multiply', [negSinU, innerDerivative]));
+                            
+                        case 'tan':
+                            const secSquaredU = new math.OperatorNode('^', 'pow', [new math.FunctionNode('sec', [arg]), new math.ConstantNode(2)]);
+                            return math.simplify(new math.OperatorNode('*', 'multiply', [secSquaredU, innerDerivative]));
+                            
+                        case 'log': // logaritmo natural (ln) en Math.js
+                            if (n.args.length === 1) { // ln(u)
+                                return math.simplify(new math.OperatorNode('/', 'divide', [innerDerivative, arg]));
+                            } else if (n.args.length === 2) { // log_b(u)
+                                const base = n.args[1];
+                                const denominator = new math.OperatorNode('*', 'multiply', [arg, new math.FunctionNode('log', [base])]);
+                                const result = new math.OperatorNode('/', 'divide', [innerDerivative, denominator]);
+                                return math.simplify(result);
+                            }
+                            break;
+
+                        case 'exp': // e^u
+                            return math.simplify(new math.OperatorNode('*', 'multiply', [n, innerDerivative]));
+                            
+                        case 'sqrt': // sqrt(u) = u^(1/2)
+                            const sqrtResult = new math.OperatorNode('*', 'multiply', [
+                                new math.OperatorNode('/', 'divide', [
+                                    new math.ConstantNode(1), 
+                                    new math.OperatorNode('*', 'multiply', [
+                                        new math.ConstantNode(2),
+                                        new math.FunctionNode('sqrt', [arg])
+                                    ])
+                                ]),
+                                innerDerivative
+                            ]);
+                            return math.simplify(sqrtResult);
+                        
+                        case 'abs': // |u|, derivada es u/|u| * u'
+                            const absResult = new math.OperatorNode('*', 'multiply', [
+                                new math.OperatorNode('/', 'divide', [arg, n]), // u / |u|
+                                innerDerivative
+                            ]);
+                            return math.simplify(absResult);
+
+                        default:
+                            throw new Error(`Función '${n.fn.name}' no soportada para derivación.`);
+                    }
+                } else if (n.type === 'ParenthesisNode') {
+                    return deriveNode(n.content, depth + 1);
+                }
+                
+                throw new Error(`No se puede derivar el término: ${n.toTex(toTexOptions)}. Tipo de elemento no reconocido o regla de derivación no implementada.`);
+            };
+
+            // Helper para evaluar una función en un punto, manejando casos especiales de infinito/indefinido
+            const evaluateFunctionAtPoint = (compiledFunction, value, epsilon = 1e-9) => {
+                try {
+                    if (value === 'Infinity' || value === '\\infty') {
+                        return compiledFunction.evaluate({ x: 1e10 }); 
+                    } else if (value === '-Infinity' || value === '-\\infty') {
+                        return compiledFunction.evaluate({ x: -1e10 });
+                    } else {
+                        const numValue = parseFloat(value);
+                        // Ajustar el valor para límites laterales si es necesario
+                        let evalX = numValue;
+                        if (limitTypeSelect.value === 'left') {
+                            evalX = numValue - epsilon;
+                        } else if (limitTypeSelect.value === 'right') {
+                            evalX = numValue + epsilon;
+                        }
+                        return compiledFunction.evaluate({ x: evalX });
+                    }
+                } catch (e) {
+                    return NaN; // Indicate undefined or error
+                }
+            };
+
+            // Función principal para calcular el límite
+            const calculateLimit = (funcText, limitValueRaw, limitType, iteration = 0) => {
+                // Clear UI elements only on the first call
+                if (iteration === 0) {
+                    resultCard.classList.add('hidden');
+                    functionError.classList.add('hidden');
+                    errorText.textContent = '';
+                    stepsCard.classList.add('hidden');
+                    graphCard.classList.remove('hidden');
+                    graphLegend.classList.remove('hidden');
+                    limitSteps = [];
+                }
+
+                try {
+                    const cleanInput = normalizeInput(funcText);
+                    const node = math.parse(cleanInput);
+                    const compiledFunction = math.compile(cleanInput);
+
+                    // Set originalFunction for graphing after successful parsing
+                    originalFunction = compiledFunction;
+
+                    let limitSymbol = limitValueRaw;
+                    if (limitValueRaw.toLowerCase() === 'infinity' || limitValueRaw.toLowerCase() === '\\infty') {
+                        limitSymbol = '\\infty';
+                    } else if (limitValueRaw.toLowerCase() === '-infinity' || limitValueRaw.toLowerCase() === '-\\infty') {
+                        limitSymbol = '-\\infty';
+                    } else {
+                        limitSymbol = limitValueRaw;
+                    }
+
+                    if (iteration === 0) {
+                        addStep(
+                            "Función original",
+                            `$$ f(x) = ${node.toTex({ implicit: 'hide' })} $$`,
+                            "Identificación de la función"
+                        );
+                    } else {
+                         addStep(
+                            `Aplicando la Regla de L'Hôpital (Iteración ${iteration})`,
+                            `$$ \\lim_{x\\to ${limitSymbol}${limitType === 'left' ? '^-' : ''}${limitType === 'right' ? '^+' : ''}} \\frac{f'(x)}{g'(x)} $$`,
+                            "Se aplica L'Hôpital para resolver la indeterminación"
+                        );
+                    }
+
+                    let calculatedLimit;
+                    let limitDescription = ``;
+                    let ruleApplied = ``;
+                    
+                    const val = (limitType === 'positive_infinity' || limitType === 'negative_infinity') ? limitValueRaw : parseFloat(limitValueRaw);
+                    const epsilon = 1e-9; // For one-sided limits
+
+                    // Check if the function is a division
+                    let numeratorNode = null;
+                    let denominatorNode = null;
+                    if (node.type === 'OperatorNode' && node.op === '/') {
+                        numeratorNode = node.args[0];
+                        denominatorNode = node.args[1];
+                    }
+
+                    let numValue = NaN;
+                    let denValue = NaN;
+
+                    // Evaluate numerator and denominator separately if it's a fraction
+                    if (numeratorNode && denominatorNode) {
+                        try {
+                            numValue = evaluateFunctionAtPoint(math.compile(numeratorNode.toString()), val, limitType === 'left' ? epsilon : (limitType === 'right' ? -epsilon : 0));
+                        } catch (e) { numValue = NaN; }
+                        try {
+                            denValue = evaluateFunctionAtPoint(math.compile(denominatorNode.toString()), val, limitType === 'left' ? epsilon : (limitType === 'right' ? -epsilon : 0));
+                        } catch (e) { denValue = NaN; }
+
+                        // Check for 0/0 or Infinity/Infinity
+                        const isZeroZero = (Math.abs(numValue) < epsilon && Math.abs(denValue) < epsilon);
+                        const isInfinityInfinity = (Math.abs(numValue) === Infinity && Math.abs(denValue) === Infinity);
+
+                        if ((isZeroZero || isInfinityInfinity) && iteration < MAX_L_HOPITAL_ITERATIONS) {
+                            addStep(
+                                "Indeterminación detectada",
+                                `$$ \\frac{${isZeroZero ? '0' : '\\infty'}}{${isZeroZero ? '0' : '\\infty'}} $$`,
+                                `Forma indeterminada ${isZeroZero ? '0/0' : '\\infty/\\infty'}. Aplicando la Regla de L'Hôpital.`
+                            );
+
+                            try {
+                                const derivedNumeratorNode = deriveNode(numeratorNode);
+                                const derivedDenominatorNode = deriveNode(denominatorNode);
+
+                                if (!derivedNumeratorNode || !derivedDenominatorNode) {
+                                    throw new Error("No se pudieron derivar el numerador o el denominador para L'Hôpital.");
+                                }
+
+                                const newFunctionText = `(${derivedNumeratorNode.toString()})/(${derivedDenominatorNode.toString()})`;
+                                
+                                // Recursively call calculateLimit with the derived function
+                                return calculateLimit(newFunctionText, limitValueRaw, limitType, iteration + 1);
+                            } catch (derivError) {
+                                errorText.textContent = `Error al aplicar L'Hôpital: ${derivError.message}`;
+                                functionError.classList.remove('hidden');
+                                drawGraph(null);
+                                return;
+                            }
+                        }
+                    }
+
+                    // If not indeterminate or max iterations reached, proceed with direct evaluation
+                    if (limitType === 'bilateral' || limitType === 'left' || limitType === 'right') {
+                        if (isNaN(val) && limitValueRaw !== 'Infinity' && limitValueRaw !== '-Infinity' && limitValueRaw !== '\\infty' && limitValueRaw !== '-\\infty') {
+                            throw new Error("El valor del límite debe ser un número finito para límites no infinitos.");
+                        }
+
+                        if (limitType === 'bilateral') {
+                            const leftLimit = evaluateFunctionAtPoint(compiledFunction, val, epsilon);
+                            const rightLimit = evaluateFunctionAtPoint(compiledFunction, val, -epsilon);
+                            const directSubstitution = evaluateFunctionAtPoint(compiledFunction, val, 0);
+
+                            if (isFinite(directSubstitution) && !isNaN(directSubstitution)) {
+                                calculatedLimit = directSubstitution;
+                                limitDescription = `Sustitución directa de $x = ${limitValueRaw}$`;
+                                ruleApplied = `\\lim_{x\\to a} f(x) = f(a) \\text{ si } f(x) \\text{ es continua en } a`;
+                            } else if (Math.abs(leftLimit - rightLimit) < 1e-6) {
+                                if (isFinite(leftLimit) && isFinite(rightLimit)) {
+                                     calculatedLimit = leftLimit;
+                                     limitDescription = `Los límites laterales coinciden en ${calculatedLimit}`;
+                                     ruleApplied = `\\lim_{x\\to a} f(x) = L \\text{ si } \\lim_{x\\to a^-} f(x) = L \\text{ y } \\lim_{x\\to a^+} f(x) = L`;
+                                } else if (leftLimit === Infinity && rightLimit === Infinity) {
+                                    calculatedLimit = Infinity;
+                                    limitDescription = `Ambos límites laterales tienden a $+\\infty$`;
+                                    ruleApplied = `\\lim_{x\\to a} f(x) = \\infty`;
+                                } else if (leftLimit === -Infinity && rightLimit === -Infinity) {
+                                    calculatedLimit = -Infinity;
+                                    limitDescription = `Ambos límites laterales tienden a $-\\infty$`;
+                                    ruleApplied = `\\lim_{x\\to a} f(x) = -\\infty`;
+                                } else {
+                                     calculatedLimit = NaN;
+                                     limitDescription = `Los límites laterales no coinciden o son indefinidos`;
+                                     ruleApplied = `Límite no existe`;
+                                }
+                            } else {
+                                calculatedLimit = NaN;
+                                limitDescription = `Los límites laterales no coinciden`;
+                                ruleApplied = `Límite no existe`;
+                            }
+                            
+                            addStep(
+                                "Evaluación del límite bilateral",
+                                `$$ \\lim_{x\\to ${limitSymbol}} f(x) $$`,
+                                ruleApplied
+                            );
+
+                        } else if (limitType === 'left') {
+                            calculatedLimit = evaluateFunctionAtPoint(compiledFunction, val, epsilon);
+                            limitDescription = `Evaluación del límite por la izquierda en $x = ${limitValueRaw}$`;
+                            ruleApplied = `\\lim_{x\\to a^-} f(x)`;
+                            addStep(
+                                "Evaluación del límite por la izquierda",
+                                `$$ \\lim_{x\\to ${limitSymbol}^-} f(x) $$`,
+                                ruleApplied
+                            );
+                        } else if (limitType === 'right') {
+                            calculatedLimit = evaluateFunctionAtPoint(compiledFunction, val, -epsilon);
+                            limitDescription = `Evaluación del límite por la derecha en $x = ${limitValueRaw}$`;
+                            ruleApplied = `\\lim_{x\\to a^+} f(x)`;
+                             addStep(
+                                "Evaluación del límite por la derecha",
+                                `$$ \\lim_{x\\to ${limitSymbol}^+} f(x) $$`,
+                                ruleApplied
+                            );
+                        }
+                    } else if (limitType === 'positive_infinity') {
+                        calculatedLimit = evaluateFunctionAtPoint(compiledFunction, 'Infinity');
+                        limitDescription = `Evaluación del límite cuando $x \\to \\infty$`;
+                        ruleApplied = `\\lim_{x\\to \\infty} f(x)`;
+                         addStep(
+                            "Evaluación del límite al infinito positivo",
+                            `$$ \\lim_{x\\to \\infty} f(x) $$`,
+                            ruleApplied
+                        );
+                    } else if (limitType === 'negative_infinity') {
+                        calculatedLimit = evaluateFunctionAtPoint(compiledFunction, '-Infinity');
+                        limitDescription = `Evaluación del límite cuando $x \\to -\\infty$`;
+                        ruleApplied = `\\lim_{x\\to -\\infty} f(x)`;
+                        addStep(
+                            "Evaluación del límite al infinito negativo",
+                            `$$ \\lim_{x\\to -\\infty} f(x) $$`,
+                            "Resultado final"
+                        );
+                    }
+
+                    let limitResultTex = '';
+                    if (isFinite(calculatedLimit) && !isNaN(calculatedLimit)) {
+                        limitResultTex = math.format(calculatedLimit, {precision: 5});
+                        addStep(
+                            "Resultado del límite",
+                            `$$ \\lim_{x\\to ${limitSymbol}${limitType === 'left' ? '^-' : ''}${limitType === 'right' ? '^+' : ''}} f(x) = ${limitResultTex} $$`,
+                            "Resultado final"
+                        );
+                    } else if (calculatedLimit === Infinity) {
+                        limitResultTex = '\\infty';
+                        addStep(
+                            "Resultado del límite",
+                            `$$ \\lim_{x\\to ${limitSymbol}${limitType === 'left' ? '^-' : ''}${limitType === 'right' ? '^+' : ''}} f(x) = \\infty $$`,
+                            "Resultado final"
+                        );
+                    } else if (calculatedLimit === -Infinity) {
+                        limitResultTex = '-\\infty';
+                         addStep(
+                            "Resultado del límite",
+                            `$$ \\lim_{x\\to ${limitSymbol}${limitType === 'left' ? '^-' : ''}${limitType === 'right' ? '^+' : ''}} f(x) = -\\infty $$`,
+                            "Resultado final"
+                        );
+                    } else {
+                        limitResultTex = '\\text{Indefinido/No existe}'; // More descriptive for cases not handled by L'Hopital
+                         addStep(
+                            "Resultado del límite",
+                            `$$ \\lim_{x\\to ${limitSymbol}${limitType === 'left' ? '^-' : ''}${limitType === 'right' ? '^+' : ''}} f(x) = \\text{Indefinido/No existe} $$`,
+                            "Resultado final"
+                        );
+                    }
+
+                    resultMathField.innerHTML = `
+                        <math-field read-only>
+                            \\lim_{x\\to ${limitSymbol}${limitType === 'left' ? '^-' : ''}${limitType === 'right' ? '^+' : ''}} \\left(${formatLatex(node.toTex({ parenthesis: 'auto', implicit: 'hide' }))}\\right) = ${limitResultTex}
+                        </math-field>
+                    `;
+                    resultCard.classList.remove('hidden');
+                    
+                    stepsCard.classList.remove('hidden');
+                    displaySteps();
+                    
+                    drawGraph(originalFunction); // Draw graph only after calculation
+
+                } catch (error) {
+                    errorText.textContent = 'Error al procesar el límite. Asegúrate de que la sintaxis es correcta o que la función es evaluable. Mensaje: ' + error.message;
+                    functionError.classList.remove('hidden');
+                    console.error("Error al calcular el límite:", error);
+                    drawGraph(null);
+                }
+            };
+
+            // Función para limpiar la interfaz
+            const clearInterface = () => {
+                functionInput.setValue('');
+                limitValueInput.setValue('');
+                limitTypeSelect.value = 'bilateral';
+                resultCard.classList.add('hidden');
+                functionError.classList.add('hidden');
+                errorText.textContent = '';
+                stepsCard.classList.add('hidden');
+                stepsList.innerHTML = '';
+                graphLegend.classList.add('hidden');
+                originalFunction = null; // Clear the stored function
+                limitSteps = [];
+                drawGraph(null);
+            };
+
+            // Event listener para el botón de resolver
+            solveBtn.addEventListener('click', () => {
+                const functionText = functionInput.getValue();
+                const limitValue = limitValueInput.getValue();
+                const limitType = limitTypeSelect.value;
+                
+                if (!functionText) {
+                    errorText.textContent = 'Por favor, introduce una función.';
+                    functionError.classList.remove('hidden');
+                    drawGraph(null);
+                    return;
+                }
+                if (!limitValue && limitType !== 'positive_infinity' && limitType !== 'negative_infinity') {
+                    errorText.textContent = 'Por favor, introduce un valor para el límite.';
+                    functionError.classList.remove('hidden');
+                    drawGraph(null);
+                    return;
+                }
+
+                calculateLimit(functionText, limitValue, limitType);
+            });
+
+            // Event listener para el botón de limpiar
+            clearBtn.addEventListener('click', clearInterface);
+
+            // Event listener para el botón "Ir a la Teoría"
+            theoryBtn.addEventListener('click', () => {
+                window.open('https://es.wikipedia.org/wiki/L%C3%ADmite_matem%C3%A1tico', '_blank'); 
+            });
+
+            // Permitir calcular con Enter en los campos de entrada
+            functionInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    solveBtn.click();
+                }
+            });
+            limitValueInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    solveBtn.click();
+                }
+            });
+
+            // Se elimina el event listener 'input' para que la gráfica no se actualice en tiempo real.
+            // La gráfica se actualizará solo al presionar el botón "Calcular Límite".
+
+            // Dibujar la gráfica vacía al cargar la página
+            drawGraph(null);
+        });
+    </script>
+</body>
+</html>

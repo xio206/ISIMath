@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Integrales Definidas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://unpkg.com/mathlive" defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/mathlive@0.95.0/dist/mathlive-static.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Variables de Color --- */
+        :root {
+            /* Colores modo claro */
+            --bg-light: #f8fafc;
+            --surface-light: #ffffff;
+            --text-light: #1e293b;
+            --primary-light: #3b82f6; /* Azul */
+            --primary-light-hover: #2563eb; /* Azul más oscuro */
+            --secondary-light: #10b981; /* Verde */
+            --secondary-light-hover: #0d9f76; /* Verde más oscuro */
+            --border-light: #e2e8f0;
+            --error-light: #ef4444; /* Rojo para texto de error */
+            --text-muted-light: #64748b;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            
+            /* Colores modo oscuro */
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --text-dark: #e2e8f0;
+            --primary-dark: #60a5fa; /* Azul más claro para oscuro */
+            --primary-dark-hover: #93c5fd; /* Azul aún más claro */
+            --secondary-dark: #10b981; /* Verde */
+            --secondary-dark-hover: #34d399; /* Verde más claro */
+            --border-dark: #334155;
+            --error-dark: #f87171; /* Rojo para texto de error */
+            --text-muted-dark: #94a3b8;
+            --shadow-sm-dark: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md-dark: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-lg-dark: 0 10px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- Estilos Base --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        body.dark {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        /* --- Layout Principal --- */
+        .app-container {
+            display: grid;
+            grid-template-columns: minmax(300px, 400px) 1fr;
+            gap: 2rem;
+            min-height: 100vh;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .app-container {
+                padding: 1rem;
+                gap: 1.5rem;
+            }
+        }
+
+        /* --- Panel de Entrada --- */
+        .input-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        @media (max-width: 1024px) {
+            .input-panel {
+                position: static;
+            }
+        }
+
+        .panel-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .panel-card {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+            box-shadow: var(--shadow-md-dark);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .panel-title {
+            color: var(--primary-dark);
+        }
+
+        .panel-title svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* --- Formulario --- */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        body.dark .form-label {
+            color: var(--text-dark);
+        }
+
+        .math-input-container {
+            width: 100%;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background-color: var(--surface-light);
+            transition: all 0.2s ease;
+            min-height: 60px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark .math-input-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .math-input-container:focus-within {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            outline: none;
+        }
+
+        body.dark .math-input-container:focus-within {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        /* --- Botones --- */
+        .btn-group {
+            display: flex;
+            gap: 1rem; /* Espacio entre botones */
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-light);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            width: 100%; /* Ocupa todo el ancho disponible en el grupo */
+            gap: 0.5rem;
+        }
+
+        body.dark .btn {
+            background-color: var(--primary-dark);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-light-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        body.dark .btn:hover {
+            background-color: var(--primary-dark-hover);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-light);
+        }
+
+        body.dark .btn-secondary {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-light-hover);
+        }
+
+        body.dark .btn-secondary:hover {
+            background-color: var(--secondary-dark-hover);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* --- Panel de Resultados --- */
+        .output-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* --- Resultado --- */
+        .result-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .result-card {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+        }
+
+        body.dark .result-title {
+            color: var(--primary-dark);
+        }
+
+        .result-content {
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        body.dark .result-content {
+            background-color: var(--bg-dark);
+            border-color: var(--border-dark);
+        }
+
+        /* --- Gráfica --- */
+        .graph-container {
+            width: 100%;
+            height: 400px;
+            background-color: var(--surface-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        body.dark .graph-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .graph-legend {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .legend-original {
+            color: var(--secondary-light);
+        }
+
+        .legend-area {
+            color: var(--primary-light);
+        }
+
+        body.dark .legend-original {
+            color: var(--secondary-dark);
+        }
+
+        body.dark .legend-area {
+            color: var(--primary-dark);
+        }
+
+        .legend-line {
+            width: 20px;
+            height: 2px;
+            border-radius: 1px;
+        }
+
+        .legend-original .legend-line {
+            background-color: var(--secondary-light);
+        }
+
+        .legend-area .legend-line {
+            background-color: var(--primary-light);
+        }
+
+        body.dark .legend-original .legend-line {
+            background-color: var(--secondary-dark);
+        }
+
+        body.dark .legend-area .legend-line {
+            background-color: var(--primary-dark);
+        }
+
+        /* --- Pasos --- */
+        .steps-container {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .steps-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .steps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .step-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-light);
+            transition: all 0.3s ease;
+        }
+
+        body.dark .step-item {
+            background-color: var(--bg-dark);
+            border-left-color: var(--primary-dark);
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .step-title {
+            color: var(--primary-dark);
+        }
+
+        .step-title svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .step-rule {
+            font-size: 0.875em;
+            color: var(--text-muted-light);
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        body.dark .step-rule {
+            color: var(--text-muted-dark);
+        }
+
+        /* --- Mensajes de error --- */
+        .error-message {
+            color: white; /* Texto blanco para ambos modos */
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            padding: 0.75rem;
+            background-color: #A00000; /* Rojo sangre para modo claro */
+            border-radius: 6px;
+            border: 1px solid #700000; /* Borde más oscuro */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .error-message {
+            color: white; /* Texto blanco para ambos modos */
+            background-color: #8B0000; /* Rojo más oscuro que combine para modo oscuro */
+            border-color: #6A0000; /* Borde aún más oscuro */
+        }
+
+        .error-message svg {
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* --- Toggle de tema --- */
+        .theme-toggle {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--surface-light);
+            color: var(--text-light);
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.dark .theme-toggle {
+            background-color: var(--surface-dark);
+            color: var(--text-dark);
+            box-shadow: var(--shadow-lg-dark);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- Estado oculto --- */
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- Estilos específicos para math-field --- */
+        math-field {
+            font-size: 1.2rem;
+            border: none;
+            padding: 0;
+            background: transparent;
+            width: 100%;
+            min-height: 40px;
+        }
+
+        body.dark math-field {
+            color: var(--text-dark);
+        }
+
+        math-field:focus {
+            outline: none;
+        }
+
+        .ML__frac-line {
+            border-top-width: 1.5px !important;
+        }
+
+        /* --- Iconos SVG --- */
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        /* --- Animaciones --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="input-panel">
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
+                        <path d="M8.5 8.5v.01"></path>
+                        <path d="M16 15.5v.01"></path>
+                        <path d="M12 12v.01"></path>
+                        <path d="M11 17v.01"></path>
+                        <path d="M7 14v.01"></path>
+                    </svg>
+                    Función a integrar
+                </h2>
+                <div class="form-group">
+                    <label for="function-input" class="form-label">Ingrese f(x):</label>
+                    <div class="math-input-container">
+                        <math-field id="function-input" virtual-keyboard-mode="manual"></math-field>
+                    </div>
+                    <div id="function-error" class="error-message hidden">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span id="error-text"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="lower-bound-input" class="form-label">Límite inferior (a):</label>
+                    <div class="math-input-container">
+                        <math-field id="lower-bound-input" virtual-keyboard-mode="manual"></math-field>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="upper-bound-input" class="form-label">Límite superior (b):</label>
+                    <div class="math-input-container">
+                        <math-field id="upper-bound-input" virtual-keyboard-mode="manual"></math-field>
+                    </div>
+                </div>
+
+                <button id="solve-btn" class="btn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 10V4.5a2.5 2.5 0 0 0-5 0V10M10 9H4.5A2.5 2.5 0 0 0 2 11.5v.5M14 9h5.5A2.5 2.5 0 0 1 22 11.5v.5M12 15v6.5a2.5 2.5 0 0 1-5 0V15M12 15v6.5a2.5 2.5 0 0 0 5 0V15"></path>
+                    </svg>
+                    Calcular Integral
+                </button>
+                <div class="btn-group">
+                    <button id="clear-btn" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6L6 18"></path>
+                            <path d="M6 6L18 18"></path>
+                        </svg>
+                        Limpiar
+                    </button>
+                    <button id="theory-btn" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Ir a la Teoría
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Instrucciones
+                </h2>
+                <ul style="padding-left: 1.25rem; color: var(--text-muted-light);">
+                    <li style="margin-bottom: 0.5rem;">Ingrese una función matemática válida.</li>
+                    <li style="margin-bottom: 0.5rem;">Ingrese los límites inferior y superior de la integral.</li>
+                    <li style="margin-bottom: 0.5rem;">Use el teclado matemático para símbolos especiales.</li>
+                    <li style="margin-bottom: 0.5rem;">Presione "Calcular Integral" para ver resultados.</li>
+                    <li style="margin-bottom: 0.5rem;">Use "Limpiar" para borrar la entrada y la gráfica.</li>
+                    <li style="margin-bottom: 0.5rem;">"Ir a la Teoría" lo llevará a una página de recursos.</li>
+                    <li style="margin-bottom: 0.5rem;">Funciones soportadas: `sin()`, `cos()`, `tan()`, `ln()`, `exp()`, `sqrt()`, `abs()`, `log()`.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="output-panel">
+            <div id="result-card" class="result-card hidden fade-in">
+                <h2 class="result-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Resultado de la integral
+                </h2>
+                <div class="result-content">
+                    <div id="result-math-field" style="font-size: 1.2rem; margin: 1rem 0;"></div>
+                </div>
+            </div>
+
+            <div id="graph-card" class="result-card fade-in"> <h2 class="result-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    Visualización gráfica
+                </h2>
+                <div id="graph-container" class="graph-container">
+                    <div id="plot" style="width: 100%; height: 100%;"></div>
+                </div>
+                <div id="graph-legend" class="graph-legend hidden">
+                    <div class="legend-item legend-original">
+                        <span class="legend-line"></span>
+                        <span>f(x) (función original)</span>
+                    </div>
+                    <div class="legend-item legend-area">
+                        <span class="legend-line"></span>
+                        <span>Área bajo la curva</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="steps-card" class="steps-container hidden fade-in">
+                <div class="steps-header">
+                    <h2 class="result-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        Pasos de resolución
+                    </h2>
+                    <button id="toggle-steps-btn" class="btn btn-secondary btn-sm">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                        Mostrar detalle
+                    </button>
+                </div>
+                <div id="steps-content" class="hidden">
+                    <div id="steps-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="theme-toggle" class="theme-toggle">
+        <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+        </svg>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referencias a elementos del DOM
+            const functionInput = document.getElementById('function-input');
+            const lowerBoundInput = document.getElementById('lower-bound-input');
+            const upperBoundInput = document.getElementById('upper-bound-input');
+            const solveBtn = document.getElementById('solve-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const theoryBtn = document.getElementById('theory-btn');
+            const resultCard = document.getElementById('result-card');
+            const resultMathField = document.getElementById('result-math-field');
+            const functionError = document.getElementById('function-error');
+            const errorText = document.getElementById('error-text');
+            const stepsCard = document.getElementById('steps-card');
+            const stepsList = document.getElementById('steps-list');
+            const toggleStepsBtn = document.getElementById('toggle-steps-btn');
+            const stepsContent = document.getElementById('steps-content');
+            const graphCard = document.getElementById('graph-card');
+            const graphContainer = document.getElementById('graph-container');
+            const graphLegend = document.getElementById('graph-legend');
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+
+            // Variables para almacenar la función y pasos
+            let originalFunction = null;
+            let integrationSteps = [];
+            let currentLowerBound = null;
+            let currentUpperBound = null;
+
+            // Define common function names for parsing and implicit multiplication handling
+            const funcNames = ['sin', 'cos', 'tan', 'log', 'exp', 'sqrt', 'abs', 'sec', 'csc', 'cot'];
+
+            // Helper to check if a node is a specific type
+            const isNodeType = (node, type) => node && node.type === type;
+
+            // Función para dibujar la gráfica y el área bajo la curva
+            const drawGraph = (func, a, b, integralValue) => {
+                const xMin = -10; // Rango de visualización más amplio
+                const xMax = 10;
+                const numPoints = 500;
+                const step = (xMax - xMin) / numPoints;
+                
+                const xValues = [];
+                const yValues = [];
+                
+                // Si no hay función, dibujar solo los ejes
+                if (!func) {
+                    for (let i = 0; i <= numPoints; i++) {
+                        const x = xMin + i * step;
+                        xValues.push(x);
+                        yValues.push(null); // No data
+                    }
+                } else {
+                    for (let i = 0; i <= numPoints; i++) {
+                        const x = xMin + i * step;
+                        try {
+                            const y = func.evaluate({x: x});
+                            yValues.push(isFinite(y) && Math.abs(y) < 100 ? y : null); // Limitar el rango Y para evitar picos extremos
+                        } catch (e) {
+                            yValues.push(null);
+                        }
+                        xValues.push(x); // Always add x to maintain array length
+                    }
+                }
+                
+                const isDarkMode = document.body.classList.contains('dark');
+                const bgColor = isDarkMode ? '#1E293B' : '#FFFFFF';
+                const gridColor = isDarkMode ? '#334155' : '#E2E8F0';
+                const textColor = isDarkMode ? '#E2E8F0' : '#1E293B';
+                const lineColors = isDarkMode ? ['#10B981', '#60a5fa'] : ['#10B981', '#3b82f6']; /* Verde y Azul */
+                
+                const data = [
+                    {
+                        x: xValues,
+                        y: yValues,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'f(x) (función original)',
+                        line: {
+                            color: lineColors[0],
+                            width: 2
+                        },
+                        connectgaps: false
+                    }
+                ];
+
+                // Añadir el sombreado del área bajo la curva si la integral fue calculada
+                if (func && a !== null && b !== null) {
+                    const xArea = [];
+                    const yArea = [];
+                    const areaStep = (b - a) / numPoints; // Usar numPoints para la densidad del sombreado
+
+                    for (let i = 0; i <= numPoints; i++) {
+                        const x = a + i * areaStep;
+                        xArea.push(x);
+                        try {
+                            const y = func.evaluate({x: x});
+                            yArea.push(isFinite(y) && Math.abs(y) < 100 ? y : null);
+                        } catch (e) {
+                            yArea.push(null);
+                        }
+                    }
+
+                    // Asegurarse de que los límites estén dentro del rango de visualización
+                    const plotXMin = Math.max(xMin, Math.min(a, b));
+                    const plotXMax = Math.min(xMax, Math.max(a, b));
+
+                    data.push({
+                        x: xArea,
+                        y: yArea,
+                        type: 'scatter',
+                        mode: 'lines',
+                        fill: 'tozeroy', // Rellena el área hasta el eje Y=0
+                        fillcolor: 'rgba(59, 130, 246, 0.3)', // Color de relleno (azul semi-transparente)
+                        name: 'Área bajo la curva',
+                        line: {
+                            color: 'rgba(0,0,0,0)', // Línea transparente para el área
+                            width: 0
+                        },
+                        hoverinfo: 'none' // No mostrar info al pasar el ratón por el área
+                    });
+                }
+                
+                const layout = {
+                    title: {
+                        text: 'Función y Área de Integral',
+                        font: {
+                            size: 16,
+                            color: textColor
+                        }
+                    },
+                    xaxis: {
+                        title: 'x',
+                        zeroline: true,
+                        zerolinecolor: textColor,
+                        zerolinewidth: 1,
+                        gridcolor: gridColor,
+                        gridwidth: 0.5,
+                        color: textColor,
+                        range: [xMin, xMax] // Mantener el rango fijo para consistencia
+                    },
+                    yaxis: {
+                        title: 'y',
+                        zeroline: true,
+                        zerolinecolor: textColor,
+                        zerolinewidth: 1,
+                        gridcolor: gridColor,
+                        gridwidth: 0.5,
+                        color: textColor,
+                        // Ajustar rango Y dinámicamente o fijarlo
+                        autorange: true 
+                    },
+                    plot_bgcolor: bgColor,
+                    paper_bgcolor: bgColor,
+                    font: {
+                        family: 'Inter, Arial, sans-serif',
+                        size: 12,
+                        color: textColor
+                    },
+                    showlegend: (func), // Mostrar leyenda solo si hay función
+                    legend: {
+                        x: 0.02,
+                        y: 0.98,
+                        bgcolor: isDarkMode ? 'rgba(30,41,59,0.8)' : 'rgba(255,255,255,0.8)',
+                        bordercolor: isDarkMode ? '#334155' : '#E2E8F0',
+                        borderwidth: 1,
+                        font: {
+                            color: textColor
+                        }
+                    },
+                    margin: {
+                        l: 50,
+                        r: 50,
+                        t: 50,
+                        b: 50
+                    }
+                };
+                
+                const config = {
+                    responsive: true,
+                    displayModeBar: true,
+                    displaylogo: false,
+                    modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d', 'autoScale2d', 'toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+                };
+                
+                Plotly.newPlot('plot', data, layout, config);
+            };
+
+            // Manejo del tema
+            function setTheme(isDark) {
+                document.body.classList.toggle('dark', isDark);
+                localStorage.setItem('darkMode', isDark);
+                
+                // Actualizar icono
+                if (isDark) {
+                    themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+                } else {
+                    themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+                }
+                
+                // Actualizar gráfica si existe o dibujar una vacía al inicio
+                drawGraph(originalFunction, currentLowerBound, currentUpperBound, null);
+            }
+
+            // Verificar preferencia del sistema o localStorage
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const storedDarkMode = localStorage.getItem('darkMode') === 'true';
+            setTheme(storedDarkMode || (localStorage.getItem('darkMode') === null && prefersDark));
+
+            themeToggle.addEventListener('click', () => {
+                const isDark = !document.body.classList.contains('dark');
+                setTheme(isDark);
+            });
+
+            // Manejar el toggle de pasos
+            toggleStepsBtn.addEventListener('click', () => {
+                if (stepsContent.classList.contains('hidden')) {
+                    stepsContent.classList.remove('hidden');
+                    toggleStepsBtn.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>Ocultar detalle`;
+                } else {
+                    stepsContent.classList.add('hidden');
+                    toggleStepsBtn.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>Mostrar detalle`;
+                }
+            });
+
+            // Función para normalizar la entrada
+            const normalizeInput = (input) => {
+                let normalized = input;
+
+                // Step 0: Remove all whitespace initially to simplify regexes
+                normalized = normalized.replace(/\s+/g, '');
+
+                // Step 1: Handle implicit multiplication using an iterative approach for robustness
+                let temp = '';
+                for (let i = 0; i < normalized.length; i++) {
+                    const char1 = normalized[i];
+                    const char2 = normalized[i + 1]; // Next character
+
+                    temp += char1; // Always add the current character
+
+                    if (i + 1 < normalized.length) {
+                        // Case 1: Number followed by a letter or opening parenthesis (e.g., 2x, 2(x+1))
+                        if (/\d/.test(char1) && /[a-zA-Z(]/.test(char2)) {
+                            temp += '*';
+                        }
+                        // Case 2: Closing parenthesis followed by a letter or number or opening parenthesis (e.g., (x+1)x, (x+1)2, (x+1)(y+1))
+                        else if (char1 === ')' && /[a-zA-Z0-9(]/.test(char2)) {
+                            temp += '*';
+                        }
+                        // Case 3: Letter followed by number or opening parenthesis
+                        else if (/[a-zA-Z]/.test(char1) && (/\d/.test(char2) || char2 === '(')) {
+                            let isPartOfFuncName = false;
+                            // Check if the current character 'char1' is the last character of a recognized function name
+                            // and if the function name is immediately followed by 'char2'
+                            for (const func of funcNames) {
+                                if (normalized.substring(i - func.length + 1, i + 1) === func && char2 !== '(') { // Only apply if not already followed by '('
+                                    isPartOfFuncName = true;
+                                    break;
+                                }
+                            }
+                            // If it's not part of a function name, then it's implicit multiplication (e.g., 'x2' or 'x(y)')
+                            if (!isPartOfFuncName) {
+                                temp += '*';
+                            }
+                        }
+                    }
+                }
+                normalized = temp;
+
+                // Step 2: Auto-parenthesize function names (if no argument is present or argument is not 'x')
+                // This ensures 'sinx' becomes 'sin(x)' and 'sin' becomes 'sin(x)'
+                funcNames.forEach(func => {
+                    // Matches 'func' followed by an alphanumeric character, but NOT already followed by an opening parenthesis.
+                    // Example: sinx -> sin(x)
+                    const regex1 = new RegExp(`(${func})([a-zA-Z0-9]+)(?!\\()`, 'g');
+                    normalized = normalized.replace(regex1, `$1($2)`);
+
+                    // Matches 'func' at the end of the string or followed by non-alphanumeric/non-parenthesis,
+                    // and not preceded by alphanumeric (to avoid 'mysin') or already parenthesized.
+                    // Example: sin -> sin(x)
+                    // Using word boundaries \b might be safer to avoid 'asin' or 'cosine' issues.
+                    const regex2 = new RegExp(`\\b(${func})\\b(?!\\()`, 'g');
+                    normalized = normalized.replace(regex2, `$1(x)`);
+                });
+
+                // Step 3: Convert sec, csc, cot to their sin/cos forms for Math.js compatibility
+                normalized = normalized.replace(/sec\(([^)]+)\)/g, '(1/cos($1))');
+                normalized = normalized.replace(/csc\(([^)]+)\)/g, '(1/sin($1))');
+                normalized = normalized.replace(/cot\(([^)]+)\)/g, '(cos($1)/sin($1))');
+
+                return normalized;
+            };
+
+            // Función para agregar pasos
+            const addStep = (description, formula, rule) => {
+                integrationSteps.push({
+                    description: description,
+                    formula: formula,
+                    rule: rule
+                });
+            };
+
+            // Función para mostrar pasos
+            const displaySteps = () => {
+                stepsList.innerHTML = '';
+                integrationSteps.forEach((step, index) => {
+                    const stepDiv = document.createElement('div');
+                    stepDiv.className = 'step-item fade-in';
+                    stepDiv.style.animationDelay = `${index * 0.1}s`;
+                    stepDiv.innerHTML = `
+                        <div class="step-title">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 8v4l3 3"></path>
+                            </svg>
+                            Paso ${index + 1}: ${step.description}
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <math-field read-only>${step.formula}</math-field>
+                        </div>
+                        <div class="step-rule">
+                            Regla aplicada: ${step.rule}
+                        </div>
+                    `;
+                    stepsList.appendChild(stepDiv);
+                });
+            };
+
+            // Implementación de la Regla del Trapecio para integración numérica
+            const trapezoidalRule = (func, a, b, n) => {
+                if (n <= 0) throw new Error("El número de subdivisiones (n) debe ser mayor que 0.");
+                if (a === b) return 0; // Integral de un punto es 0
+
+                const h = (b - a) / n;
+                let sum = func.evaluate({x: a}) + func.evaluate({x: b});
+
+                for (let i = 1; i < n; i++) {
+                    sum += 2 * func.evaluate({x: a + i * h});
+                }
+                return (h / 2) * sum;
+            };
+
+            // Función principal para calcular integral
+            const calculateIntegral = (funcText, lowerBoundText, upperBoundText) => {
+                resultCard.classList.add('hidden');
+                functionError.classList.add('hidden');
+                errorText.textContent = '';
+                stepsCard.classList.add('hidden');
+                graphCard.classList.remove('hidden');
+                graphLegend.classList.add('hidden');
+                integrationSteps = [];
+                currentLowerBound = null;
+                currentUpperBound = null;
+
+                try {
+                    // Use .text directly from math-field for cleaner input
+                    const cleanFuncInput = normalizeInput(functionInput.text);
+                    const funcNode = math.parse(cleanFuncInput);
+                    originalFunction = math.compile(cleanFuncInput);
+                    
+                    let a = parseFloat(normalizeInput(lowerBoundInput.text));
+                    let b = parseFloat(normalizeInput(upperBoundInput.text));
+
+                    if (isNaN(a) || isNaN(b)) {
+                        throw new Error("Los límites de integración deben ser números válidos.");
+                    }
+
+                    currentLowerBound = a;
+                    currentUpperBound = b;
+
+                    let antiderivativeNode = null;
+                    let symbolicSuccess = false;
+
+                    // Simplified symbolic integration attempt for constants and x^n
+                    try {
+                        // Check for simple constant
+                        if (isNodeType(funcNode, 'ConstantNode')) {
+                            antiderivativeNode = math.parse(`${funcNode.value} * x`);
+                            symbolicSuccess = true;
+                        } 
+                        // Check for x (which is x^1)
+                        else if (isNodeType(funcNode, 'SymbolNode') && funcNode.name === 'x') {
+                            antiderivativeNode = math.parse('0.5 * x^2');
+                            symbolicSuccess = true;
+                        }
+                        // Check for x^n
+                        else if (isNodeType(funcNode, 'OperatorNode') && funcNode.op === '^') {
+                            const base = funcNode.args[0];
+                            const exponent = funcNode.args[1];
+                            if (isNodeType(base, 'SymbolNode') && base.name === 'x' && isNodeType(exponent, 'ConstantNode')) {
+                                const n = exponent.value;
+                                if (n === -1) { // Special case for 1/x
+                                    antiderivativeNode = math.parse('log(abs(x))');
+                                    symbolicSuccess = true;
+                                } else { // General power rule
+                                    const newExponent = n + 1;
+                                    const coefficient = 1 / newExponent;
+                                    antiderivativeNode = math.parse(`${coefficient} * x^${newExponent}`);
+                                    symbolicSuccess = true;
+                                }
+                            }
+                        }
+                        // Check for sin(x)
+                        else if (isNodeType(funcNode, 'FunctionNode') && funcNode.fn.name === 'sin' && isNodeType(funcNode.args[0], 'SymbolNode') && funcNode.args[0].name === 'x') {
+                            antiderivativeNode = math.parse('-cos(x)');
+                            symbolicSuccess = true;
+                        }
+                        // Check for cos(x)
+                        else if (isNodeType(funcNode, 'FunctionNode') && funcNode.fn.name === 'cos' && isNodeType(funcNode.args[0], 'SymbolNode') && funcNode.args[0].name === 'x') {
+                            antiderivativeNode = math.parse('sin(x)');
+                            symbolicSuccess = true;
+                        }
+                        // Check for exp(x)
+                        else if (isNodeType(funcNode, 'FunctionNode') && funcNode.fn.name === 'exp' && isNodeType(funcNode.args[0], 'SymbolNode') && funcNode.args[0].name === 'x') {
+                            antiderivativeNode = math.parse('exp(x)');
+                            symbolicSuccess = true;
+                        }
+                        // Check for ln(x) (integral of ln(x) is x*ln(x) - x)
+                        else if (isNodeType(funcNode, 'FunctionNode') && funcNode.fn.name === 'log' && funcNode.args.length === 1 && isNodeType(funcNode.args[0], 'SymbolNode') && funcNode.args[0].name === 'x') {
+                            antiderivativeNode = math.parse('x * log(x) - x');
+                            symbolicSuccess = true;
+                        }
+
+                    } catch (e) {
+                        console.warn("Error attempting symbolic integration:", e);
+                        symbolicSuccess = false;
+                    }
+
+                    let integralResult;
+                    let integralLatex;
+
+                    if (symbolicSuccess && antiderivativeNode) {
+                        // Symbolic Integration Path
+                        addStep(
+                            "Función original a integrar",
+                            `$$ f(x) = ${funcNode.toTex()} $$`,
+                            "Identificación de la función"
+                        );
+                        addStep(
+                            "Límites de integración",
+                            `$$ a = ${a}, b = ${b} $$`,
+                            "Identificación de los límites"
+                        );
+                        addStep(
+                            "Encontrar la antiderivada (integral indefinida)",
+                            `$$ \\int f(x) dx = ${antiderivativeNode.toTex()} + C $$`,
+                            "Aplicación de reglas de integración directa"
+                        );
+
+                        const compiledAntiderivative = math.compile(antiderivativeNode.toTex());
+                        const F_b = compiledAntiderivative.evaluate({x: b});
+                        const F_a = compiledAntiderivative.evaluate({x: a});
+                        integralResult = F_b - F_a;
+
+                        addStep(
+                            "Aplicación del Teorema Fundamental del Cálculo",
+                            `$$ \\int_{${a}}^{${b}} f(x) dx = F(${b}) - F(${a}) = ${antiderivativeNode.toTex().replace(/x/g, `(${b})`)} - (${antiderivativeNode.toTex().replace(/x/g, `(${a})`)}) $$`,
+                            "Evaluación de la antiderivada en los límites para obtener el valor de la integral definida"
+                        );
+
+                        integralLatex = `\\int_{${a}}^{${b}} ${funcNode.toTex()} dx = ${integralResult.toFixed(6)}`;
+
+                    } else {
+                        // Numerical Integration Path (for complex functions or those not symbolically handled)
+                        addStep(
+                            "Función original a integrar",
+                            `$$ f(x) = ${funcNode.toTex()} $$`,
+                            "Identificación de la función"
+                        );
+                        addStep(
+                            "Límites de integración",
+                            `$$ a = ${a}, b = ${b} $$`,
+                            "Identificación de los límites"
+                        );
+
+                        const N_SUBDIVISIONS = 10000;
+                        integralResult = trapezoidalRule(originalFunction, a, b, N_SUBDIVISIONS);
+
+                        addStep(
+                            "Cálculo de la Integral Definida",
+                            `$$ \\int_{${a}}^{${b}} ${funcNode.toTex()} dx = \\text{Valor calculado} $$`, // Changed text
+                            `Método numérico de integración (Regla del Trapecio con ${N_SUBDIVISIONS} subdivisiones) para funciones complejas o sin antiderivada elemental directa`
+                        );
+                        
+                        integralLatex = `\\int_{${a}}^{${b}} ${funcNode.toTex()} dx = ${integralResult.toFixed(6)}`;
+                    }
+
+                    resultMathField.innerHTML = `
+                        <math-field read-only>
+                            ${integralLatex}
+                        </math-field>
+                    `;
+                    resultCard.classList.remove('hidden');
+                    
+                    stepsCard.classList.remove('hidden');
+                    displaySteps();
+                    
+                    // Mostrar y dibujar la gráfica con el área sombreada
+                    graphLegend.classList.remove('hidden');
+                    drawGraph(originalFunction, a, b, integralResult);
+
+                } catch (error) {
+                    errorText.textContent = 'Error al procesar la integral. Asegúrate de que la sintaxis es correcta, los límites son números válidos y la función es integrable en el rango. Mensaje: ' + error.message;
+                    functionError.classList.remove('hidden');
+                    console.error("Error al calcular la integral:", error);
+                    // Asegurarse de que la gráfica se dibuje vacía si hay un error
+                    drawGraph(null, null, null, null);
+                }
+            };
+
+            // Función para limpiar la interfaz
+            const clearInterface = () => {
+                functionInput.setValue('');
+                lowerBoundInput.setValue('');
+                upperBoundInput.setValue('');
+                resultCard.classList.add('hidden');
+                functionError.classList.add('hidden');
+                errorText.textContent = '';
+                stepsCard.classList.add('hidden');
+                stepsList.innerHTML = '';
+                graphLegend.classList.add('hidden');
+                originalFunction = null;
+                integrationSteps = [];
+                currentLowerBound = null;
+                currentUpperBound = null;
+                drawGraph(null, null, null, null); // Dibuja la gráfica vacía
+            };
+
+            // Event listener para el botón de resolver
+            solveBtn.addEventListener('click', () => {
+                // Use .text property for getting plain text from math-field
+                const functionText = functionInput.text;
+                const lowerBoundText = lowerBoundInput.text;
+                const upperBoundText = upperBoundInput.text;
+                
+                if (!functionText || !lowerBoundText || !upperBoundText) {
+                    errorText.textContent = 'Por favor, introduce la función y ambos límites de integración.';
+                    functionError.classList.remove('hidden');
+                    drawGraph(null, null, null, null);
+                    return;
+                }
+
+                calculateIntegral(functionText, lowerBoundText, upperBoundText);
+            });
+
+            // Event listener para el botón de limpiar
+            clearBtn.addEventListener('click', clearInterface);
+
+            // Event listener para el botón "Ir a la Teoría"
+            theoryBtn.addEventListener('click', () => {
+                // Abre una nueva pestaña con la página de Wikipedia sobre integrales
+                window.open('https://es.wikipedia.org/wiki/Integral', '_blank'); 
+            });
+
+            // Permitir calcular con Enter en cualquier campo de entrada
+            functionInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') solveBtn.click(); });
+            lowerBoundInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') solveBtn.click(); });
+            upperBoundInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') solveBtn.click(); });
+
+            // Dibujar la gráfica vacía al cargar la página para que se previsualice
+            drawGraph(null, null, null, null);
+        });
+    </script>
+</body>
+</html>

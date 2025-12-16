@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teoría de Estadística I</title>
+    <style>
+        :root {
+            --primary-light: #2c3e50;
+            --primary-dark: #ffffff;
+            --secondary-color: #1a2a3a; /* Azul noche */
+            --accent-light: #3498db;
+            --accent-dark: #4fc3f7;
+            --text-light: #333333;
+            --text-dark: #f5f5f5;
+            --bg-light: #f9f9f9;
+            --bg-dark: #0d1621; /* Fondo más oscuro para contraste */
+            --card-light: #1a2a3a; /* Cambiado a azul noche para modo claro */
+            --card-dark: #1a2a3a; /* Azul noche para cards */
+            --number-bg-light: #3498db; /* Azul claro para modo claro */
+            --number-bg-dark: #4fc3f7; /* Azul claro para modo oscuro */
+            --card-text-light: #ffffff; /* Texto blanco para modo claro */
+            --card-text-dark: #ffffff; /* Texto blanco para modo oscuro */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            transition: all 0.5s ease;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Modo claro */
+        body.light-mode {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+        }
+
+        /* Modo oscuro azul noche */
+        body.dark-mode {
+            background-color: var(--secondary-color); /* Azul noche como fondo */
+            color: var(--text-dark);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--accent-light);
+        }
+
+        .dark-mode .header {
+            border-bottom-color: var(--accent-dark);
+        }
+
+        .header h1 {
+            color: var(--primary-light);
+            font-weight: 600;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            transition: color 0.5s ease;
+        }
+
+        .dark-mode .header h1 {
+            color: var(--primary-dark);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+            transition: color 0.5s ease;
+        }
+
+        .dark-mode .header p {
+            color: var(--text-dark);
+        }
+
+        /* Ajuste de la cuadrícula para solo 5 elementos */
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Diseño flexible */
+            gap: 25px;
+            margin-top: 40px;
+            justify-content: center; /* Centrar elementos en el contenedor */
+        }
+
+        @media (max-width: 700px) {
+            .topics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .topics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .topic-card {
+            background-color: var(--card-light);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--card-text-light); 
+        }
+
+        .dark-mode .topic-card {
+            background-color: var(--card-dark);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--card-text-dark); 
+        }
+
+        .topic-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            z-index: 1;
+        }
+
+        .dark-mode .topic-card::before {
+            background: linear-gradient(135deg, rgba(79, 195, 247, 0.15) 0%, transparent 100%);
+        }
+
+        .topic-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .dark-mode .topic-card:hover {
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .topic-card:hover::before {
+            opacity: 1;
+        }
+
+        .topic-card h3 {
+            margin: 20px 0 0;
+            color: white; 
+            font-size: 1.3rem;
+            font-weight: 500;
+            transition: all 0.5s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .topic-number-container {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .topic-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background-color: var(--number-bg-light);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+
+        .dark-mode .topic-number {
+            background-color: var(--number-bg-dark);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .topic-number::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border: 2px solid var(--accent-light);
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 1;
+        }
+
+        .dark-mode .topic-number::after {
+            border-color: var(--accent-dark);
+        }
+
+        .topic-card:hover .topic-number {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .topic-card:hover .topic-number::after {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--number-bg-light);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 100;
+        }
+
+        .dark-mode .theme-toggle {
+            background-color: var(--accent-dark);
+            color: var(--secondary-color);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes floatIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) rotateX(90deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+
+        .topic-card {
+            animation: floatIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0;
+            transform-style: preserve-3d;
+        }
+
+        /* Ajuste de delays para 5 elementos */
+        .topic-card:nth-child(1) { animation-delay: 0.1s; }
+        .topic-card:nth-child(2) { animation-delay: 0.2s; }
+        .topic-card:nth-child(3) { animation-delay: 0.3s; }
+        .topic-card:nth-child(4) { animation-delay: 0.4s; }
+        .topic-card:nth-child(5) { animation-delay: 0.5s; }
+
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .topic-number {
+            animation: pulse 4s infinite ease-in-out;
+        }
+
+        .topic-card:hover .topic-number {
+            animation: none;
+        }
+
+        /* Style for the anchor tags to ensure they don't break the layout */
+        .topic-card a {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <div class="container">
+        <div class="header">
+            <h1>TEORÍA DE ESTADÍSTICA</h1>
+            <p>Explora los fundamentos esenciales para el análisis de datos. Esta sección está diseñada para brindarte una comprensión clara y concisa de los temas clave de la Estadística.</p>
+        </div>
+
+        <div class="topics-grid">
+            <div class="topic-card">
+                <a href="/assets/docs/teoriaestadisticadescriptiva.html">
+                    <div class="topic-number-container">
+                        <div class="topic-number">1</div>
+                    </div>
+                    <h3>Estadística descriptiva</h3>
+                </a>
+            </div>
+            <div class="topic-card">
+                <a href="/assets/docs/teoriacorrelacionregresion.html">
+                    <div class="topic-number-container">
+                        <div class="topic-number">2</div>
+                    </div>
+                    <h3>Correlación y regresión</h3>
+                </a>
+            </div>
+            <div class="topic-card">
+                <a href="/assets/docs/teoriaprobabilidades.html">
+                    <div class="topic-number-container">
+                        <div class="topic-number">3</div>
+                    </div>
+                    <h3>Probabilidades</h3>
+                </a>
+            </div>
+            <div class="topic-card">
+                <a href="/assets/docs/teoriaintervalosconfianza.html">
+                    <div class="topic-number-container">
+                        <div class="topic-number">4</div>
+                    </div>
+                    <h3>Intervalos de Confianza</h3>
+                </a>
+            </div>
+            <div class="topic-card">
+                <a href="/assets/docs/teoriapruebashipotesis.html">
+                    <div class="topic-number-container">
+                        <div class="topic-number">5</div>
+                    </div>
+                    <h3>Pruebas de hipótesis</h3>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <button class="theme-toggle" id="themeToggle">🌓</button>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        // Comprobar preferencia del usuario
+        const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        // Aplicar modo inicial
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && prefersDarkMode)) {
+            body.classList.add('dark-mode');
+        }
+
+        // Alternar tema
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            
+            // Guardar preferencia
+            const isDark = body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+    </script>
+</body>
+</html>

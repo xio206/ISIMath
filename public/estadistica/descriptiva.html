@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Estadística Descriptiva</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* [Se mantienen todos los estilos CSS originales] */
+        :root {
+            /* Colores modo claro */
+            --bg-light: #f8fafc;
+            --surface-light: #ffffff;
+            --text-light: #1e293b;
+            --primary-light: #3b82f6;
+            --primary-light-hover: #2563eb;
+            --secondary-light: #10b981;
+            --secondary-light-hover: #0d9f76;
+            --accent-light: #8b5cf6;
+            --accent-light-hover: #7c3aed;
+            --border-light: #e2e8f0;
+            --error-light: #ef4444;
+            --success-light: #10b981;
+            --text-muted-light: #64748b;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            
+            /* Colores modo oscuro */
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --text-dark: #e2e8f0;
+            --primary-dark: #60a5fa;
+            --primary-dark-hover: #93c5fd;
+            --secondary-dark: #10b981;
+            --secondary-dark-hover: #34d399;
+            --accent-dark: #a78bfa;
+            --accent-dark-hover: #c4b5fd;
+            --border-dark: #334155;
+            --error-dark: #f87171;
+            --success-dark: #34d399;
+            --text-muted-dark: #94a3b8;
+            --shadow-sm-dark: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md-dark: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-lg-dark: 0 10px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- Estilos Base --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+        body.dark { background-color: var(--bg-dark); color: var(--text-dark); }
+
+        /* --- Layout Principal --- */
+        .app-container {
+            display: grid;
+            grid-template-columns: minmax(300px, 350px) 1fr;
+            gap: 2rem;
+            min-height: 100vh;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        @media (max-width: 1024px) { .app-container { grid-template-columns: 1fr; padding: 1.5rem; } }
+        @media (max-width: 640px) { .app-container { padding: 1rem; gap: 1.5rem; } }
+
+        /* --- Panel de Entrada --- */
+        .input-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+        @media (max-width: 1024px) { .input-panel { position: static; } }
+
+        .panel-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        body.dark .panel-card { background-color: var(--surface-dark); border-color: var(--border-dark); box-shadow: var(--shadow-md-dark); }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        body.dark .panel-title { color: var(--primary-dark); }
+        .panel-title svg { width: 1.25rem; height: 1.25rem; }
+
+        /* --- Inputs y Textarea --- */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-light); }
+        body.dark .form-label { color: var(--text-dark); }
+
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background-color: var(--surface-light);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+        body.dark .input-field { background-color: var(--surface-dark); border-color: var(--border-dark); color: var(--text-dark); }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        body.dark .input-field:focus { border-color: var(--primary-dark); box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2); }
+
+        textarea.input-field {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* --- Botones --- */
+        .btn-group { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-light); 
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            width: 100%;
+            gap: 0.5rem;
+        }
+        body.dark .btn { background-color: var(--primary-dark); }
+        .btn:hover { background-color: var(--primary-light-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        body.dark .btn:hover { background-color: var(--primary-dark-hover); }
+        .btn:active { transform: translateY(0); }
+
+        /* Estilo para los botones de Acción Secundaria (VERDE) */
+        .btn-accent-secondary {
+            background-color: var(--secondary-light);
+        }
+        .btn-accent-secondary:hover {
+            background-color: var(--secondary-light-hover);
+        }
+        body.dark .btn-accent-secondary {
+            background-color: var(--secondary-dark);
+        }
+        body.dark .btn-accent-secondary:hover {
+            background-color: var(--secondary-dark-hover);
+        }
+
+        .btn-secondary-old { 
+            background-color: var(--surface-light); 
+            border: 1px solid var(--border-light); 
+            color: var(--text-light); 
+        }
+        body.dark .btn-secondary-old { background-color: var(--surface-dark); border-color: var(--border-dark); color: var(--text-dark); }
+        .btn-secondary-old:hover { background-color: var(--bg-light); }
+        body.dark .btn-secondary-old:hover { background-color: var(--bg-dark); }
+
+        /* --- Mensajes de error --- */
+        .error-message {
+            color: white;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            padding: 0.75rem;
+            background-color: var(--error-light);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        body.dark .error-message { background-color: #991b1b; }
+        
+        /* --- Mensajes de éxito --- */
+        .success-message {
+            color: white;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            padding: 0.75rem;
+            background-color: var(--success-light);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        body.dark .success-message { background-color: #065f46; }
+        
+        /* --- Panel de Resultados --- */
+        .output-panel { display: flex; flex-direction: column; gap: 1.5rem; }
+        
+        .result-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        body.dark .result-card { background-color: var(--surface-dark); border-color: var(--border-dark); }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        body.dark .result-title { color: var(--primary-dark); }
+        
+        #stepsCard .result-title {
+            color: var(--accent-light);
+        }
+        body.dark #stepsCard .result-title {
+            color: var(--accent-dark);
+        }
+
+        /* Grid específica de Descriptiva */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-light);
+        }
+        body.dark .stat-box { background: var(--bg-dark); border-color: var(--border-dark); }
+
+        .stat-label { font-size: 0.85rem; color: var(--text-muted-light); display: block; margin-bottom: 0.25rem; }
+        body.dark .stat-label { color: var(--text-muted-dark); }
+
+        .stat-value { font-size: 1.25rem; font-weight: 700; color: var(--primary-light); }
+        body.dark .stat-value { color: var(--primary-dark); }
+
+        .section-header {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted-light);
+            margin: 1.5rem 0 0.75rem 0;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 0.25rem;
+        }
+        body.dark .section-header { color: var(--text-muted-dark); border-color: var(--border-dark); }
+
+        /* Tabla Estilizada */
+        .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border-light); }
+        body.dark .table-container { border-color: var(--border-dark); }
+        
+        .freq-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+        .freq-table th, .freq-table td { padding: 1rem; text-align: center; border-bottom: 1px solid var(--border-light); }
+        body.dark .freq-table th, body.dark .freq-table td { border-color: var(--border-dark); }
+        
+        .freq-table th { background-color: var(--bg-light); color: var(--text-light); font-weight: 600; }
+        body.dark .freq-table th { background-color: var(--bg-dark); color: var(--text-dark); }
+        
+        .freq-table td { color: var(--text-light); }
+        body.dark .freq-table td { color: var(--text-dark); }
+
+        /* Pasos MathJax - Estilo Colapsable */
+        .steps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 640px) {
+             .steps-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+             }
+             .steps-header .btn {
+                width: 100%;
+             }
+        }
+
+        .step-section { margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px dashed var(--border-light); }
+        body.dark .step-section { border-color: var(--border-dark); }
+        .step-section:last-child { border-bottom: none; }
+        
+        .step-title-math { font-weight: 600; color: var(--accent-light); margin-bottom: 1rem; font-size: 1.1rem; }
+        body.dark .step-title-math { color: var(--accent-dark); }
+
+        .math-display {
+            overflow-x: auto;
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            color: var(--text-light);
+        }
+        body.dark .math-display { background-color: var(--bg-dark); border-color: var(--border-dark); color: var(--text-dark); }
+
+        /* --- Carga de archivos --- */
+        .file-upload-container {
+            border: 2px dashed var(--border-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background-color: var(--bg-light);
+        }
+        body.dark .file-upload-container { border-color: var(--border-dark); background-color: var(--bg-dark); }
+        
+        .file-upload-container:hover {
+            border-color: var(--primary-light);
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        body.dark .file-upload-container:hover {
+            border-color: var(--primary-dark);
+            background-color: rgba(96, 165, 250, 0.05);
+        }
+        
+        .file-upload-icon {
+            font-size: 2.5rem;
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+        }
+        body.dark .file-upload-icon { color: var(--primary-dark); }
+        
+        .file-upload-text {
+            color: var(--text-muted-light);
+            margin-bottom: 0.5rem;
+        }
+        body.dark .file-upload-text { color: var(--text-muted-dark); }
+        
+        .file-info {
+            font-size: 0.85rem;
+            color: var(--text-muted-light);
+        }
+        body.dark .file-info { color: var(--text-muted-dark); }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .file-preview {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+        body.dark .file-preview { background-color: var(--bg-dark); border-color: var(--border-dark); }
+        
+        .file-preview-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-light);
+        }
+        body.dark .file-preview-title { color: var(--primary-dark); }
+        
+        .file-preview-data {
+            font-family: monospace;
+            font-size: 0.85rem;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            background-color: var(--surface-light);
+            border-radius: 4px;
+            border: 1px solid var(--border-light);
+        }
+        body.dark .file-preview-data { background-color: var(--surface-dark); border-color: var(--border-dark); }
+        
+        .column-selector {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+        body.dark .column-selector { background-color: var(--bg-dark); border-color: var(--border-dark); }
+        
+        .column-selector-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-light);
+        }
+        body.dark .column-selector-title { color: var(--primary-dark); }
+        
+        .column-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .column-option {
+            padding: 0.5rem 1rem;
+            background-color: var(--surface-light);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        body.dark .column-option { background-color: var(--surface-dark); border-color: var(--border-dark); }
+        
+        .column-option:hover {
+            background-color: var(--bg-light);
+        }
+        body.dark .column-option:hover {
+            background-color: var(--bg-dark);
+        }
+        
+        .column-option.selected {
+            background-color: var(--primary-light);
+            color: white;
+            border-color: var(--primary-light);
+        }
+        body.dark .column-option.selected {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        /* --- Toggle de tema --- */
+        .theme-toggle {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--surface-light);
+            color: var(--text-light);
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        body.dark .theme-toggle { background-color: var(--surface-dark); color: var(--text-dark); box-shadow: var(--shadow-lg-dark); }
+        .theme-toggle:hover { transform: scale(1.05); }
+
+        /* Helpers */
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
+        
+        /* NUEVOS ESTILOS PARA PLOTLY EN MODO OSCURO (BORDES, CONTROLES) */
+        .js-plotly-plot .plotly .modebar-container {
+            background-color: var(--surface-light); 
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 0.25rem;
+            box-shadow: var(--shadow-sm);
+        }
+        body.dark .js-plotly-plot .plotly .modebar-container {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-dark);
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="input-panel">
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Datos de la Muestra
+                </h2>
+                
+                <!-- Sección de carga de archivos -->
+                <div class="form-group">
+                    <label class="form-label">Cargar datos desde archivo:</label>
+                    <div class="file-upload-container" id="fileUploadArea">
+                        <div class="file-upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="file-upload-text">
+                            Haz clic para seleccionar un archivo o arrastra y suelta aquí
+                        </div>
+                        <div class="file-info">
+                            Formatos soportados: Excel (.xlsx, .xls), CSV (.csv), Texto (.txt)
+                        </div>
+                        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv,.txt">
+                    </div>
+                    
+                    <div id="filePreview" class="file-preview hidden">
+                        <div class="file-preview-title">Vista previa del archivo:</div>
+                        <div id="previewContent" class="file-preview-data"></div>
+                        
+                        <div id="columnSelector" class="column-selector hidden">
+                            <div class="column-selector-title">Selecciona la columna a analizar:</div>
+                            <div id="columnOptions" class="column-options"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="fileSuccess" class="success-message hidden">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="successTextContent">Archivo cargado exitosamente</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="dataInput" class="form-label">O ingresa tus datos manualmente:</label>
+                    <textarea id="dataInput" class="input-field" placeholder="Ej: 10, 12, 15, 14, 10, 20... (separados por coma o espacio)"></textarea>
+                </div>
+
+                <div id="inputError" class="error-message hidden">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span id="errorTextContent">Ingresa al menos 2 datos numéricos.</span>
+                </div>
+                
+                <button id="solveBtn" class="btn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
+                    </svg>
+                    Calcular Estadísticos
+                </button>
+
+                <div class="btn-group">
+                    <button id="clearBtn" class="btn btn-accent-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6L6 18"></path>
+                            <path d="M6 6L18 18"></path>
+                        </svg>
+                        Limpiar Todo
+                    </button>
+                    <button id="theoryBtn" class="btn btn-accent-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Ir a la Teoría
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Instrucciones
+                </h2>
+                <ul style="padding-left: 1.25rem; color: var(--text-muted-light);">
+                    <li style="margin-bottom: 0.5rem;"><strong>Opción 1:</strong> Carga un archivo (Excel, CSV o TXT).</li>
+                    <li style="margin-bottom: 0.5rem;"><strong>Opción 2:</strong> Pega o escribe datos manualmente.</li>
+                    <li style="margin-bottom: 0.5rem;">Los datos se pueden separar con comas, espacios o saltos de línea.</li>
+                    <li style="margin-bottom: 0.5rem;">Presiona "Calcular" para ver todos los estadísticos y gráficos.</li>
+                    <li style="margin-bottom: 0.5rem;">Usa "Limpiar Todo" para reiniciar y cargar nuevos datos.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="output-panel">
+            
+            <div id="resultsCard" class="result-card hidden fade-in">
+                <h2 class="result-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3v18h18"></path>
+                        <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                    </svg>
+                    Resumen Estadístico
+                </h2>
+
+                <div class="section-header">Posición Central</div>
+                <div class="stats-grid">
+                    <div class="stat-box"><span class="stat-label">Media (x̄)</span><span class="stat-value" id="resMean">-</span></div>
+                    <div class="stat-box"><span class="stat-label">Mediana (Me)</span><span class="stat-value" id="resMedian">-</span></div>
+                    <div class="stat-box"><span class="stat-label">Moda (Mo)</span><span class="stat-value" id="resMode">-</span></div>
+                </div>
+
+                <div class="section-header">Posición No Central</div>
+                <div class="stats-grid">
+                    <div class="stat-box"><span class="stat-label">Cuartil 1 (Q1)</span><span class="stat-value" id="resQ1">-</span></div>
+                    <div class="stat-box"><span class="stat-label">Cuartil 3 (Q3)</span><span class="stat-value" id="resQ3">-</span></div>
+                    <div class="stat-box"><span class="stat-label">Mínimo</span><span class="stat-value" id="resMin">-</span></div>
+                    <div class="stat-box"><span class="stat-label">Máximo</span><span class="stat-value" id="resMax">-</span></div>
+                </div>
+
+                <div class="section-header">Dispersión</div>
+                <div class="stats-grid">
+                    <div class="stat-box"><span class="stat-label">Rango</span><span class="stat-value" id="resRange">-</span></div>
+                    <div class="stat-box"><span class="stat-label">Varianza (s²)</span><span class="stat-value" id="resVar">-</span></div>
+                    <div class="stat-box"><span class="stat-label">Desv. Estándar (s)</span><span class="stat-value" id="resStd">-</span></div>
+                    <div class="stat-box"><span class="stat-label">CV (%)</span><span class="stat-value" id="resCV">-</span></div>
+                </div>
+
+                <div class="section-header">Forma</div>
+                <div class="stats-grid">
+                    <div class="stat-box"><span class="stat-label">Asimetría (g1)</span><span class="stat-value" id="resSkew">-</span></div>
+                    <div class="stat-box"><span class="stat-label">Curtosis (g2)</span><span class="stat-value" id="resKurt">-</span></div>
+                </div>
+            </div>
+
+            <div id="chartsCard" class="result-card fade-in">
+                <h2 class="result-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3v18h18"></path>
+                        <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                    </svg>
+                    Visualización Gráfica
+                </h2>
+                <div id="dist-container" style="width:100%; height:450px;"></div>
+            </div>
+
+            <div id="tableCard" class="result-card hidden fade-in">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 class="result-title" style="margin-bottom: 0;">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg>
+                        Tabla de Distribución de Frecuencias
+                    </h2>
+
+                    <button id="btnDescargarExcel" class="btn btn-accent-secondary" style="width: auto; padding: 10px 18px;">
+                        <i class="fas fa-file-excel"></i> Descargar Excel
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="freq-table" id="freqTable">
+                        <thead>
+                            <tr>
+                                <th>Intervalo</th>
+                                <th>Marca (xi)</th>
+                                <th>fi</th>
+                                <th>Fi</th>
+                                <th>hi</th>
+                                <th>hi%</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="interpretationBox" class="hidden" style="margin-top: 1.5rem; padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border-left: 4px solid #3b82f6;">
+                <h4 style="margin: 0 0 0.5rem 0; color: #1e293b; font-size: 0.95rem;">
+                    <i class="fas fa-lightbulb" style="color: #f59e0b;"></i> Interpretación de la Distribución
+                </h4>
+                <p id="interpretationText" style="margin: 0; color: #475569; font-size: 0.9rem; line-height: 1.5;"></p>
+            </div>
+
+            <div id="stepsCard" class="result-card hidden fade-in">
+                <div class="steps-header">
+                    <h2 class="result-title" style="margin-bottom: 0;">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Pasos de resolución
+                    </h2>
+                    <button id="toggleStepsBtn" class="btn btn-accent-secondary" style="width: auto; padding: 0.5rem 1rem;">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                        Mostrar detalle
+                    </button>
+                </div>
+                
+                <div id="stepsContent" class="hidden" style="margin-top: 1.5rem;">
+                    <div class="step-section">
+                        <div class="step-title-math">1. Cálculo de la Media (x̄)</div>
+                        <div id="stepMean" class="math-display"></div>
+                    </div>
+
+                    <div class="step-section">
+                        <div class="step-title-math">2. Cálculo de la Varianza (s²) y Desviación (s)</div>
+                        <div id="stepVar" class="math-display"></div>
+                    </div>
+
+                    <div class="step-section">
+                        <div class="step-title-math">3. Cálculo de Asimetría (Fisher)</div>
+                        <div id="stepSkew" class="math-display"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <button id="theme-toggle" class="theme-toggle">
+        <svg id="theme-icon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            </svg>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const solveBtn = document.getElementById('solveBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const theoryBtn = document.getElementById('theoryBtn');
+            const dataInput = document.getElementById('dataInput');
+            const errorDiv = document.getElementById('inputError');
+            const errorText = document.getElementById('errorTextContent');
+            const fileInput = document.getElementById('fileInput');
+            const fileUploadArea = document.getElementById('fileUploadArea');
+            const filePreview = document.getElementById('filePreview');
+            const previewContent = document.getElementById('previewContent');
+            const fileSuccess = document.getElementById('fileSuccess');
+            const successText = document.getElementById('successTextContent');
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const toggleStepsBtn = document.getElementById('toggleStepsBtn');
+            const stepsContent = document.getElementById('stepsContent');
+            const botonExcel = document.getElementById('btnDescargarExcel');
+            const columnSelector = document.getElementById('columnSelector');
+            const columnOptions = document.getElementById('columnOptions');
+
+            // Variables para almacenar datos del archivo
+            let fileData = null;
+            let selectedColumn = null;
+
+            theoryBtn.addEventListener('click', () => {
+                window.open('https://es.wikipedia.org/wiki/Estad%C3%ADstica_descriptiva', '_blank');
+            });
+
+            toggleStepsBtn.addEventListener('click', () => {
+                const isHidden = stepsContent.classList.contains('hidden');
+                stepsContent.classList.toggle('hidden');
+                toggleStepsBtn.innerHTML = isHidden 
+                    ? `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg> Ocultar detalle`
+                    : `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg> Mostrar detalle`;
+            });
+
+            // --- LÓGICA DE TEMA ---
+            function setTheme(isDark) {
+                document.body.classList.toggle('dark', isDark);
+                localStorage.setItem('darkMode', isDark);
+                
+                if (isDark) {
+                    themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+                } else {
+                    themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+                }
+                
+                // Redibujar gráfico si la tarjeta es visible
+                const chartCard = document.getElementById('chartsCard');
+                if(!chartCard.classList.contains('hidden')) {
+                     const data = getCurrentData();
+                     if (data && data.length >= 2) {
+                         drawCharts(data);
+                     } else {
+                         drawEmptyChart(isDark);
+                     }
+                } else {
+                    drawEmptyChart(isDark);
+                }
+            }
+            
+            // --- FUNCIÓN: DIBUJAR GRÁFICO VACÍO ---
+            function drawEmptyChart(isDark) {
+                const textColor = isDark ? '#e2e8f0' : '#1e293b';
+                const gridColor = isDark ? '#334155' : '#e2e8f0';
+                const plotBgColor = isDark ? 'rgb(30, 41, 59)' : 'rgb(255, 255, 255)'; 
+                const paperBgColor = plotBgColor;
+
+                const emptyData = [{ 
+                    x: [0, 1], 
+                    y: [0, 1], 
+                    mode: 'lines', 
+                    visible: false
+                }];
+
+                const emptyLayout = {
+                    title: {
+                        text: 'Esperando datos para Visualización',
+                        font: { size: 18, color: textColor }
+                    },
+                    paper_bgcolor: paperBgColor,
+                    plot_bgcolor: plotBgColor,
+                    margin: { t: 60, b: 40, l: 50, r: 20 },
+                    xaxis: { 
+                        title: 'Eje X', 
+                        color: textColor, 
+                        gridcolor: gridColor,
+                        zerolinecolor: gridColor,
+                        linecolor: gridColor, 
+                        linewidth: 1,
+                        range: [-5, 5] 
+                    },
+                    yaxis: { 
+                        title: 'Eje Y', 
+                        color: textColor,
+                        gridcolor: gridColor,
+                        zerolinecolor: gridColor,
+                        linecolor: gridColor, 
+                        linewidth: 1,
+                        range: [-1, 5] 
+                    },
+                    showlegend: false
+                };
+
+                Plotly.newPlot('dist-container', emptyData, emptyLayout, { 
+                    displayModeBar: true,
+                    responsive: true,
+                    modeBarButtonsToRemove: ['lasso2d', 'select2d'],
+                    displaylogo: false
+                });
+            }
+
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const storedDarkMode = localStorage.getItem('darkMode') === 'true';
+            const initialDark = storedDarkMode || (localStorage.getItem('darkMode') === null && prefersDark);
+            
+            setTheme(initialDark);
+            drawEmptyChart(initialDark);
+
+            themeToggle.addEventListener('click', () => {
+                const isDark = !document.body.classList.contains('dark');
+                setTheme(isDark);
+            });
+
+            // --- FUNCIÓN: OBTENER DATOS ACTUALES (archivo o manual) ---
+            function getCurrentData() {
+                // Si hay datos del archivo seleccionados
+                if (fileData && selectedColumn !== null && fileData.columns && fileData.columns[selectedColumn]) {
+                    return fileData.columns[selectedColumn].filter(v => !isNaN(v));
+                }
+                
+                // Si no, usar datos manuales
+                const rawText = dataInput.value;
+                return rawText.split(/[\s,]+/).map(v => parseFloat(v)).filter(v => !isNaN(v)).sort((a,b)=>a-b);
+            }
+
+            // --- LÓGICA DE CARGA DE ARCHIVOS ---
+            fileUploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // Arrastrar y soltar archivos
+            fileUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUploadArea.style.borderColor = 'var(--primary-light)';
+                fileUploadArea.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+            });
+
+            fileUploadArea.addEventListener('dragleave', () => {
+                fileUploadArea.style.borderColor = '';
+                fileUploadArea.style.backgroundColor = '';
+            });
+
+            fileUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUploadArea.style.borderColor = '';
+                fileUploadArea.style.backgroundColor = '';
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileUpload(e.dataTransfer.files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length) {
+                    handleFileUpload(e.target.files[0]);
+                }
+            });
+
+            // Función para procesar el archivo
+            function handleFileUpload(file) {
+                const fileType = file.name.split('.').pop().toLowerCase();
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    try {
+                        let data = [];
+                        let columns = {};
+                        let previewText = '';
+                        
+                        if (fileType === 'xlsx' || fileType === 'xls') {
+                            // Procesar archivo Excel
+                            const workbook = XLSX.read(e.target.result, { type: 'binary' });
+                            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                            const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                            
+                            // Extraer encabezados
+                            const headers = jsonData[0] || [];
+                            
+                            // Crear estructura de columnas
+                            for (let i = 0; i < headers.length; i++) {
+                                const columnName = headers[i] || `Columna ${i+1}`;
+                                const columnData = [];
+                                
+                                for (let j = 1; j < jsonData.length; j++) {
+                                    if (jsonData[j] && jsonData[j][i] !== undefined) {
+                                        const value = parseFloat(jsonData[j][i]);
+                                        if (!isNaN(value)) {
+                                            columnData.push(value);
+                                        }
+                                    }
+                                }
+                                
+                                if (columnData.length > 0) {
+                                    columns[columnName] = columnData;
+                                }
+                            }
+                            
+                            // Preparar vista previa
+                            previewText = `Archivo: ${file.name}\n`;
+                            previewText += `Hojas: ${workbook.SheetNames.join(', ')}\n`;
+                            previewText += `Filas: ${jsonData.length}\n`;
+                            previewText += `Columnas detectadas: ${Object.keys(columns).length}\n\n`;
+                            
+                            // Mostrar primeras filas
+                            const previewRows = Math.min(5, jsonData.length);
+                            for (let i = 0; i < previewRows; i++) {
+                                previewText += jsonData[i].join('\t') + '\n';
+                            }
+                            if (jsonData.length > previewRows) {
+                                previewText += `... (${jsonData.length - previewRows} filas más)`;
+                            }
+                            
+                            fileData = { type: 'excel', columns: columns, rawData: jsonData };
+                            
+                        } else if (fileType === 'csv') {
+                            // Procesar archivo CSV
+                            const csvContent = e.target.result;
+                            const lines = csvContent.split('\n');
+                            const headers = lines[0].split(',').map(h => h.trim());
+                            
+                            // Crear estructura de columnas
+                            for (let i = 0; i < headers.length; i++) {
+                                const columnName = headers[i] || `Columna ${i+1}`;
+                                const columnData = [];
+                                
+                                for (let j = 1; j < lines.length; j++) {
+                                    if (lines[j].trim()) {
+                                        const values = lines[j].split(',');
+                                        if (values[i] !== undefined) {
+                                            const value = parseFloat(values[i].trim());
+                                            if (!isNaN(value)) {
+                                                columnData.push(value);
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                if (columnData.length > 0) {
+                                    columns[columnName] = columnData;
+                                }
+                            }
+                            
+                            // Preparar vista previa
+                            previewText = `Archivo: ${file.name}\n`;
+                            previewText += `Filas: ${lines.length}\n`;
+                            previewText += `Columnas detectadas: ${Object.keys(columns).length}\n\n`;
+                            
+                            // Mostrar primeras líneas
+                            const previewLines = Math.min(5, lines.length);
+                            for (let i = 0; i < previewLines; i++) {
+                                previewText += lines[i] + '\n';
+                            }
+                            if (lines.length > previewLines) {
+                                previewText += `... (${lines.length - previewLines} líneas más)`;
+                            }
+                            
+                            fileData = { type: 'csv', columns: columns, rawData: lines };
+                            
+                        } else if (fileType === 'txt') {
+                            // Procesar archivo de texto
+                            const textContent = e.target.result;
+                            const lines = textContent.split('\n');
+                            
+                            // Intentar extraer datos numéricos
+                            const allNumbers = [];
+                            for (let line of lines) {
+                                const numbers = line.split(/[\s,;]+/).map(v => parseFloat(v)).filter(v => !isNaN(v));
+                                allNumbers.push(...numbers);
+                            }
+                            
+                            if (allNumbers.length > 0) {
+                                columns['Datos'] = allNumbers;
+                            }
+                            
+                            // Preparar vista previa
+                            previewText = `Archivo: ${file.name}\n`;
+                            previewText += `Números encontrados: ${allNumbers.length}\n\n`;
+                            previewText += `Primeros 10 números: ${allNumbers.slice(0, 10).join(', ')}`;
+                            if (allNumbers.length > 10) {
+                                previewText += ` ... (${allNumbers.length - 10} más)`;
+                            }
+                            
+                            fileData = { type: 'txt', columns: columns, rawData: lines };
+                        } else {
+                            throw new Error('Formato de archivo no soportado');
+                        }
+                        
+                        // Mostrar vista previa
+                        previewContent.textContent = previewText;
+                        filePreview.classList.remove('hidden');
+                        
+                        // Mostrar selector de columnas si hay múltiples columnas
+                        if (Object.keys(columns).length > 1) {
+                            columnOptions.innerHTML = '';
+                            Object.keys(columns).forEach((colName, index) => {
+                                const colData = columns[colName];
+                                const button = document.createElement('button');
+                                button.className = 'column-option';
+                                button.textContent = `${colName} (${colData.length} datos)`;
+                                button.dataset.index = index;
+                                
+                                button.addEventListener('click', () => {
+                                    // Deseleccionar todos
+                                    document.querySelectorAll('.column-option').forEach(opt => {
+                                        opt.classList.remove('selected');
+                                    });
+                                    
+                                    // Seleccionar este
+                                    button.classList.add('selected');
+                                    selectedColumn = colName;
+                                    
+                                    // Mostrar éxito
+                                    successText.textContent = `Columna "${colName}" seleccionada (${colData.length} datos)`;
+                                    fileSuccess.classList.remove('hidden');
+                                    
+                                    // Llenar el textarea con los datos
+                                    dataInput.value = colData.join(', ');
+                                });
+                                
+                                columnOptions.appendChild(button);
+                            });
+                            
+                            columnSelector.classList.remove('hidden');
+                            selectedColumn = null;
+                        } else if (Object.keys(columns).length === 1) {
+                            // Si solo hay una columna, seleccionarla automáticamente
+                            const colName = Object.keys(columns)[0];
+                            const colData = columns[colName];
+                            selectedColumn = colName;
+                            
+                            // Mostrar éxito
+                            successText.textContent = `Archivo cargado: ${file.name} - ${colData.length} datos extraídos`;
+                            fileSuccess.classList.remove('hidden');
+                            
+                            // Llenar el textarea con los datos
+                            dataInput.value = colData.join(', ');
+                        } else {
+                            throw new Error('No se encontraron datos numéricos en el archivo');
+                        }
+                        
+                    } catch (error) {
+                        errorText.textContent = `Error al procesar el archivo: ${error.message}`;
+                        errorDiv.classList.remove('hidden');
+                        filePreview.classList.add('hidden');
+                        columnSelector.classList.add('hidden');
+                        fileSuccess.classList.add('hidden');
+                    }
+                };
+                
+                if (fileType === 'xlsx' || fileType === 'xls') {
+                    reader.readAsBinaryString(file);
+                } else {
+                    reader.readAsText(file);
+                }
+            }
+
+            // --- LÓGICA PRINCIPAL DE CÁLCULO ---
+            solveBtn.addEventListener('click', () => {
+                const data = getCurrentData();
+                
+                if(data.length < 2) {
+                    errorText.textContent = "Ingresa al menos 2 datos numéricos.";
+                    errorDiv.classList.remove('hidden');
+                    document.getElementById('resultsCard').classList.add('hidden');
+                    document.getElementById('tableCard').classList.add('hidden');
+                    document.getElementById('stepsCard').classList.add('hidden');
+                    return;
+                }
+                
+                errorDiv.classList.add('hidden');
+                fileSuccess.classList.add('hidden');
+
+                document.getElementById('resultsCard').classList.remove('hidden');
+                document.getElementById('chartsCard').classList.remove('hidden');
+                document.getElementById('tableCard').classList.remove('hidden');
+                document.getElementById('stepsCard').classList.remove('hidden');
+                
+                // Resetear estado del botón de pasos
+                stepsContent.classList.add('hidden');
+                toggleStepsBtn.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg> Mostrar detalle`;
+
+                calculateStats(data);
+                drawCharts(data);
+                generateTable(data);
+            });
+
+            function calculateStats(data) {
+                const n = data.length;
+                const mean = math.mean(data);
+                const median = math.median(data);
+                const mode = math.mode(data);
+                const std = math.std(data, 'unbiased');
+                const variance = math.variance(data, 'unbiased');
+                const min = data[0];
+                const max = data[n-1];
+                const range = max - min;
+                const cv = (std / mean) * 100;
+                
+                const q1 = math.quantileSeq(data, 0.25);
+                const q3 = math.quantileSeq(data, 0.75);
+
+                let sum3 = 0;
+                let sum4 = 0;
+                data.forEach(x => {
+                    sum3 += Math.pow(x - mean, 3);
+                    sum4 += Math.pow(x - mean, 4);
+                });
+                
+                const skewness = (n * sum3) / ((n - 1) * (n - 2) * Math.pow(std, 3));
+                const kurtosis = (sum4 / (n * Math.pow(math.std(data, 'uncorrected'), 4))) - 3; 
+
+                document.getElementById('resMean').textContent = mean.toFixed(2);
+                document.getElementById('resMedian').textContent = median.toFixed(2);
+                document.getElementById('resMode').textContent = Array.isArray(mode) ? mode.join(', ') : mode;
+                document.getElementById('resMin').textContent = min;
+                document.getElementById('resMax').textContent = max;
+                document.getElementById('resQ1').textContent = q1.toFixed(2);
+                document.getElementById('resQ3').textContent = q3.toFixed(2);
+                document.getElementById('resRange').textContent = range.toFixed(2);
+                document.getElementById('resVar').textContent = variance.toFixed(2);
+                document.getElementById('resStd').textContent = std.toFixed(2);
+                document.getElementById('resCV').textContent = cv.toFixed(2);
+                
+                document.getElementById('resSkew').textContent = skewness ? skewness.toFixed(3) : "0";
+                document.getElementById('resKurt').textContent = kurtosis ? kurtosis.toFixed(3) : "0";
+
+                generateSteps(data, mean, n, variance, std, skewness);
+            }
+
+            // --- FUNCIÓN: DIBUJAR GRÁFICO ---
+            function drawCharts(data) {
+                const n = data.length;
+                const mean = math.mean(data);
+                const std = math.std(data, 'unbiased');
+                const min = Math.min(...data);
+                const max = Math.max(...data);
+                const isDarkMode = document.body.classList.contains('dark');
+
+                // Colores dinámicos según tema
+                const textColor = isDarkMode ? '#e2e8f0' : '#1e293b';
+                const gridColor = isDarkMode ? '#334155' : '#e2e8f0';
+                const barColor = isDarkMode ? 'rgba(96, 165, 250, 0.5)' : 'rgba(59, 130, 246, 0.4)';
+                const barLineColor = isDarkMode ? '#60a5fa' : '#3b82f6';
+                
+                const plotBgColor = isDarkMode ? 'rgb(30, 41, 59)' : 'rgb(255, 255, 255)';
+                const paperBgColor = plotBgColor;
+                
+                let sum4 = 0;
+                data.forEach(x => sum4 += Math.pow(x - mean, 4));
+                const kurtosis = (sum4 / (n * Math.pow(math.std(data, 'uncorrected'), 4))) - 3; 
+
+                let clasificacion = "";
+                let colorTitulo = "";
+
+                if (kurtosis > 0.2) { 
+                    clasificacion = "LEPTOCÚRTICA";
+                    colorTitulo = isDarkMode ? "#f87171" : "#ef4444"; 
+                } else if (kurtosis < -0.2) {
+                    clasificacion = "PLATICÚRTICA";
+                    colorTitulo = "#f59e0b"; 
+                } else {
+                    clasificacion = "MESOCÚRTICA";
+                    colorTitulo = isDarkMode ? "#34d399" : "#10b981"; 
+                }
+
+                const traceHist = {
+                    x: data,
+                    type: 'histogram',
+                    histnorm: 'probability density', 
+                    marker: { color: barColor, line: {color: barLineColor, width: 1} },
+                    name: 'Distribución Observada',
+                    xbins: { start: min, end: max }
+                };
+
+                const xValues = [];
+                const yValues = [];
+                const rangeDiff = max - min || 1;
+                for (let x = min - rangeDiff/4; x <= max + rangeDiff/4; x += rangeDiff/100) {
+                    xValues.push(x);
+                    const num = Math.exp(-0.5 * Math.pow((x - mean) / std, 2));
+                    const den = std * Math.sqrt(2 * Math.PI);
+                    yValues.push(num / den);
+                }
+
+                const traceCurve = {
+                    x: xValues,
+                    y: yValues,
+                    mode: 'lines',
+                    name: 'Curva Normal (Teórica)',
+                    line: { color: isDarkMode ? '#a78bfa' : '#8b5cf6', width: 2, dash: 'dash' }
+                };
+
+                const layout = {
+                    title: {
+                        text: `Análisis de Forma: ${clasificacion} (g2=${kurtosis.toFixed(2)})`,
+                        font: { size: 18, color: colorTitulo }
+                    },
+                    paper_bgcolor: paperBgColor,
+                    plot_bgcolor: plotBgColor,
+                    margin: { t: 60, b: 40, l: 50, r: 20 },
+                    xaxis: { 
+                        title: 'Valor (X)', 
+                        color: textColor, 
+                        gridcolor: gridColor,
+                        zerolinecolor: gridColor,
+                        linecolor: gridColor, 
+                        linewidth: 1 
+                    },
+                    yaxis: { 
+                        title: 'Densidad', 
+                        color: textColor,
+                        gridcolor: gridColor,
+                        zerolinecolor: gridColor,
+                        linecolor: gridColor, 
+                        linewidth: 1
+                    },
+                    showlegend: true,
+                    legend: { 
+                        x: 0.8, y: 1,
+                        bgcolor: 'rgba(0,0,0,0)',
+                        font: { color: textColor }
+                    }
+                };
+                
+                const config = {
+                    displayModeBar: true, 
+                    responsive: true,
+                    modeBarButtonsToRemove: ['lasso2d', 'select2d'],
+                    displaylogo: false
+                };
+
+                Plotly.newPlot('dist-container', [traceHist, traceCurve], layout, config);
+            }
+
+            function generateTable(data) {
+                const n = data.length;
+                const min = data[0], max = data[n - 1];
+                const k = Math.round(1 + 3.322 * Math.log10(n));
+                const amp = (max - min) / k || 1; 
+                const tbody = document.querySelector('#freqTable tbody');
+                tbody.innerHTML = '';
+                
+                let current = min, acc = 0, labels = [], values = [];
+
+                for(let i = 0; i < k; i++) {
+                    let limit = (i === k - 1) ? max + 0.0001 : current + amp;
+                    const freq = data.filter(x => x >= current && x < limit).length;
+                    acc += freq;
+                    const label = `[${current.toFixed(1)} - ${(i === k-1 ? max : limit).toFixed(1)}${i === k-1 ? ']' : ')'}`;
+                    labels.push(label); values.push(freq);
+
+                    tbody.innerHTML += `<tr><td>${label}</td><td>${((current + (i === k - 1 ? max : limit)) / 2).toFixed(2)}</td><td>${freq}</td><td>${acc}</td><td>${(freq/n).toFixed(3)}</td><td>${((freq/n)*100).toFixed(1)}%</td></tr>`;
+                    current += amp;
+                }
+
+                const maxFi = Math.max(...values);
+                document.getElementById('interpretationText').innerHTML = `La mayor concentración está en <b>${labels[values.indexOf(maxFi)]}</b> con <b>${maxFi}</b> datos.`;
+                document.getElementById('interpretationBox').classList.remove('hidden');
+
+                const isDark = document.body.classList.contains('dark');
+                Plotly.newPlot('freqBarChart', [{ x: labels, y: values, type: 'bar', marker: {color: '#3b82f6'} }], { 
+                    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+                    font: { color: isDark ? '#f8fafc' : '#1e293b' }
+                }, {responsive: true});
+            }
+
+            function generateSteps(data, mean, n, variance, std, skewness) {
+                const sumS = data.length > 6 ? `${data.slice(0,3).join('+')}...` : data.join('+');
+                document.getElementById('stepMean').innerHTML = `$$ \\bar{x} = \\frac{${sumS}}{${n}} = ${mean.toFixed(2)} $$`;
+                document.getElementById('stepVar').innerHTML = `$$ s^2 = ${variance.toFixed(2)} \\rightarrow s = ${std.toFixed(2)} $$`;
+                document.getElementById('stepSkew').innerHTML = `$$ g_1 = ${skewness.toFixed(3)} $$`;
+                if (window.MathJax) MathJax.typesetPromise();
+            }
+
+            // LÓGICA DE EXCEL
+            if (botonExcel) {
+                botonExcel.addEventListener('click', () => {
+                    if (typeof XLSX === 'undefined') return alert("Librería no cargada");
+                    const tabla = document.getElementById('freqTable');
+                    if (!tabla || tabla.querySelectorAll('tbody tr').length === 0) return alert("No hay datos");
+                    
+                    // Crear un nuevo libro de trabajo
+                    const wb = XLSX.utils.book_new();
+                    
+                    // Convertir tabla a hoja de cálculo
+                    const ws = XLSX.utils.table_to_sheet(tabla);
+                    
+                    // Agregar la hoja al libro
+                    XLSX.utils.book_append_sheet(wb, ws, "Distribución Frecuencias");
+                    
+                    // Agregar una segunda hoja con los estadísticos
+                    const statsData = [
+                        ["RESUMEN ESTADÍSTICO", ""],
+                        ["Media (x̄)", document.getElementById('resMean').textContent],
+                        ["Mediana (Me)", document.getElementById('resMedian').textContent],
+                        ["Moda (Mo)", document.getElementById('resMode').textContent],
+                        ["Cuartil 1 (Q1)", document.getElementById('resQ1').textContent],
+                        ["Cuartil 3 (Q3)", document.getElementById('resQ3').textContent],
+                        ["Mínimo", document.getElementById('resMin').textContent],
+                        ["Máximo", document.getElementById('resMax').textContent],
+                        ["Rango", document.getElementById('resRange').textContent],
+                        ["Varianza (s²)", document.getElementById('resVar').textContent],
+                        ["Desv. Estándar (s)", document.getElementById('resStd').textContent],
+                        ["CV (%)", document.getElementById('resCV').textContent],
+                        ["Asimetría (g1)", document.getElementById('resSkew').textContent],
+                        ["Curtosis (g2)", document.getElementById('resKurt').textContent],
+                        ["", ""],
+                        ["Fecha de exportación", new Date().toLocaleString()]
+                    ];
+                    
+                    const statsWs = XLSX.utils.aoa_to_sheet(statsData);
+                    XLSX.utils.book_append_sheet(wb, statsWs, "Estadísticos");
+                    
+                    // Descargar el archivo
+                    XLSX.writeFile(wb, "ISIMath_Reporte.xlsx");
+                });
+            }
+
+            clearBtn.addEventListener('click', () => {
+                // Limpiar todo
+                dataInput.value = '';
+                fileInput.value = '';
+                fileData = null;
+                selectedColumn = null;
+                filePreview.classList.add('hidden');
+                columnSelector.classList.add('hidden');
+                fileSuccess.classList.add('hidden');
+                errorDiv.classList.add('hidden');
+                
+                // Ocultar resultados
+                document.getElementById('resultsCard').classList.add('hidden');
+                document.getElementById('tableCard').classList.add('hidden');
+                document.getElementById('stepsCard').classList.add('hidden');
+                document.getElementById('interpretationBox').classList.add('hidden');
+                
+                // Restablecer el gráfico a vacío
+                const isDark = document.body.classList.contains('dark');
+                drawEmptyChart(isDark);
+                
+                // Restablecer selector de columnas
+                columnOptions.innerHTML = '';
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,547 @@
+/* --- Variables de Color y Estilos Base --- */
+        :root {
+            --app-bg-light: #F0F2F5;
+            --app-bg-dark: #1a1a2e;
+            --app-surface-light: #FFFFFF;
+            --app-surface-dark: #16213E;
+            --app-primary-light: #3567f0; /* Morado similar a la imagen */
+            --app-primary-dark: #44c4ff;
+            --app-secondary-light: #20B2AA; /* Teal similar a la imagen */
+            --app-secondary-dark: #48D1CC;
+            --app-text-light: #0D0D0D;
+            --app-text-dark: #E0E0E0;
+            --app-text-muted-light: #6c757d;
+            --app-text-muted-dark: #a0a0a0;
+            --app-border-light: #dee2e6;
+            --app-border-dark: #495057;
+            --app-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --app-shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+            --derivadas-bg-light: #F0F2F5;
+            --derivadas-bg-dark: #1a1a2e;
+            --derivadas-surface-light: #FFFFFF;
+            --derivadas-surface-dark: #16213E;
+            --derivadas-primary-light: #6A5ACD; /* Morado similar a la imagen */
+            --derivadas-primary-dark: #7B68EE;
+            --derivadas-secondary-light: #20B2AA; /* Teal similar a la imagen */
+            --derivadas-secondary-dark: #48D1CC;
+            --derivadas-text-light: #0D0D0D;
+            --derivadas-text-dark: #E0E0E0;
+            --derivadas-text-muted-light: #6c757d;
+            --derivadas-text-muted-dark: #a0a0a0;
+            --derivadas-border-light: #dee2e6;
+            --derivadas-border-dark: #495057;
+            --derivadas-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --derivadas-shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+            --integralesD-bg-light: #F0F2F5;
+            --integralesD-bg-dark: #1a1a2e;
+            --integralesD-surface-light: #FFFFFF;
+            --integralesD-surface-dark: #16213E;
+            --integralesD-primary-light: #6A5ACD; /* Morado similar a la imagen */
+            --integralesD-primary-dark: #7B68EE;
+            --integralesD-secondary-light: #20B2AA; /* Teal similar a la imagen */
+            --integralesD-secondary-dark: #48D1CC;
+            --integralesD-text-light: #0D0D0D;
+            --integralesD-text-dark: #E0E0E0;
+            --integralesD-text-muted-light: #6c757d;
+            --integralesD-text-muted-dark: #a0a0a0;
+            --integralesD-border-light: #dee2e6;
+            --integralesD-border-dark: #495057;
+            --integralesD-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --integralesD-shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+            --integralesI-bg-light: #F0F2F5;
+            --integralesI-bg-dark: #1a1a2e;
+            --integralesI-surface-light: #FFFFFF;
+            --integralesI-surface-dark: #16213E;
+            --integralesI-primary-light: #6A5ACD;
+            --integralesI-primary-dark: #7B68EE;
+            --integralesI-secondary-light: #20B2AA;
+            --integralesI-secondary-dark: #48D1CC;
+            --integralesI-text-light: #0D0D0D;
+            --integralesI-text-dark: #E0E0E0;
+            --integralesI-text-muted-light: #6c757d;
+            --integralesI-text-muted-dark: #a0a0a0;
+            --integralesI-border-light: #dee2e6;
+            --integralesI-border-dark: #495057;
+            --integralesI-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --integralesI-shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.2);
+            --integralesI-success-light: #28a745;
+            --integralesI-success-dark: #34d058;
+            --integralesI-error-light: #dc3545;
+            --integralesI-error-dark: #f85149;
+
+            --limites-bg-light: #F0F2F5;
+            --limites-bg-dark: #1a1a2e;
+            --limites-surface-light: #FFFFFF;
+            --limites-surface-dark: #16213E;
+            --limites-primary-light: #6A5ACD; /* Morado similar a la imagen */
+            --limites-primary-dark: #7B68EE;
+            --limites-secondary-light: #20B2AA; /* Teal similar a la imagen */
+            --limites-secondary-dark: #48D1CC;
+            --limites-text-light: #0D0D0D;
+            --limites-text-dark: #E0E0E0;
+            --limites-text-muted-light: #6c757d;
+            --limites-text-muted-dark: #a0a0a0;
+            --limites-border-light: #dee2e6;
+            --limites-border-dark: #495057;
+            --limites-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --limites-shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+            --calculadoraMatriz-bg-light: #F0F2F5;
+            --calculadoraMatriz-bg-dark: #1a1a2e;
+            --calculadoraMatriz-surface-light: #FFFFFF;
+            --calculadoraMatriz-surface-dark: #16213E;
+            --calculadoraMatriz-primary-light: #6A5ACD; /* Morado similar a la imagen */
+            --calculadoraMatriz-primary-dark: #7B68EE;
+            --calculadoraMatriz-secondary-light: #20B2AA; /* Teal similar a la imagen */
+            --calculadoraMatriz-secondary-dark: #48D1CC;
+            --calculadoraMatriz-text-light: #0D0D0D;
+            --calculadoraMatriz-text-dark: #E0E0E0;
+            --calculadoraMatriz-text-muted-light: #6c757d;
+            --calculadoraMatriz-text-muted-dark: #a0a0a0;
+            --calculadoraMatriz-border-light: #dee2e6;
+            --calculadoraMatriz-border-dark: #495057;
+            --calculadoraMatriz-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --calculadoraMatriz-shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+            --determinantes-bg-light: #F0F2F5;
+            --determinantes-bg-dark: #1a1a2e;
+            --determinantes-surface-light: #FFFFFF;
+            --determinantes-surface-dark: #16213E;
+            --determinantes-primary-light: #6A5ACD; /* Morado similar a la imagen */
+            --determinantes-primary-dark: #7B68EE;
+            --determinantes-secondary-light: #20B2AA; /* Teal similar a la imagen */
+            --determinantes-secondary-dark: #48D1CC;
+            --determinantes-text-light: #0D0D0D;
+            --determinantes-text-dark: #E0E0E0;
+            --determinantes-text-muted-light: #6c757d;
+            --determinantes-text-muted-dark: #a0a0a0;
+            --determinantes-border-light: #dee2e6;
+            --determinantes-border-dark: #495057;
+            --determinantes-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --determinantes-shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+            --inversa-bg-light: #F0F2F5;
+            --inversa-bg-dark: #1a1a2e;
+            --inversa-surface-light: #FFFFFF;
+            --inversa-surface-dark: #16213E;
+            --inversa-primary-light: #6A5ACD; /* Morado similar a la imagen */
+            --inversa-primary-dark: #7B68EE;
+            --inversa-secondary-light: #20B2AA; /* Teal similar a la imagen */
+            --inversa-secondary-dark: #48D1CC;
+            --inversa-text-light: #0D0D0D;
+            --inversa-text-dark: #E0E0E0;
+            --inversa-text-muted-light: #6c757d;
+            --inversa-text-muted-dark: #a0a0a0;
+            --inversa-border-light: #dee2e6;
+            --inversa-border-dark: #495057;
+            --inversa-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --inversa-shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+            --iterativos-bg-light: #F0F2F5;
+            --iterativos-bg-dark: #1a1a2e;
+            --iterativos-surface-light: #FFFFFF;
+            --iterativos-surface-dark: #16213E;
+            --iterativos-primary-light: #6A5ACD; /* Morado similar a la imagen */
+            --iterativos-primary-dark: #7B68EE;
+            --iterativos-secondary-light: #20B2AA; /* Teal similar a la imagen */
+            --iterativos-secondary-dark: #48D1CC;
+            --iterativos-text-light: #0D0D0D;
+            --iterativos-text-dark: #E0E0E0;
+            --iterativos-text-muted-light: #6c757d;
+            --iterativos-text-muted-dark: #a0a0a0;
+            --iterativos-border-light: #dee2e6;
+            --iterativos-border-dark: #495057;
+            --iterativos-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --iterativos-shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--app-bg-light);
+            color: var(--app-text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* manager.css */
+body.dark {
+    background-color: var(--app-bg-dark); /* Estilo para el modo oscuro */
+    color: var(--app-text-dark); /* Estilo para el modo oscuro */
+}
+
+        /* --- Clases de Utilidad --- */
+        .app__hidden {
+            display: none !important;
+        }
+
+        /* --- Estructura Principal --- */
+        .app__container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Encabezado --- */
+        .app__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background-color: var(--app-surface-light);
+            border-bottom: 1px solid var(--app-border-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        body.dark .app__header {
+            background-color: var(--app-surface-dark);
+            border-bottom: 1px solid var(--app-border-dark);
+        }
+
+        .app__logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+        }
+
+        .app__logo-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--app-primary-light), var(--app-secondary-light));
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        body.dark .app__logo-icon {
+             background: linear-gradient(45deg, var(--app-primary-dark), var(--app-secondary-dark));
+        }
+
+        .app__logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .app__breadcrumbs {
+            font-size: 1rem;
+            color: var(--app-text-muted-light);
+            font-weight: 500;
+        }
+        body.dark .app__breadcrumbs {
+            color: var(--app-text-muted-dark);
+        }
+
+        .app__nav-desktop {
+            display: none; /* Oculto en móvil */
+            gap: 1.5rem;
+        }
+
+        .app__nav-link {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--app-text-muted-light);
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .app__nav-link:hover, .app__nav-link.active {
+            color: var(--app-primary-light);
+        }
+        
+        body.dark .app__nav-link {
+            color: var(--app-text-muted-dark);
+        }
+        body.dark .app__nav-link:hover, body.dark .app__nav-link.active {
+            color: var(--app-primary-dark);
+        }
+
+        .app__header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .app__theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--app-text-muted-light);
+            transition: color 0.2s;
+        }
+        .app__theme-toggle:hover {
+            color: var(--app-primary-light);
+        }
+        body.dark .app__theme-toggle {
+            color: var(--app-text-muted-dark);
+        }
+        body.dark .app__theme-toggle:hover {
+            color: var(--app-primary-dark);
+        }
+
+        .app__mobile-menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.8rem;
+        }
+        
+        /* --- Menú Móvil --- */
+        .app__nav-mobile {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background-color: var(--app-surface-light);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            z-index: 1001;
+            transition: left 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+        }
+        .app__nav-mobile.open {
+            left: 0;
+        }
+        body.dark .app__nav-mobile {
+            background-color: var(--app-surface-dark);
+        }
+        .app__mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .app__mobile-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--app-text-light);
+        }
+        body.dark .app__mobile-close-btn {
+            color: var(--app-text-dark);
+        }
+
+
+        /* --- Contenido Principal --- */
+        .app__main-content {
+            flex-grow: 1;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- Vista Inicial --- */
+        .app__initial-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .app__welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--app-primary-light);
+        }
+        body.dark .app__welcome-title {
+            color: var(--app-primary-dark);
+        }
+
+        .app__welcome-text {
+            font-size: 1.1rem;
+            color: var(--app-text-muted-light);
+            max-width: 450px;
+            margin: 0.5rem 0 2rem 0;
+        }
+        body.dark .app__welcome-text {
+            color: var(--app-text-muted-dark);
+        }
+
+
+        .app__cards-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .app__card {
+            background-color: var(--app-surface-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--app-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 1px solid var(--app-border-light);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+        .app__card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        body.dark .app__card {
+            background-color: var(--app-surface-dark);
+            border: 1px solid var(--app-border-dark);
+            box-shadow: var(--app-shadow-dark);
+        }
+        body.dark .app__card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .app__card-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+            color: var(--app-primary-light);
+        }
+        body.dark .app__card-icon {
+            color: var(--app-primary-dark);
+        }
+
+        .app__card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .app__card-description {
+            color: var(--app-text-muted-light);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+        body.dark .app__card-description {
+            color: var(--app-text-muted-dark);
+        }
+
+        .app__card-button {
+            background-color: var(--app-primary-light);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            pointer-events: none; /* El click se maneja en la tarjeta padre */
+        }
+        body.dark .app__card-button {
+            background-color: var(--app-primary-dark);
+        }
+        
+        /* --- SVG Rotatorio --- */
+        .app__rotating-svg-container {
+            width: 100%;
+            max-width: 300px;
+            margin-top: 2rem;
+        }
+
+        .app__rotating-svg {
+            width: 100%;
+            height: auto;
+            animation: app-spin 20s linear infinite;
+        }
+
+        @keyframes app-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* --- Contenedores de Contenido Específico --- */
+        .app__content-section {
+            background-color: var(--app-surface-light);
+            padding: 2rem;
+            border-radius: 12px;
+            width: 80%;
+            box-shadow: var(--app-shadow);
+            border: 1px solid var(--app-border-light);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        body.dark .app__content-section {
+            background-color: var(--app-surface-dark);
+            border: 1px solid var(--app-border-dark);
+            box-shadow: var(--app-shadow-dark);
+        }
+        .app__content-section h2 {
+            font-size: 2rem;
+            color: var(--app-primary-light);
+            margin-bottom: 1.5rem;
+        }
+        body.dark .app__content-section h2 {
+            color: var(--app-primary-dark);
+        }
+        .app__content-svg {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            color: var(--app-secondary-light);
+        }
+        body.dark .app__content-svg {
+            color: var(--app-secondary-dark);
+        }
+
+
+        /* --- Responsive: Tablet --- */
+        @media (min-width: 768px) {
+            .app__mobile-menu-btn {
+                display: none;
+            }
+            .app__nav-desktop {
+                display: flex;
+            }
+            .app__cards-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .app__main-content {
+                flex-direction: row;
+                align-items: flex-start;
+                gap: 2rem;
+            }
+            .app__cards-container.full-width {
+                flex-grow: 1;
+            }
+            .app__rotating-svg-container {
+                flex-shrink: 0;
+                width: 300px;
+                margin-top: 0;
+            }
+            .app__welcome-title {
+                font-size: 2.5rem;
+            }
+            .app__content-section {
+                display: flex;
+                gap: 1rem;  
+            }
+        }
+
+        /* --- Responsive: Desktop --- */
+        @media (min-width: 1024px) {
+            .app__cards-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }

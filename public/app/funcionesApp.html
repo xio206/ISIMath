@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Herramientas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light theme colors */
+            --light-bg: #f8fafc;
+            --light-surface: #ffffff;
+            --light-surface-alt: #f1f5f9;
+            --light-text-primary: #1e293b;
+            --light-text-secondary: #475569;
+            --light-border: #e2e8f0;
+            --light-shadow: rgba(0, 0, 0, 0.1);
+            
+            /* Dark theme colors */
+            --dark-bg: #0f172a;
+            --dark-surface: #1e293b;
+            --dark-surface-alt: #334155;
+            --dark-text-primary: #f8fafc;
+            --dark-text-secondary: #94a3b8;
+            --dark-border: #334155;
+            --dark-shadow: rgba(2, 6, 23, 0.3);
+            
+            /* Accent colors (consistent across themes) */
+            --midnight-blue: #0f172a;
+            --deep-blue: #1e293b;
+            --navy-blue: #1e3a8a;
+            --electric-blue: #3b82f6;
+            --light-blue: #60a5fa;
+            --pale-blue: #bfdbfe;
+            
+            /* Default to light theme */
+            --bg-primary: var(--light-bg);
+            --bg-surface: var(--light-surface);
+            --bg-surface-alt: var(--light-surface-alt);
+            --text-primary: var(--light-text-primary);
+            --text-secondary: var(--light-text-secondary);
+            --border-color: var(--light-border);
+            --shadow-color: var(--light-shadow);
+        }
+        
+        /* Dark theme */
+        .dark {
+            --bg-primary: var(--dark-bg);
+            --bg-surface: var(--dark-surface);
+            --bg-surface-alt: var(--dark-surface-alt);
+            --text-primary: var(--dark-text-primary);
+            --text-secondary: var(--dark-text-secondary);
+            --border-color: var(--dark-border);
+            --shadow-color: var(--dark-shadow);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Header Section */
+        .header-section {
+            background: linear-gradient(135deg, var(--navy-blue) 0%, #172554 100%);
+            padding: 3rem 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .header-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .title-section h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .title-section h1::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--electric-blue), transparent);
+            border-radius: 3px;
+        }
+        
+        .title-section p {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            line-height: 1.6;
+        }
+        
+        /* Theme Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .theme-toggle svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle span {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Main Content */
+        .app__main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Cards Container */
+        .app__cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .app__card {
+            background: var(--bg-surface);
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px var(--shadow-color);
+        }
+        
+        .app__card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--electric-blue), var(--light-blue));
+            border-radius: 1rem 1rem 0 0;
+        }
+        
+        .app__card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px var(--shadow-color);
+            border-color: var(--electric-blue);
+        }
+        
+        .app__card-icon {
+            width: 3rem;
+            height: 3rem;
+            color: var(--electric-blue);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .app__card:hover .app__card-icon {
+            transform: scale(1.1);
+            color: var(--light-blue);
+        }
+        
+        .app__card-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .app__card-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        
+        .app__card-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--electric-blue);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .app__card-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .app__card-button:hover::before {
+            left: 100%;
+        }
+        
+        .app__card-button:hover {
+            background: var(--light-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Back Button */
+        .app__back {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 100;
+            background: var(--bg-surface);
+            padding: 0.75rem;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px var(--shadow-color);
+        }
+        
+        .app__back:hover {
+            background: var(--electric-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px var(--shadow-color);
+        }
+        
+        .app__return {
+            width: 1.5rem;
+            height: 1.5rem;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+        }
+        
+        .app__back:hover .app__return {
+            color: white;
+        }
+        
+        /* Rotating SVG */
+        .app__rotating-svg-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 0;
+        }
+        
+        .app__rotating-svg {
+            width: 200px;
+            height: 200px;
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Utility Classes */
+        .app__hidden {
+            display: none;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .title-section h1 {
+                font-size: 2.5rem;
+            }
+            
+            .app__cards-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .app__main-content {
+                padding: 1rem;
+            }
+            
+            .app__back {
+                top: 1rem;
+                left: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .title-section h1 {
+                font-size: 2rem;
+            }
+            
+            .app__card {
+                padding: 1.5rem;
+            }
+            
+            .header-section {
+                padding: 2rem 1rem;
+            }
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--electric-blue);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--light-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="header-content">
+            <div class="title-section">
+                <h1>ISIMath</h1>
+                <p>Herramientas matemáticas avanzadas para el análisis y cálculo diferencial. Explora conceptos fundamentales con ejemplos interactivos y soluciones paso a paso.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="app__main-content">
+        <!-- Cards Container -->
+        <div class="app__cards-container">
+            <div class="app__card" data-target="limites" data-name="Límites">
+                <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 12h16M4 12l6-6m-6 6l6 6"/><path d="M21 5h-6"/><path d="M21 19h-6"/><path d="m15 5 6 14"/>
+                </svg>
+                <h3 class="app__card-title">Límites</h3>
+                <p class="app__card-description">Calcula el límite de una función cuando la variable tiende a un número específico. Incluye casos especiales y formas indeterminadas.</p>
+                <a class="app__card-button" href="/public/function/limites.html">
+                    Explorar
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+            
+            <div class="app__card" data-target="derivadas" data-name="Derivadas">
+                <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 18V5.2C9 4 10.1 3 11.3 3s2.4.9 2.7 2.1L15 10"/><path d="M12 18h.01"/><path d="M6 18h.01"/><path d="M18 18h.01"/>
+                </svg>
+                <h3 class="app__card-title">Derivadas</h3>
+                <p class="app__card-description">Encuentra la razón de cambio instantánea de una función. Aplica reglas de derivación y resuelve problemas de optimización.</p>
+                <a class="app__card-button" href="/public/function/derivadas.html">
+                    Explorar
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+            
+            <div class="app__card" data-target="integrales-definidas" data-name="Integrales Definidas">
+                <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 3l-6 6v6l6 6"/><path d="M18 21h-7"/><path d="M18 3h-7"/><path d="M15 3v18"/>
+                </svg>
+                <h3 class="app__card-title">Integrales Definidas</h3>
+                <p class="app__card-description">Calcula el área bajo la curva entre dos puntos específicos. Resuelve problemas de áreas y volúmenes con precisión.</p>
+                <a class="app__card-button" href="/public/function/IntegralesDefinidas.html">
+                    Explorar
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+            
+            <div class="app__card" data-target="integrales-indefinidas" data-name="Integrales Indefinidas">
+                <svg class="app__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 3l-6 6v6l6 6"/><path d="M18 3v18"/>
+                </svg>
+                <h3 class="app__card-title">Integrales Indefinidas</h3>
+                <p class="app__card-description">Encuentra la antiderivada o primitiva de una función. Domina técnicas de integración y constantes de integración.</p>
+                <a class="app__card-button" href="/public/function/IntegralesIndifinidas.html">
+                    Explorar
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Rotating SVG -->
+        <div class="app__rotating-svg-container app__hidden">
+            <svg class="app__rotating-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="app-gradient-section" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--electric-blue); stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:var(--light-blue); stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="45" fill="none" stroke="url(#app-gradient-section)" stroke-width="4" stroke-dasharray="282.74" stroke-dashoffset="70"/>
+                <ellipse cx="50" cy="50" rx="45" ry="20" fill="none" stroke="url(#app-gradient-section)" stroke-width="2" transform="rotate(45 50 50)"/>
+                <ellipse cx="50" cy="50" rx="45" ry="20" fill="none" stroke="url(#app-gradient-section)" stroke-width="2" transform="rotate(-45 50 50)"/>
+                <circle cx="50" cy="50" r="5" fill="url(#app-gradient-section)"/>
+            </svg>
+        </div>
+    </main>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+        const themeText = document.getElementById('themeText');
+        const body = document.body;
+
+        // Check for saved theme preference or default to light mode
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        
+        // Apply saved theme
+        if (savedTheme === 'dark') {
+            body.classList.add('dark');
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+            themeText.textContent = 'Modo Claro';
+        }
+
+        // Toggle theme
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            
+            if (body.classList.contains('dark')) {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+                themeText.textContent = 'Modo Claro';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+                themeText.textContent = 'Modo Oscuro';
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Card interaction (if needed for functionality)
+        document.querySelectorAll('.app__card').forEach(card => {
+            card.addEventListener('click', function() {
+                const target = this.getAttribute('data-target');
+                const name = this.getAttribute('data-name');
+                console.log(`Clicked on ${name} card with target: ${target}`);
+            });
+        });
+
+
+    </script>
+</body>
+</html>

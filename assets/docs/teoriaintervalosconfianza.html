@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intervalos de Confianza - Estadística</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Colores adaptados del tema oscuro */
+            --midnight-blue: #0f172a;
+            --deep-blue: #1e293b;
+            --navy-blue: #1e3a8a;
+            --electric-blue: #3b82f6;
+            --light-blue: #60a5fa;
+            --pale-blue: #bfdbfe;
+            --dark-gray: #0f172a;
+            --medium-gray: #334155;
+            --light-gray: #94a3b8;
+            --white: #f8fafc;
+            --success-green: #10b981;
+            --warning-yellow: #f59e0b;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--midnight-blue);
+            color: var(--white);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .math-display {
+            font-size: 1.1rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            color: var(--pale-blue);
+        }
+        
+        .step-highlight {
+            border-left: 4px solid var(--electric-blue);
+            background-color: rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .step-highlight:hover {
+            background-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .formula-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+            overflow: hidden;
+            background-color: var(--deep-blue);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .formula-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 12px rgba(2, 6, 23, 0.5);
+            border-color: var(--electric-blue);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .content-container {
+            max-width: 95%;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, var(--navy-blue) 0%, #172554 100%);
+            padding: 3rem 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .header-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        
+        .resource-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid var(--electric-blue);
+            background-color: var(--deep-blue);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .resource-item:hover {
+            transform: translateX(5px);
+            border-color: var(--light-blue);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .home-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(2, 6, 23, 0.5);
+            background-color: var(--navy-blue);
+            border: 1px solid var(--electric-blue);
+        }
+        
+        .home-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(2, 6, 23, 0.7);
+            background-color: var(--electric-blue);
+        }
+        
+        .content-card {
+            background-color: var(--deep-blue);
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+            border: 1px solid var(--medium-gray);
+            border-radius: 0.75rem;
+        }
+        
+        .tab-button {
+            transition: all 0.2s ease;
+        }
+        
+        .title-accent {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .title-accent::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--electric-blue), transparent);
+            border-radius: 3px;
+        }
+        
+        .text-primary {
+            color: var(--white);
+        }
+        
+        .text-secondary {
+            color: var(--light-gray);
+        }
+        
+        .bg-light {
+            background-color: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--midnight-blue);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--navy-blue);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--electric-blue);
+        }
+        
+        /* Tab styling */
+        .tab-button {
+            color: var(--light-gray);
+        }
+        
+        .tab-button.active {
+            color: var(--electric-blue);
+            border-bottom-color: var(--electric-blue);
+        }
+        
+        /* Link styling */
+        a {
+            color: var(--light-blue);
+            transition: color 0.2s;
+        }
+        
+        a:hover {
+            color: var(--electric-blue);
+        }
+        
+        /* Confidence interval specific */
+        .ci-visualization {
+            height: 120px;
+            position: relative;
+            background: linear-gradient(90deg, var(--deep-blue) 0%, rgba(30, 58, 138, 0.3) 50%, var(--deep-blue) 100%);
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .ci-line {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: var(--light-blue);
+        }
+        
+        .ci-point {
+            position: absolute;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            background-color: var(--electric-blue);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px var(--electric-blue);
+        }
+        
+        .ci-interval {
+            position: absolute;
+            top: 40%;
+            height: 20px;
+            background-color: rgba(59, 130, 246, 0.3);
+            border: 1px dashed var(--light-blue);
+            border-radius: 4px;
+        }
+        
+        .confidence-level {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .level-90 { background-color: rgba(16, 185, 129, 0.2); color: var(--success-green); border: 1px solid var(--success-green); }
+        .level-95 { background-color: rgba(59, 130, 246, 0.2); color: var(--electric-blue); border: 1px solid var(--electric-blue); }
+        .level-99 { background-color: rgba(245, 158, 11, 0.2); color: var(--warning-yellow); border: 1px solid var(--warning-yellow); }
+        
+        .z-value-explanation {
+            background-color: rgba(30, 41, 59, 0.5);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--success-green);
+        }
+    </style>
+</head>
+<body>
+    <div class="header-section">
+        <div class="header-content content-container">
+            <h1 class="text-4xl md:text-5xl font-bold font-poppins mb-4 title-accent">INTERVALOS DE CONFIANZA</h1>
+            <div class="max-w-3xl bg-white/5 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+                <p class="text-lg text-white/90 leading-relaxed">
+                    Los intervalos de confianza son herramientas estadísticas que permiten estimar un parámetro poblacional desconocido a partir de una muestra, proporcionando un rango de valores plausibles con un nivel de confianza determinado.
+                </p>
+                <div class="mt-4 flex items-center text-white/80">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-electric-blue" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-sm font-medium">Inferencia estadística: de la muestra a la población</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="content-container py-8">
+        <div class="main-grid">
+            <div>
+                <section class="mb-12 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                        </svg>
+                        <span class="title-accent">Conceptos Fundamentales</span>
+                    </h2>
+                    
+                    <div class="z-value-explanation">
+                        <h4 class="font-semibold text-primary mb-2">Notación Correcta para Valores Críticos</h4>
+                        <p class="text-secondary mb-2">Para un nivel de confianza \(1-\alpha\):</p>
+                        <div class="text-center my-2 math-display">$$z_{1-\alpha/2} \quad \text{o} \quad z_{\alpha/2}$$</div>
+                        <p class="text-secondary text-sm mt-2">Ambas notaciones son equivalentes: \(z_{1-\alpha/2} = -z_{\alpha/2}\) en valor absoluto. Se usa el valor positivo para intervalos bilaterales.</p>
+                    </div>
+                    
+                    <div class="bg-light rounded-lg p-6 mb-6 border border-medium-gray">
+                        <h3 class="font-semibold text-primary mb-3">1. Intervalo de Confianza para la Media Poblacional (\( \mu \))</h3>
+                        <p class="mb-4 text-secondary">Cuando se conoce la desviación estándar poblacional (\( \sigma \)) o la muestra es grande (\( n \geq 30 \)):</p>
+                        <div class="text-center text-xl font-math my-4 math-display p-4 bg-dark-gray rounded-lg border border-medium-gray">$$\bar{x} \pm z_{1-\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}$$</div>
+                        <p class="text-secondary">Donde \( \bar{x} \) es la media muestral, \( z_{1-\alpha/2} \) es el valor crítico de la distribución normal estándar para un nivel de confianza \( 1-\alpha \), \( \sigma \) es la desviación estándar poblacional y \( n \) es el tamaño de la muestra.</p>
+                    </div>
+                    
+                    <div class="bg-light rounded-lg p-6 mb-6 border border-medium-gray">
+                        <h3 class="font-semibold text-primary mb-3">2. Intervalo de Confianza para la Media con Varianza Desconocida</h3>
+                        <p class="mb-4 text-secondary">Cuando no se conoce \( \sigma \) y la muestra es pequeña (\( n < 30 \)), se usa la distribución t de Student:</p>
+                        <div class="text-center text-xl font-math my-4 math-display p-4 bg-dark-gray rounded-lg border border-medium-gray">$$\bar{x} \pm t_{1-\alpha/2, n-1} \cdot \frac{s}{\sqrt{n}}$$</div>
+                        <p class="text-secondary">Donde \( s \) es la desviación estándar muestral y \( t_{1-\alpha/2, n-1} \) es el valor crítico de la distribución t con \( n-1 \) grados de libertad.</p>
+                    </div>
+
+                    <div class="bg-light rounded-lg p-6 mb-6 border border-medium-gray">
+                        <h3 class="font-semibold text-primary mb-3">3. Intervalo de Confianza para la Proporción Poblacional (\( p \))</h3>
+                        <p class="mb-4 text-secondary">Para estimar la proporción de una característica en la población:</p>
+                        <div class="text-center text-xl font-math my-4 math-display p-4 bg-dark-gray rounded-lg border border-medium-gray">$$\hat{p} \pm z_{1-\alpha/2} \cdot \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$$</div>
+                        <p class="text-secondary">Donde \( \hat{p} \) es la proporción muestral y se requiere que \( n\hat{p} \geq 5 \) y \( n(1-\hat{p}) \geq 5 \) para aplicar la aproximación normal.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card p-6">
+                            <h3 class="font-semibold text-primary mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                                </svg>
+                                Interpretación
+                            </h3>
+                            <ul class="space-y-2 text-secondary">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Un IC del 95% significa que si tomamos muchas muestras, el 95% de los intervalos calculados contendrán el verdadero parámetro poblacional.
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    El nivel de confianza (ej. 95%) no es la probabilidad de que el parámetro esté en el intervalo, sino una propiedad del método.
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    Mayor confianza → intervalo más amplio. Mayor precisión → intervalo más estrecho.
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="formula-card p-6">
+                            <h3 class="font-semibold text-primary mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-electric-blue mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                Factores que Afectan la Amplitud
+                            </h3>
+                            <ul class="space-y-2 text-secondary">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    <strong>Tamaño de muestra (n):</strong> A mayor n, menor amplitud.
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    <strong>Nivel de confianza (1-α):</strong> A mayor confianza, mayor amplitud.
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    <strong>Variabilidad (σ o s):</strong> A mayor variabilidad, mayor amplitud.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="mb-12 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        <span class="title-accent">Ejemplos Resueltos</span>
+                    </h2>
+                    
+                    <div class="mb-8 bg-dark-gray rounded-xl overflow-hidden border border-medium-gray">
+                        <div class="flex border-b border-medium-gray">
+                            <button class="tab-button active py-3 px-6 font-medium text-electric-blue border-b-2 border-electric-blue" onclick="openExampleTab('example1', 'tab1')">
+                                Enunciado
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example1', 'tab2')">
+                                Solución
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example1', 'tab3')">
+                                Interpretación
+                            </button>
+                        </div>
+                        
+                        <div id="example1-tab1" class="tab-content active p-6">
+                            <p class="mb-4 text-secondary">Se desea estimar la estatura promedio de los estudiantes universitarios. Se toma una muestra aleatoria de 50 estudiantes, obteniendo una media de 170 cm y una desviación estándar de 8 cm. Construye un intervalo de confianza del 95% para la estatura media poblacional.</p>
+                            <div class="text-light-gray text-sm p-2 bg-light rounded-lg">
+                                Datos: \(n=50\), \(\bar{x}=170\), \(s=8\), Nivel de confianza: 95% (\( \alpha = 0.05 \))
+                            </div>
+                        </div>
+                        
+                        <div id="example1-tab2" class="tab-content p-6">
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 1: Identificar el valor crítico \( z_{1-\alpha/2} \)</h4>
+                                <p class="text-secondary mb-2">Para un 95% de confianza, \( \alpha = 0.05 \), \( \alpha/2 = 0.025 \), \( 1-\alpha/2 = 0.975 \)</p>
+                                <div class="text-center my-2 math-display text-pale-blue">$$z_{0.975} = 1.96$$</div>
+                                <p class="text-secondary text-sm mt-2">Nota: \(z_{0.975}\) es el valor que deja 0.975 del área a la izquierda en la distribución normal estándar.</p>
+                            </div>
+                            
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 2: Calcular el error estándar</h4>
+                                <div class="text-center my-2 math-display text-pale-blue">$$SE = \frac{s}{\sqrt{n}} = \frac{8}{\sqrt{50}} \approx 1.131$$</div>
+                            </div>
+                            
+                            <div class="step-highlight p-4 rounded-lg">
+                                <h4 class="font-semibold text-primary mb-2">Paso 3: Construir el intervalo</h4>
+                                <div class="text-center my-2 math-display text-pale-blue">$$170 \pm 1.96 \times 1.131$$</div>
+                                <div class="text-center my-2 font-bold math-display text-electric-blue">$$170 \pm 2.217$$</div>
+                                <div class="text-center my-2 font-bold text-xl text-white mt-3">IC<sub>95%</sub>: (167.78, 172.22)</div>
+                            </div>
+                        </div>
+                        
+                        <div id="example1-tab3" class="tab-content p-6">
+                            <div class="bg-light p-4 rounded-lg border border-medium-gray">
+                                <h4 class="font-semibold text-primary mb-2">Interpretación del Intervalo</h4>
+                                <p class="mb-3 text-secondary">Con un 95% de confianza, podemos afirmar que la estatura promedio de todos los estudiantes universitarios se encuentra entre <strong>167.78 cm y 172.22 cm</strong>.</p>
+                                <p class="text-secondary">Esto significa que si tomáramos muchas muestras de tamaño 50 y construyéramos intervalos de confianza del 95% para cada una, aproximadamente el 95% de esos intervalos contendrían la verdadera estatura media poblacional.</p>
+                                
+                                <div class="ci-visualization mt-6">
+                                    <div class="ci-line"></div>
+                                    <div class="ci-point" style="left: 50%;"></div>
+                                    <div class="ci-interval" style="left: 40%; width: 20%;"></div>
+                                    <div class="absolute bottom-2 left-0 right-0 text-center text-sm text-light-gray">
+                                        <span class="mr-4">167.78</span>
+                                        <span class="mx-4">170</span>
+                                        <span class="ml-4">172.22</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-dark-gray rounded-xl overflow-hidden border border-medium-gray">
+                        <div class="flex border-b border-medium-gray">
+                            <button class="tab-button active py-3 px-6 font-medium text-electric-blue border-b-2 border-electric-blue" onclick="openExampleTab('example2', 'tab1')">
+                                Enunciado
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example2', 'tab2')">
+                                Solución
+                            </button>
+                            <button class="tab-button py-3 px-6 font-medium text-light-gray hover:text-electric-blue" onclick="openExampleTab('example2', 'tab3')">
+                                Comparación
+                            </button>
+                        </div>
+                        
+                        <div id="example2-tab1" class="tab-content active p-6">
+                            <p class="mb-4 text-secondary">En una encuesta a 400 personas, 160 indicaron que planean viajar en las próximas vacaciones. Construye un intervalo de confianza del 99% para la proporción poblacional de personas que planean viajar.</p>
+                            <div class="text-light-gray text-sm p-2 bg-light rounded-lg">
+                                Datos: \(n=400\), \(x=160\), \(\hat{p}=160/400=0.4\), Nivel de confianza: 99% (\( \alpha = 0.01 \))
+                            </div>
+                        </div>
+                        
+                        <div id="example2-tab2" class="tab-content p-6">
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 1: Verificar condiciones</h4>
+                                <div class="text-center my-2 math-display text-pale-blue">$$n\hat{p} = 400 \times 0.4 = 160 \geq 5$$</div>
+                                <div class="text-center my-2 math-display text-pale-blue">$$n(1-\hat{p}) = 400 \times 0.6 = 240 \geq 5$$</div>
+                                <p class="text-secondary mt-2">Se cumple la aproximación normal.</p>
+                            </div>
+                            
+                            <div class="step-highlight p-4 rounded-lg mb-4">
+                                <h4 class="font-semibold text-primary mb-2">Paso 2: Valor crítico para 99% de confianza</h4>
+                                <p class="text-secondary mb-2">Para 99% de confianza: \( \alpha = 0.01 \), \( \alpha/2 = 0.005 \), \( 1-\alpha/2 = 0.995 \)</p>
+                                <div class="text-center my-2 math-display text-pale-blue">$$z_{0.995} = 2.576$$</div>
+                            </div>
+                            
+                            <div class="step-highlight p-4 rounded-lg">
+                                <h4 class="font-semibold text-primary mb-2">Paso 3: Calcular el intervalo</h4>
+                                <div class="text-center my-2 math-display text-pale-blue">$$0.4 \pm 2.576 \times \sqrt{\frac{0.4 \times 0.6}{400}}$$</div>
+                                <div class="text-center my-2 math-display text-pale-blue">$$0.4 \pm 2.576 \times 0.0245$$</div>
+                                <div class="text-center my-2 font-bold math-display text-electric-blue">$$0.4 \pm 0.063$$</div>
+                                <div class="text-center my-2 font-bold text-xl text-white mt-3">IC<sub>99%</sub>: (0.337, 0.463)</div>
+                            </div>
+                        </div>
+                        
+                        <div id="example2-tab3" class="tab-content p-6">
+                            <div class="bg-light p-4 rounded-lg border border-medium-gray">
+                                <h4 class="font-semibold text-primary mb-2">Comparación de Niveles de Confianza</h4>
+                                <p class="mb-3 text-secondary">Si comparamos con un intervalo del 95% para los mismos datos:</p>
+                                
+                                <div class="space-y-4 mt-4">
+                                    <div>
+                                        <span class="confidence-level level-99">99% Confianza</span>
+                                        <div class="mt-2 text-secondary">IC: (0.337, 0.463) → Amplitud: 0.126</div>
+                                        <div class="ci-visualization mt-2" style="height: 40px;">
+                                            <div class="ci-interval" style="left: 33.7%; width: 12.6%;"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="confidence-level level-95">95% Confianza</span>
+                                        <div class="mt-2 text-secondary">IC: (0.352, 0.448) → Amplitud: 0.096</div>
+                                        <div class="ci-visualization mt-2" style="height: 40px;">
+                                            <div class="ci-interval" style="left: 35.2%; width: 9.6%;"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="confidence-level level-90">90% Confianza</span>
+                                        <div class="mt-2 text-secondary">IC: (0.360, 0.440) → Amplitud: 0.080</div>
+                                        <div class="ci-visualization mt-2" style="height: 40px;">
+                                            <div class="ci-interval" style="left: 36%; width: 8%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <p class="mt-4 text-secondary">Observación: A mayor nivel de confianza, más amplio es el intervalo (mayor margen de error).</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <div>
+                <section class="mb-8 content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span class="title-accent">Fórmulas Esenciales</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Valores Críticos Comunes</h3>
+                            <div class="grid grid-cols-2 gap-2 text-center mt-2">
+                                <div class="p-2 bg-dark-gray rounded">
+                                    <div class="text-xs text-light-gray">90% Confianza</div>
+                                    <div class="font-bold">\(z_{0.95} = 1.645\)</div>
+                                    <div class="text-xs text-light-gray">\( \alpha=0.10 \)</div>
+                                </div>
+                                <div class="p-2 bg-dark-gray rounded">
+                                    <div class="text-xs text-light-gray">95% Confianza</div>
+                                    <div class="font-bold">\(z_{0.975} = 1.96\)</div>
+                                    <div class="text-xs text-light-gray">\( \alpha=0.05 \)</div>
+                                </div>
+                                <div class="p-2 bg-dark-gray rounded">
+                                    <div class="text-xs text-light-gray">99% Confianza</div>
+                                    <div class="font-bold">\(z_{0.995} = 2.576\)</div>
+                                    <div class="text-xs text-light-gray">\( \alpha=0.01 \)</div>
+                                </div>
+                                <div class="p-2 bg-dark-gray rounded">
+                                    <div class="text-xs text-light-gray">99.9% Confianza</div>
+                                    <div class="font-bold">\(z_{0.9995} = 3.291\)</div>
+                                    <div class="text-xs text-light-gray">\( \alpha=0.001 \)</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Margen de Error (ME)</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$ME = z_{1-\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}$$</div>
+                            <p class="text-sm text-light-gray">Para media con σ conocida. Representa la mitad de la amplitud del intervalo.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Tamaño Muestral para Media</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$n = \left( \frac{z_{1-\alpha/2} \cdot \sigma}{E} \right)^2$$</div>
+                            <p class="text-sm text-light-gray">Donde \(E\) es el margen de error deseado. Se redondea hacia arriba.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">Tamaño Muestral para Proporción</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$n = \frac{z_{1-\alpha/2}^2 \cdot p(1-p)}{E^2}$$</div>
+                            <p class="text-sm text-light-gray">Si no se conoce \(p\), se usa \(p=0.5\) para el máximo tamaño muestral.</p>
+                        </div>
+                        
+                        <div class="formula-card p-4">
+                            <h3 class="font-semibold text-primary mb-2">IC para Diferencia de Medias</h3>
+                            <div class="text-center my-2 math-display text-pale-blue">$$(\bar{x}_1 - \bar{x}_2) \pm z_{1-\alpha/2} \sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}$$</div>
+                            <p class="text-sm text-light-gray">Para comparar dos poblaciones independientes con varianzas conocidas.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="content-card shadow-sm p-6">
+                    <h2 class="text-2xl font-bold font-poppins text-primary mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <span class="title-accent">Recursos Adicionales</span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">PDF: Tabla de Distribución t de Student</h3>
+                                <p class="text-sm text-light-gray mt-1">Tabla completa de valores críticos para diferentes grados de libertad y niveles de significancia.</p>
+                            </div>
+                        </a>
+                        
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">Calculadora de Tamaño Muestral</h3>
+                                <p class="text-sm text-light-gray mt-1">Herramienta para determinar el tamaño de muestra necesario para un margen de error deseado.</p>
+                            </div>
+                        </a>
+                        
+                        <a href="#" class="resource-item p-4 rounded-lg flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-electric-blue mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 13v-1m4 1v-3m4 3V8M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-primary">Simulador de Intervalos de Confianza</h3>
+                                <p class="text-sm text-light-gray mt-1">Visualización interactiva de cómo funcionan los IC con diferentes muestras.</p>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <div class="flex justify-center mt-12 mb-8">
+            <a href="/public/teoria.html" class="home-button text-white font-medium py-3 px-8 rounded-lg transition duration-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                Volver a Inicio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+        function openExampleTab(exampleId, tabId) {
+            // Ocultar todos los contenidos de pestañas del ejemplo dado
+            const tabs = ['tab1', 'tab2', 'tab3'];
+            tabs.forEach(tab => {
+                const content = document.getElementById(`${exampleId}-${tab}`);
+                if(content) content.classList.remove('active');
+            });
+
+            // Mostrar el contenido seleccionado
+            const activeContent = document.getElementById(`${exampleId}-${tabId}`);
+            if(activeContent) activeContent.classList.add('active');
+
+            // Actualizar clases de los botones de pestañas
+            const buttons = document.querySelectorAll(`button[onclick^="openExampleTab('${exampleId}'"]`);
+            buttons.forEach(btn => {
+                btn.classList.remove('active', 'text-electric-blue', 'border-electric-blue');
+                btn.classList.add('text-light-gray');
+            });
+
+            // Activar el botón correspondiente
+            const activeButtons = document.querySelectorAll(`button[onclick="openExampleTab('${exampleId}', '${tabId}')"]`);
+            activeButtons.forEach(btn => {
+                btn.classList.add('active', 'text-electric-blue', 'border-electric-blue');
+                btn.classList.remove('text-light-gray');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            openExampleTab('example1', 'tab1');
+            openExampleTab('example2', 'tab1');
+
+            if (typeof MathJax !== 'undefined') {
+                MathJax.typesetPromise();
+            }
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,2454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISIMath - Correlación y Regresión Lineal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-light: #f8fafc;
+            --surface-light: #ffffff;
+            --text-light: #1e293b;
+            --primary-light: #3b82f6;
+            --primary-light-hover: #2563eb;
+            --secondary-light: #10b981;
+            --secondary-light-hover: #0d9f76;
+            --accent-light: #8b5cf6;
+            --accent-light-hover: #7c3aed;
+            --border-light: #e2e8f0;
+            --error-light: #ef4444;
+            --success-light: #10b981;
+            --warning-light: #f59e0b;
+            --text-muted-light: #64748b;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --text-dark: #e2e8f0;
+            --primary-dark: #60a5fa;
+            --primary-dark-hover: #93c5fd;
+            --secondary-dark: #10b981;
+            --secondary-dark-hover: #34d399;
+            --accent-dark: #a78bfa;
+            --accent-dark-hover: #c4b5fd;
+            --border-dark: #334155;
+            --error-dark: #f87171;
+            --success-dark: #34d399;
+            --warning-dark: #fbbf24;
+            --text-muted-dark: #94a3b8;
+            --shadow-sm-dark: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md-dark: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-lg-dark: 0 10px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        body.dark {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: minmax(300px, 400px) 1fr;
+            gap: 2rem;
+            min-height: 100vh;
+            padding: 2rem;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+            }
+        }
+
+        .input-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+            max-height: calc(100vh - 4rem);
+            overflow-y: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .input-panel {
+                position: static;
+            }
+        }
+
+        .panel-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .panel-card {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+            box-shadow: var(--shadow-md-dark);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .panel-title {
+            color: var(--primary-dark);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        body.dark .form-label {
+            color: var(--text-dark);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background-color: var(--surface-light);
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            font-family: 'Courier New', monospace;
+        }
+
+        body.dark .input-field {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        body.dark .input-field:focus {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            margin: 0.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .radio-input {
+            display: none;
+        }
+
+        .radio-custom {
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid var(--border-light);
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        body.dark .radio-custom {
+            border-color: var(--border-dark);
+        }
+
+        .radio-input:checked + .radio-custom {
+            border-color: var(--primary-light);
+            background-color: var(--primary-light);
+        }
+
+        body.dark .radio-input:checked + .radio-custom {
+            border-color: var(--primary-dark);
+            background-color: var(--primary-dark);
+        }
+
+        .radio-input:checked + .radio-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0.625rem;
+            height: 0.625rem;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .radio-label {
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        body.dark .radio-label {
+            color: var(--text-dark);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-light);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            width: 100%;
+            gap: 0.5rem;
+        }
+
+        body.dark .btn {
+            background-color: var(--primary-dark);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-light-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        body.dark .btn:hover {
+            background-color: var(--primary-dark-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-light);
+        }
+
+        body.dark .btn-secondary {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-light-hover);
+        }
+
+        body.dark .btn-secondary:hover {
+            background-color: var(--secondary-dark-hover);
+        }
+
+        .btn-warning {
+            background-color: var(--warning-light);
+        }
+
+        body.dark .btn-warning {
+            background-color: var(--warning-dark);
+        }
+
+        .btn-warning:hover {
+            background-color: #e69e00;
+        }
+
+        body.dark .btn-warning:hover {
+            background-color: #f59e0b;
+        }
+
+        .output-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .result-card {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .result-card {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .result-title {
+            color: var(--primary-dark);
+        }
+
+        .steps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .btn-toggle {
+            background-color: var(--secondary-light);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .btn-toggle {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-toggle:hover {
+            background-color: var(--secondary-light-hover);
+        }
+
+        body.dark .btn-toggle:hover {
+            background-color: var(--secondary-dark-hover);
+        }
+
+        .btn-toggle svg {
+            transition: transform 0.3s ease;
+        }
+
+        .btn-toggle.collapsed svg {
+            transform: rotate(-180deg);
+        }
+
+        .collapsible-content {
+            max-height: 5000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            opacity: 1;
+        }
+
+        .collapsible-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .result-item {
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark .result-item {
+            background-color: var(--bg-dark);
+            border-color: var(--border-dark);
+        }
+
+        .result-item-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted-light);
+            margin-bottom: 0.25rem;
+        }
+
+        body.dark .result-item-title {
+            color: var(--text-muted-dark);
+        }
+
+        .result-item-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-light);
+        }
+
+        body.dark .result-item-value {
+            color: var(--primary-dark);
+        }
+
+        .equation-display {
+            text-align: center;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border: 2px solid var(--accent-light);
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.2rem;
+        }
+
+        body.dark .equation-display {
+            background-color: var(--bg-dark);
+            border-color: var(--accent-dark);
+        }
+
+        .graph-container {
+            width: 100%;
+            height: 500px;
+            min-height: 500px;
+            background-color: var(--surface-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+            position: relative;
+        }
+
+        body.dark .graph-container {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        #plot {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 500px !important;
+        }
+
+        .error-message {
+            color: white;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            padding: 0.75rem;
+            background-color: #A00000;
+            border-radius: 6px;
+            border: 1px solid #700000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .error-message {
+            background-color: #8B0000;
+            border-color: #6A0000;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--surface-light);
+            color: var(--text-light);
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.dark .theme-toggle {
+            background-color: var(--surface-dark);
+            color: var(--text-dark);
+            box-shadow: var(--shadow-lg-dark);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-light);
+        }
+
+        body.dark .step-item {
+            background-color: var(--bg-dark);
+            border-left-color: var(--primary-dark);
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark .step-title {
+            color: var(--primary-dark);
+        }
+
+        .step-math {
+            margin: 0.5rem 0;
+            padding: 0.75rem;
+            background-color: var(--surface-light);
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+
+        body.dark .step-math {
+            background-color: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .help-text {
+            font-size: 0.875rem;
+            color: var(--text-muted-light);
+            margin-top: 0.25rem;
+        }
+
+        body.dark .help-text {
+            color: var(--text-muted-dark);
+        }
+
+        /* Estilos para la carga de archivos */
+        .file-upload-section {
+            margin-top: 1.5rem;
+            border-top: 1px solid var(--border-light);
+            padding-top: 1.5rem;
+        }
+
+        body.dark .file-upload-section {
+            border-top-color: var(--border-dark);
+        }
+
+        .file-upload-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border: 2px dashed var(--border-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: var(--bg-light);
+            text-align: center;
+        }
+
+        body.dark .file-upload-label {
+            border-color: var(--border-dark);
+            background-color: var(--bg-dark);
+        }
+
+        .file-upload-label:hover {
+            border-color: var(--primary-light);
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        body.dark .file-upload-label:hover {
+            border-color: var(--primary-dark);
+            background-color: rgba(96, 165, 250, 0.05);
+        }
+
+        .file-upload-icon {
+            width: 3rem;
+            height: 3rem;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+        }
+
+        body.dark .file-upload-icon {
+            color: var(--primary-dark);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            font-size: 0.875rem;
+        }
+
+        body.dark .file-info {
+            background-color: var(--bg-dark);
+            border-color: var(--border-dark);
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark .file-name {
+            color: var(--primary-dark);
+        }
+
+        .file-preview {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 0.5rem;
+            background-color: var(--surface-light);
+        }
+
+        body.dark .file-preview {
+            border-color: var(--border-dark);
+            background-color: var(--surface-dark);
+        }
+
+        .file-preview table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+
+        .file-preview th,
+        .file-preview td {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+
+        body.dark .file-preview th,
+        body.dark .file-preview td {
+            border-color: var(--border-dark);
+        }
+
+        .file-preview th {
+            background-color: var(--bg-light);
+            font-weight: 600;
+        }
+
+        body.dark .file-preview th {
+            background-color: var(--bg-dark);
+        }
+
+        .column-selector {
+            margin-top: 1rem;
+        }
+
+        .selector-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .selector-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            color: var(--text-light);
+        }
+
+        body.dark .selector-label {
+            color: var(--text-dark);
+        }
+
+        .selector-select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            background-color: var(--surface-light);
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        body.dark .selector-select {
+            border-color: var(--border-dark);
+            background-color: var(--surface-dark);
+            color: var(--text-dark);
+        }
+
+        .load-data-btn {
+            width: 100%;
+            margin-top: 1rem;
+            background-color: var(--accent-light);
+        }
+
+        body.dark .load-data-btn {
+            background-color: var(--accent-dark);
+        }
+
+        .load-data-btn:hover {
+            background-color: var(--accent-light-hover);
+        }
+
+        body.dark .load-data-btn:hover {
+            background-color: var(--accent-dark-hover);
+        }
+
+        .success-message {
+            color: white;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            padding: 0.75rem;
+            background-color: var(--success-light);
+            border-radius: 6px;
+            border: 1px solid var(--secondary-light-hover);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark .success-message {
+            background-color: var(--success-dark);
+            border-color: var(--secondary-dark-hover);
+        }
+
+        /* Estilos para botones de exportación */
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .results-header h2 {
+            margin-bottom: 0;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+
+        body.dark .data-table th,
+        body.dark .data-table td {
+            border-color: var(--border-dark);
+        }
+
+        .data-table th {
+            background-color: var(--bg-light);
+            font-weight: 600;
+        }
+
+        body.dark .data-table th {
+            background-color: var(--bg-dark);
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        body.dark .data-table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .data-table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+        }
+
+        body.dark .data-table-container {
+            border-color: var(--border-dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="input-panel">
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    Correlación y Regresión
+                </h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Tipo de regresión:</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="regression-type" value="simple" class="radio-input" checked>
+                            <span class="radio-custom"></span>
+                            <span class="radio-label">Simple (2D)</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="regression-type" value="multiple" class="radio-input">
+                            <span class="radio-custom"></span>
+                            <span class="radio-label">Múltiple (3D)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="simple-inputs">
+                    <div class="form-group">
+                        <label for="x-values" class="form-label">Valores X:</label>
+                        <input type="text" id="x-values" class="input-field" placeholder="Ej: 1, 2, 3, 4, 5">
+                        <div class="help-text">Separados por comas o espacios</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="y-values" class="form-label">Valores Y:</label>
+                        <input type="text" id="y-values" class="input-field" placeholder="Ej: 2, 4, 5, 4, 5">
+                        <div class="help-text">Separados por comas o espacios</div>
+                    </div>
+                </div>
+
+                <div id="multiple-inputs" class="hidden">
+                    <div class="form-group">
+                        <label for="x1-values" class="form-label">Valores X₁:</label>
+                        <input type="text" id="x1-values" class="input-field" placeholder="Ej: 1, 2, 3, 4, 5">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="x2-values" class="form-label">Valores X₂:</label>
+                        <input type="text" id="x2-values" class="input-field" placeholder="Ej: 2, 3, 4, 5, 6">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="y-values-mult" class="form-label">Valores Y:</label>
+                        <input type="text" id="y-values-mult" class="input-field" placeholder="Ej: 5, 7, 9, 11, 13">
+                    </div>
+                </div>
+
+                <!-- Sección para subir archivos -->
+                <div class="file-upload-section">
+                    <h3 class="form-label" style="margin-bottom: 1rem;">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1rem; height: 1rem; margin-right: 0.5rem;">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        Cargar datos desde archivo
+                    </h3>
+                    
+                    <label for="file-input" class="file-upload-label">
+                        <svg class="file-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span>Arrastra y suelta un archivo aquí o haz clic para seleccionar</span>
+                        <div class="help-text" style="margin-top: 0.5rem;">
+                            Formatos soportados: CSV, Excel (XLSX, XLS) (máx. 5MB)
+                        </div>
+                        <input type="file" id="file-input" class="file-input" accept=".csv,.xlsx,.xls,.txt">
+                    </label>
+
+                    <div id="file-info" class="file-info hidden">
+                        <div class="file-name" id="file-name"></div>
+                        <div class="file-size" id="file-size"></div>
+                        <div class="file-type" id="file-type"></div>
+                        <div class="file-rows" id="file-rows"></div>
+                        
+                        <div id="file-preview" class="file-preview hidden">
+                            <table id="preview-table">
+                                <thead id="preview-head"></thead>
+                                <tbody id="preview-body"></tbody>
+                            </table>
+                        </div>
+
+                        <div id="column-selector" class="column-selector hidden">
+                            <div class="selector-group">
+                                <div>
+                                    <div class="selector-label">Columna para X / X₁:</div>
+                                    <select id="column-x" class="selector-select">
+                                        <option value="">Seleccionar columna</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <div class="selector-label">Columna para Y:</div>
+                                    <select id="column-y" class="selector-select">
+                                        <option value="">Seleccionar columna</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div id="column-x2-group" class="hidden">
+                                <div class="selector-label">Columna para X₂ (regresión múltiple):</div>
+                                <select id="column-x2" class="selector-select">
+                                    <option value="">Seleccionar columna</option>
+                                </select>
+                            </div>
+                            
+                            <button id="load-data-btn" class="btn load-data-btn">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="16 16 12 12 8 16"></polyline>
+                                    <line x1="12" y1="12" x2="12" y2="21"></line>
+                                    <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                                    <polyline points="16 16 12 12 8 16"></polyline>
+                                </svg>
+                                Cargar datos seleccionados
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="error-message" class="error-message hidden">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span id="error-text"></span>
+                </div>
+
+                <button id="calculate-btn" class="btn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
+                    </svg>
+                    Calcular
+                </button>
+
+                <div class="btn-group">
+                    <button id="clear-btn" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18"></path>
+                            <path d="M6 6L18 18"></path>
+                        </svg>
+                        Limpiar
+                    </button>
+                    <button id="theory-btn" class="btn btn-secondary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Ir a la Teoría
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <h2 class="panel-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Instrucciones
+                </h2>
+                <ul style="padding-left: 1.25rem; color: var(--text-muted-light);">
+                    <li style="margin-bottom: 0.5rem;">Seleccione el tipo de regresión (simple o múltiple)</li>
+                    <li style="margin-bottom: 0.5rem;">Ingrese los valores manualmente o cargue un archivo</li>
+                    <li style="margin-bottom: 0.5rem;">Formatos soportados: CSV, Excel (XLSX, XLS)</li>
+                    <li style="margin-bottom: 0.5rem;">Para archivos: seleccione las columnas correspondientes</li>
+                    <li style="margin-bottom: 0.5rem;">Todos los conjuntos deben tener la misma cantidad de datos</li>
+                    <li style="margin-bottom: 0.5rem;">Para regresión simple: mínimo 2 pares de datos</li>
+                    <li style="margin-bottom: 0.5rem;">Para regresión múltiple: mínimo 3 conjuntos de datos</li>
+                    <li style="margin-bottom: 0.5rem;">Exporte resultados en Excel o PDF</li>
+                    <li style="margin-bottom: 0.5rem;">El gráfico 3D es interactivo (puede rotarse y hacer zoom)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="output-panel">
+            <div id="result-card" class="result-card hidden fade-in">
+                <div class="results-header">
+                    <h2 class="result-title" style="margin-bottom: 0;">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        Resultados
+                    </h2>
+                    <div class="export-buttons">
+                        <button id="export-excel-btn" class="btn export-btn btn-secondary">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <path d="M16 13H8"></path>
+                                <path d="M16 17H8"></path>
+                                <path d="M10 9H9H8"></path>
+                            </svg>
+                            Exportar Excel
+                        </button>
+                        <button id="export-pdf-btn" class="btn export-btn btn-warning">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            Exportar PDF
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="equation-display" class="equation-display"></div>
+                <div class="results-grid" id="results-grid"></div>
+                
+                <div id="data-table-container" class="data-table-container hidden">
+                    <table id="data-table" class="data-table">
+                        <thead id="data-table-head"></thead>
+                        <tbody id="data-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="graph-card" class="result-card fade-in">
+                <h2 class="result-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    Visualización Gráfica
+                </h2>
+                <div id="graph-container" class="graph-container">
+                    <div id="plot" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+
+            <div id="steps-card" class="result-card hidden fade-in">
+                <div class="steps-header">
+                    <h2 class="result-title" style="margin-bottom: 0;">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        Pasos de Cálculo
+                    </h2>
+                    <button id="toggle-steps-btn" class="btn-toggle collapsed">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                        Mostrar detalle
+                    </button>
+                </div>
+                <div id="steps-content" class="collapsible-content collapsed">
+                    <div id="steps-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="theme-toggle" class="theme-toggle">
+        <svg id="theme-icon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </button>
+
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <div id="loading-text">Generando documento...</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const regressionTypeRadios = document.querySelectorAll('input[name="regression-type"]');
+            const simpleInputs = document.getElementById('simple-inputs');
+            const multipleInputs = document.getElementById('multiple-inputs');
+            const xValuesInput = document.getElementById('x-values');
+            const yValuesInput = document.getElementById('y-values');
+            const x1ValuesInput = document.getElementById('x1-values');
+            const x2ValuesInput = document.getElementById('x2-values');
+            const yValuesMultInput = document.getElementById('y-values-mult');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const theoryBtn = document.getElementById('theory-btn');
+            const errorDiv = document.getElementById('error-message');
+            const errorText = document.getElementById('error-text');
+            const resultCard = document.getElementById('result-card');
+            const stepsCard = document.getElementById('steps-card');
+            const stepsList = document.getElementById('steps-list');
+            const equationDisplay = document.getElementById('equation-display');
+            const resultsGrid = document.getElementById('results-grid');
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const toggleStepsBtn = document.getElementById('toggle-steps-btn');
+            const stepsContent = document.getElementById('steps-content');
+            
+            // Variables para carga de archivos
+            const fileInput = document.getElementById('file-input');
+            const fileInfo = document.getElementById('file-info');
+            const fileName = document.getElementById('file-name');
+            const fileSize = document.getElementById('file-size');
+            const fileType = document.getElementById('file-type');
+            const fileRows = document.getElementById('file-rows');
+            const filePreview = document.getElementById('file-preview');
+            const previewHead = document.getElementById('preview-head');
+            const previewBody = document.getElementById('preview-body');
+            const columnSelector = document.getElementById('column-selector');
+            const columnX = document.getElementById('column-x');
+            const columnY = document.getElementById('column-y');
+            const columnX2 = document.getElementById('column-x2');
+            const columnX2Group = document.getElementById('column-x2-group');
+            const loadDataBtn = document.getElementById('load-data-btn');
+            const fileUploadLabel = document.querySelector('.file-upload-label');
+            
+            // Variables para exportación
+            const exportExcelBtn = document.getElementById('export-excel-btn');
+            const exportPdfBtn = document.getElementById('export-pdf-btn');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const loadingText = document.getElementById('loading-text');
+            const dataTableContainer = document.getElementById('data-table-container');
+            const dataTableHead = document.getElementById('data-table-head');
+            const dataTableBody = document.getElementById('data-table-body');
+
+            let currentType = 'simple';
+            let calculationSteps = [];
+            let uploadedData = null;
+            let columns = [];
+            let currentResults = null;
+            let currentData = null;
+
+            // Inicializar jsPDF
+            const { jsPDF } = window.jspdf;
+
+            // Toggle de pasos
+            toggleStepsBtn.addEventListener('click', () => {
+                const isCollapsed = stepsContent.classList.toggle('collapsed');
+                toggleStepsBtn.classList.toggle('collapsed');
+                toggleStepsBtn.innerHTML = isCollapsed 
+                    ? `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>Mostrar detalle`
+                    : `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>Ocultar detalle`;
+            });
+
+            const parseValues = (text) => {
+                if (!text || text.trim() === '') return [];
+                return text.trim()
+                    .split(/[\s,]+/)
+                    .map(v => parseFloat(v))
+                    .filter(v => !isNaN(v));
+            };
+
+            regressionTypeRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    currentType = e.target.value;
+                    if (currentType === 'simple') {
+                        simpleInputs.classList.remove('hidden');
+                        multipleInputs.classList.add('hidden');
+                        columnX2Group.classList.add('hidden');
+                    } else {
+                        simpleInputs.classList.add('hidden');
+                        multipleInputs.classList.remove('hidden');
+                        if (uploadedData) {
+                            columnX2Group.classList.remove('hidden');
+                        }
+                    }
+                    resultCard.classList.add('hidden');
+                    stepsCard.classList.add('hidden');
+                    errorDiv.classList.add('hidden');
+                    drawEmptyGraph();
+                });
+            });
+
+            const calculateSimpleRegression = (x, y) => {
+                calculationSteps = [];
+                const n = x.length;
+                
+                const sumX = x.reduce((a, b) => a + b, 0);
+                const sumY = y.reduce((a, b) => a + b, 0);
+                const sumXY = x.reduce((acc, xi, i) => acc + xi * y[i], 0);
+                const sumX2 = x.reduce((acc, xi) => acc + xi * xi, 0);
+                const sumY2 = y.reduce((acc, yi) => acc + yi * yi, 0);
+                const meanX = sumX / n;
+                const meanY = sumY / n;
+
+                calculationSteps.push({
+                    title: 'Paso 1: Datos básicos',
+                    content: `n = ${n} datos
+Σx = ${sumX.toFixed(4)}
+Σy = ${sumY.toFixed(4)}
+Σxy = ${sumXY.toFixed(4)}
+Σx² = ${sumX2.toFixed(4)}
+Σy² = ${sumY2.toFixed(4)}
+x̄ = ${meanX.toFixed(4)}
+ȳ = ${meanY.toFixed(4)}`
+                });
+
+                const numeratorR = n * sumXY - sumX * sumY;
+                const denominatorR = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+                const r = numeratorR / denominatorR;
+                const r2 = r * r;
+
+                calculationSteps.push({
+                    title: 'Paso 2: Coeficiente de correlación (r)',
+                    content: `r = [n·Σxy - Σx·Σy] / √[(n·Σx² - (Σx)²)(n·Σy² - (Σy)²)]
+Numerador = ${numeratorR.toFixed(4)}
+Denominador = ${denominatorR.toFixed(4)}
+r = ${r.toFixed(6)}
+r² = ${r2.toFixed(6)}`
+                });
+
+                const b = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+                const a = meanY - b * meanX;
+
+                calculationSteps.push({
+                    title: 'Paso 3: Cálculo de pendiente (b)',
+                    content: `b = (n·Σxy - Σx·Σy) / (n·Σx² - (Σx)²)
+b = ${b.toFixed(6)}`
+                });
+
+                calculationSteps.push({
+                    title: 'Paso 4: Cálculo de intercepto (a)',
+                    content: `a = ȳ - b·x̄
+a = ${meanY.toFixed(4)} - ${b.toFixed(6)}·${meanX.toFixed(4)}
+a = ${a.toFixed(6)}`
+                });
+
+                const yPred = x.map(xi => a + b * xi);
+                const ssr = yPred.reduce((acc, ypi, i) => acc + Math.pow(ypi - meanY, 2), 0);
+                const sse = y.reduce((acc, yi, i) => acc + Math.pow(yi - yPred[i], 2), 0);
+                const sst = y.reduce((acc, yi) => acc + Math.pow(yi - meanY, 2), 0);
+
+                return {
+                    a, b, r, r2,
+                    equation: `y = ${a.toFixed(4)} + ${b.toFixed(4)}x`,
+                    yPred,
+                    ssr, sse, sst,
+                    type: 'simple',
+                    x: x,
+                    y: y,
+                    n: n,
+                    sumX, sumY, sumXY, sumX2, sumY2, meanX, meanY
+                };
+            };
+
+            const calculateMultipleRegression = (x1, x2, y) => {
+                calculationSteps = [];
+                const n = x1.length;
+
+                const sumX1 = x1.reduce((a, b) => a + b, 0);
+                const sumX2 = x2.reduce((a, b) => a + b, 0);
+                const sumY = y.reduce((a, b) => a + b, 0);
+                const sumX1Y = x1.reduce((acc, x1i, i) => acc + x1i * y[i], 0);
+                const sumX2Y = x2.reduce((acc, x2i, i) => acc + x2i * y[i], 0);
+                const sumX1X2 = x1.reduce((acc, x1i, i) => acc + x1i * x2[i], 0);
+                const sumX1_2 = x1.reduce((acc, x1i) => acc + x1i * x1i, 0);
+                const sumX2_2 = x2.reduce((acc, x2i) => acc + x2i * x2i, 0);
+
+                calculationSteps.push({
+                    title: 'Paso 1: Sumatorias básicas',
+                    content: `n = ${n}
+Σx₁ = ${sumX1.toFixed(4)}
+Σx₂ = ${sumX2.toFixed(4)}
+Σy = ${sumY.toFixed(4)}
+Σx₁y = ${sumX1Y.toFixed(4)}
+Σx₂y = ${sumX2Y.toFixed(4)}
+Σx₁x₂ = ${sumX1X2.toFixed(4)}
+Σx₁² = ${sumX1_2.toFixed(4)}
+Σx₂² = ${sumX2_2.toFixed(4)}`
+                });
+
+                const X = [
+                    [n, sumX1, sumX2],
+                    [sumX1, sumX1_2, sumX1X2],
+                    [sumX2, sumX1X2, sumX2_2]
+                ];
+                const Y = [sumY, sumX1Y, sumX2Y];
+
+                calculationSteps.push({
+                    title: 'Paso 2: Sistema de ecuaciones normales',
+                    content: `Método de mínimos cuadrados ordinarios
+(X'X) · β = X'Y`
+                });
+
+                const coefficients = solveLinearSystem(X, Y);
+                const [b0, b1, b2] = coefficients;
+
+                calculationSteps.push({
+                    title: 'Paso 3: Coeficientes de regresión',
+                    content: `b₀ = ${b0.toFixed(6)}
+b₁ = ${b1.toFixed(6)}
+b₂ = ${b2.toFixed(6)}`
+                });
+
+                const meanY = sumY / n;
+                const yPred = x1.map((x1i, i) => b0 + b1 * x1i + b2 * x2[i]);
+                const ssr = yPred.reduce((acc, ypi) => acc + Math.pow(ypi - meanY, 2), 0);
+                const sst = y.reduce((acc, yi) => acc + Math.pow(yi - meanY, 2), 0);
+                const r2 = ssr / sst;
+                const r = Math.sqrt(r2);
+
+                calculationSteps.push({
+                    title: 'Paso 4: Coeficiente de determinación',
+                    content: `R² = ${r2.toFixed(6)}
+R = ${r.toFixed(6)}`
+                });
+
+                return {
+                    b0, b1, b2, r, r2,
+                    equation: `y = ${b0.toFixed(4)} + ${b1.toFixed(4)}x₁ + ${b2.toFixed(4)}x₂`,
+                    yPred,
+                    type: 'multiple',
+                    x1: x1,
+                    x2: x2,
+                    y: y,
+                    n: n,
+                    sumX1, sumX2, sumY, sumX1Y, sumX2Y, sumX1X2, sumX1_2, sumX2_2, meanY
+                };
+            };
+
+            const solveLinearSystem = (A, b) => {
+                const n = A.length;
+                const aug = A.map((row, i) => [...row, b[i]]);
+
+                for (let i = 0; i < n; i++) {
+                    let maxRow = i;
+                    for (let k = i + 1; k < n; k++) {
+                        if (Math.abs(aug[k][i]) > Math.abs(aug[maxRow][i])) {
+                            maxRow = k;
+                        }
+                    }
+                    [aug[i], aug[maxRow]] = [aug[maxRow], aug[i]];
+
+                    for (let k = i + 1; k < n; k++) {
+                        const factor = aug[k][i] / aug[i][i];
+                        for (let j = i; j <= n; j++) {
+                            aug[k][j] -= factor * aug[i][j];
+                        }
+                    }
+                }
+
+                const x = new Array(n);
+                for (let i = n - 1; i >= 0; i--) {
+                    x[i] = aug[i][n];
+                    for (let j = i + 1; j < n; j++) {
+                        x[i] -= aug[i][j] * x[j];
+                    }
+                    x[i] /= aug[i][i];
+                }
+
+                return x;
+            };
+
+            const showError = (message) => {
+                errorText.textContent = message;
+                errorDiv.classList.remove('hidden');
+            };
+
+            const hideError = () => {
+                errorDiv.classList.add('hidden');
+            };
+
+            const displayResults = (results) => {
+                currentResults = results;
+                
+                equationDisplay.innerHTML = `<strong>Ecuación de regresión:</strong><br>${results.equation}`;
+                
+                resultsGrid.innerHTML = '';
+                
+                if (results.type === 'simple') {
+                    const items = [
+                        { title: 'Coef. Correlación (r)', value: results.r.toFixed(6) },
+                        { title: 'Coef. Determinación (R²)', value: results.r2.toFixed(6) },
+                        { title: 'Intercepto (a)', value: results.a.toFixed(6) },
+                        { title: 'Pendiente (b)', value: results.b.toFixed(6) },
+                        { title: 'Número de datos (n)', value: results.n },
+                        { title: 'Media X (x̄)', value: results.meanX.toFixed(6) },
+                        { title: 'Media Y (ȳ)', value: results.meanY.toFixed(6) }
+                    ];
+                    items.forEach(item => {
+                        resultsGrid.innerHTML += `
+                            <div class="result-item">
+                                <div class="result-item-title">${item.title}</div>
+                                <div class="result-item-value">${item.value}</div>
+                            </div>
+                        `;
+                    });
+                    
+                    // Mostrar tabla de datos
+                    dataTableContainer.classList.remove('hidden');
+                    dataTableHead.innerHTML = '';
+                    dataTableBody.innerHTML = '';
+                    
+                    // Crear encabezados
+                    const headerRow = document.createElement('tr');
+                    ['N', 'X', 'Y', 'Y Predicho', 'Residuo'].forEach(header => {
+                        const th = document.createElement('th');
+                        th.textContent = header;
+                        headerRow.appendChild(th);
+                    });
+                    dataTableHead.appendChild(headerRow);
+                    
+                    // Crear filas de datos
+                    for (let i = 0; i < results.n; i++) {
+                        const row = document.createElement('tr');
+                        const residuo = results.y[i] - results.yPred[i];
+                        
+                        [i + 1, results.x[i], results.y[i], results.yPred[i].toFixed(4), residuo.toFixed(4)].forEach(value => {
+                            const td = document.createElement('td');
+                            td.textContent = value;
+                            row.appendChild(td);
+                        });
+                        dataTableBody.appendChild(row);
+                    }
+                    
+                    currentData = {
+                        type: 'simple',
+                        x: results.x,
+                        y: results.y,
+                        yPred: results.yPred
+                    };
+                } else {
+                    const items = [
+                        { title: 'Coef. Correlación (R)', value: results.r.toFixed(6) },
+                        { title: 'Coef. Determinación (R²)', value: results.r2.toFixed(6) },
+                        { title: 'Intercepto (b₀)', value: results.b0.toFixed(6) },
+                        { title: 'Coeficiente b₁', value: results.b1.toFixed(6) },
+                        { title: 'Coeficiente b₂', value: results.b2.toFixed(6) },
+                        { title: 'Número de datos (n)', value: results.n },
+                        { title: 'Media Y (ȳ)', value: results.meanY.toFixed(6) }
+                    ];
+                    items.forEach(item => {
+                        resultsGrid.innerHTML += `
+                            <div class="result-item">
+                                <div class="result-item-title">${item.title}</div>
+                                <div class="result-item-value">${item.value}</div>
+                            </div>
+                        `;
+                    });
+                    
+                    // Mostrar tabla de datos
+                    dataTableContainer.classList.remove('hidden');
+                    dataTableHead.innerHTML = '';
+                    dataTableBody.innerHTML = '';
+                    
+                    // Crear encabezados
+                    const headerRow = document.createElement('tr');
+                    ['N', 'X₁', 'X₂', 'Y', 'Y Predicho', 'Residuo'].forEach(header => {
+                        const th = document.createElement('th');
+                        th.textContent = header;
+                        headerRow.appendChild(th);
+                    });
+                    dataTableHead.appendChild(headerRow);
+                    
+                    // Crear filas de datos
+                    for (let i = 0; i < results.n; i++) {
+                        const row = document.createElement('tr');
+                        const residuo = results.y[i] - results.yPred[i];
+                        
+                        [i + 1, results.x1[i], results.x2[i], results.y[i], results.yPred[i].toFixed(4), residuo.toFixed(4)].forEach(value => {
+                            const td = document.createElement('td');
+                            td.textContent = value;
+                            row.appendChild(td);
+                        });
+                        dataTableBody.appendChild(row);
+                    }
+                    
+                    currentData = {
+                        type: 'multiple',
+                        x1: results.x1,
+                        x2: results.x2,
+                        y: results.y,
+                        yPred: results.yPred
+                    };
+                }
+
+                resultCard.classList.remove('hidden');
+                
+                resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            };
+
+            const displaySteps = () => {
+                stepsList.innerHTML = '';
+                calculationSteps.forEach(step => {
+                    stepsList.innerHTML += `
+                        <div class="step-item">
+                            <div class="step-title">${step.title}</div>
+                            <div class="step-math">${step.content}</div>
+                        </div>
+                    `;
+                });
+                stepsCard.classList.remove('hidden');
+            };
+
+            const drawSimpleGraph = (x, y, results) => {
+                const isDark = document.body.classList.contains('dark');
+                const xMin = Math.min(...x) - 1;
+                const xMax = Math.max(...x) + 1;
+                const xLine = [xMin, xMax];
+                const yLine = xLine.map(xi => results.a + results.b * xi);
+
+                const trace1 = {
+                    x: x,
+                    y: y,
+                    mode: 'markers',
+                    type: 'scatter',
+                    name: 'Datos',
+                    marker: {
+                        size: 10,
+                        color: isDark ? '#60a5fa' : '#3b82f6',
+                        line: { width: 2, color: 'white' }
+                    }
+                };
+
+                const trace2 = {
+                    x: xLine,
+                    y: yLine,
+                    mode: 'lines',
+                    type: 'scatter',
+                    name: 'Regresión',
+                    line: { color: isDark ? '#34d399' : '#10b981', width: 3 }
+                };
+
+                const layout = {
+                    title: 'Regresión Lineal Simple',
+                    xaxis: { title: 'X', gridcolor: isDark ? '#334155' : '#e2e8f0' },
+                    yaxis: { title: 'Y', gridcolor: isDark ? '#334155' : '#e2e8f0' },
+                    plot_bgcolor: isDark ? '#1e293b' : '#ffffff',
+                    paper_bgcolor: isDark ? '#1e293b' : '#ffffff',
+                    font: { color: isDark ? '#e2e8f0' : '#1e293b' },
+                    showlegend: true
+                };
+
+                Plotly.newPlot('plot', [trace1, trace2], layout, { responsive: true, displaylogo: false });
+            };
+
+            const drawMultipleGraph = (x1, x2, y, results) => {
+                const isDark = document.body.classList.contains('dark');
+                
+                const trace1 = {
+                    x: x1,
+                    y: x2,
+                    z: y,
+                    mode: 'markers',
+                    type: 'scatter3d',
+                    name: 'Datos observados',
+                    marker: {
+                        size: 8,
+                        color: y,
+                        colorscale: 'Viridis',
+                        showscale: true,
+                        opacity: 0.8,
+                        line: {
+                            color: isDark ? '#60a5fa' : '#3b82f6',
+                            width: 1
+                        }
+                    }
+                };
+
+                const x1Min = Math.min(...x1);
+                const x1Max = Math.max(...x1);
+                const x2Min = Math.min(...x2);
+                const x2Max = Math.max(...x2);
+                
+                const x1Range = [];
+                const x2Range = [];
+                const steps = 20;
+                
+                for (let i = 0; i <= steps; i++) {
+                    x1Range.push(x1Min + (x1Max - x1Min) * i / steps);
+                    x2Range.push(x2Min + (x2Max - x2Min) * i / steps);
+                }
+                
+                const zSurface = [];
+                for (let i = 0; i < x1Range.length; i++) {
+                    const row = [];
+                    for (let j = 0; j < x2Range.length; j++) {
+                        row.push(results.b0 + results.b1 * x1Range[i] + results.b2 * x2Range[j]);
+                    }
+                    zSurface.push(row);
+                }
+
+                const trace2 = {
+                    x: x1Range,
+                    y: x2Range,
+                    z: zSurface,
+                    type: 'surface',
+                    name: 'Plano de regresión',
+                    colorscale: 'Viridis',
+                    opacity: 0.7,
+                    showscale: false
+                };
+
+                const layout = {
+                    title: {
+                        text: 'Regresión Lineal Múltiple',
+                        font: { size: 16, color: isDark ? '#e2e8f0' : '#1e293b' }
+                    },
+                    scene: {
+                        xaxis: { 
+                            title: 'X₁',
+                            gridcolor: isDark ? '#334155' : '#e2e8f0',
+                            backgroundcolor: isDark ? '#1e293b' : '#ffffff'
+                        },
+                        yaxis: { 
+                            title: 'X₂',
+                            gridcolor: isDark ? '#334155' : '#e2e8f0',
+                            backgroundcolor: isDark ? '#1e293b' : '#ffffff'
+                        },
+                        zaxis: { 
+                            title: 'Y',
+                            gridcolor: isDark ? '#334155' : '#e2e8f0',
+                            backgroundcolor: isDark ? '#1e293b' : '#ffffff'
+                        },
+                        camera: {
+                            eye: { x: 1.5, y: 1.5, z: 1.3 }
+                        }
+                    },
+                    plot_bgcolor: isDark ? '#1e293b' : '#ffffff',
+                    paper_bgcolor: isDark ? '#1e293b' : '#ffffff',
+                    font: { color: isDark ? '#e2e8f0' : '#1e293b' }
+                };
+
+                Plotly.newPlot('plot', [trace2, trace1], layout, { responsive: true, displaylogo: false });
+            };
+
+            const drawEmptyGraph = () => {
+                const isDark = document.body.classList.contains('dark');
+                const layout = {
+                    title: currentType === 'simple' ? 'Regresión Lineal Simple' : 'Regresión Lineal Múltiple',
+                    xaxis: { title: 'X' },
+                    yaxis: { title: 'Y' },
+                    plot_bgcolor: isDark ? '#1e293b' : '#ffffff',
+                    paper_bgcolor: isDark ? '#1e293b' : '#ffffff',
+                    font: { color: isDark ? '#e2e8f0' : '#1e293b' }
+                };
+                Plotly.newPlot('plot', [], layout, { responsive: true, displaylogo: false });
+            };
+
+            // Funciones para manejo de archivos
+            const readFile = (file) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    
+                    reader.onload = (e) => {
+                        const data = e.target.result;
+                        
+                        if (file.name.endsWith('.csv') || file.name.endsWith('.txt')) {
+                            parseCSV(data, resolve, reject);
+                        } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+                            parseExcel(data, resolve, reject);
+                        } else {
+                            reject(new Error('Formato de archivo no soportado'));
+                        }
+                    };
+                    
+                    reader.onerror = () => reject(new Error('Error al leer el archivo'));
+                    
+                    if (file.name.endsWith('.csv') || file.name.endsWith('.txt')) {
+                        reader.readAsText(file);
+                    } else {
+                        reader.readAsArrayBuffer(file);
+                    }
+                });
+            };
+
+            const parseCSV = (data, resolve, reject) => {
+                try {
+                    const lines = data.split('\n').filter(line => line.trim() !== '');
+                    if (lines.length === 0) {
+                        reject(new Error('El archivo CSV está vacío'));
+                        return;
+                    }
+                    
+                    const firstLine = lines[0];
+                    let delimiter = ',';
+                    if (firstLine.includes(';') && !firstLine.includes(',')) delimiter = ';';
+                    if (firstLine.includes('\t')) delimiter = '\t';
+                    
+                    const headers = lines[0].split(delimiter).map(h => h.trim());
+                    
+                    const rows = [];
+                    for (let i = 1; i < lines.length; i++) {
+                        const values = lines[i].split(delimiter).map(v => v.trim());
+                        if (values.length === headers.length) {
+                            const row = {};
+                            headers.forEach((header, index) => {
+                                const value = parseFloat(values[index]);
+                                row[header] = isNaN(value) ? values[index] : value;
+                            });
+                            rows.push(row);
+                        }
+                    }
+                    
+                    resolve({ headers, data: rows });
+                } catch (error) {
+                    reject(error);
+                }
+            };
+
+            const parseExcel = (data, resolve, reject) => {
+                try {
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                    
+                    if (jsonData.length === 0) {
+                        reject(new Error('El archivo Excel está vacío'));
+                        return;
+                    }
+                    
+                    const headers = jsonData[0];
+                    const rows = [];
+                    
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const rowData = jsonData[i];
+                        const row = {};
+                        headers.forEach((header, index) => {
+                            if (rowData[index] !== undefined) {
+                                const value = parseFloat(rowData[index]);
+                                row[header] = isNaN(value) ? rowData[index] : value;
+                            }
+                        });
+                        if (Object.keys(row).length > 0) {
+                            rows.push(row);
+                        }
+                    }
+                    
+                    resolve({ headers, data: rows });
+                } catch (error) {
+                    reject(error);
+                }
+            };
+
+            const displayFileInfo = (file, data) => {
+                fileName.textContent = `Archivo: ${file.name}`;
+                fileSize.textContent = `Tamaño: ${(file.size / 1024).toFixed(2)} KB`;
+                fileType.textContent = `Tipo: ${file.type || file.name.split('.').pop().toUpperCase()}`;
+                fileRows.textContent = `Filas de datos: ${data.data.length}`;
+                
+                if (data.data.length > 0) {
+                    showPreview(data);
+                    filePreview.classList.remove('hidden');
+                }
+                
+                fileInfo.classList.remove('hidden');
+            };
+
+            const showPreview = (data) => {
+                previewHead.innerHTML = '';
+                previewBody.innerHTML = '';
+                
+                const headerRow = document.createElement('tr');
+                data.headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
+                });
+                previewHead.appendChild(headerRow);
+                
+                const rowsToShow = Math.min(5, data.data.length);
+                for (let i = 0; i < rowsToShow; i++) {
+                    const row = document.createElement('tr');
+                    data.headers.forEach(header => {
+                        const td = document.createElement('td');
+                        const value = data.data[i][header];
+                        td.textContent = typeof value === 'number' ? value.toFixed(4) : value;
+                        row.appendChild(td);
+                    });
+                    previewBody.appendChild(row);
+                }
+            };
+
+            const populateColumnSelectors = (headers) => {
+                columnX.innerHTML = '<option value="">Seleccionar columna</option>';
+                columnY.innerHTML = '<option value="">Seleccionar columna</option>';
+                columnX2.innerHTML = '<option value="">Seleccionar columna</option>';
+                
+                headers.forEach(header => {
+                    const optionX = document.createElement('option');
+                    optionX.value = header;
+                    optionX.textContent = header;
+                    columnX.appendChild(optionX.cloneNode(true));
+                    
+                    const optionY = document.createElement('option');
+                    optionY.value = header;
+                    optionY.textContent = header;
+                    columnY.appendChild(optionY.cloneNode(true));
+                    
+                    const optionX2 = document.createElement('option');
+                    optionX2.value = header;
+                    optionX2.textContent = header;
+                    columnX2.appendChild(optionX2);
+                });
+                
+                columnSelector.classList.remove('hidden');
+                
+                if (currentType === 'multiple') {
+                    columnX2Group.classList.remove('hidden');
+                } else {
+                    columnX2Group.classList.add('hidden');
+                }
+            };
+
+            const showSuccess = (message) => {
+                const existingSuccess = document.querySelector('.success-message');
+                if (existingSuccess) {
+                    existingSuccess.remove();
+                }
+                
+                const successDiv = document.createElement('div');
+                successDiv.className = 'success-message';
+                successDiv.innerHTML = `
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <span>${message}</span>
+                `;
+                
+                errorDiv.parentNode.insertBefore(successDiv, errorDiv.nextSibling);
+                
+                setTimeout(() => {
+                    successDiv.remove();
+                }, 3000);
+            };
+
+            // Funciones para exportación
+            const showLoading = (message = 'Generando documento...') => {
+                loadingText.textContent = message;
+                loadingOverlay.classList.remove('hidden');
+            };
+
+            const hideLoading = () => {
+                loadingOverlay.classList.add('hidden');
+            };
+
+            const exportToExcel = () => {
+                if (!currentResults || !currentData) {
+                    showError('No hay resultados para exportar');
+                    return;
+                }
+
+                showLoading('Generando archivo Excel...');
+                
+                try {
+                    // Crear workbook
+                    const wb = XLSX.utils.book_new();
+                    const ws_data = [];
+                    
+                    // Agregar encabezado
+                    ws_data.push(['ANÁLISIS DE REGRESIÓN LINEAL']);
+                    ws_data.push([`Tipo: ${currentResults.type === 'simple' ? 'Regresión Simple' : 'Regresión Múltiple'}`]);
+                    ws_data.push(['']);
+                    
+                    // Agregar ecuación
+                    ws_data.push(['ECUACIÓN DE REGRESIÓN:']);
+                    ws_data.push([currentResults.equation]);
+                    ws_data.push(['']);
+                    
+                    // Agregar resultados principales
+                    ws_data.push(['RESULTADOS PRINCIPALES:']);
+                    if (currentResults.type === 'simple') {
+                        ws_data.push(['Coeficiente de Correlación (r):', currentResults.r.toFixed(6)]);
+                        ws_data.push(['Coeficiente de Determinación (R²):', currentResults.r2.toFixed(6)]);
+                        ws_data.push(['Intercepto (a):', currentResults.a.toFixed(6)]);
+                        ws_data.push(['Pendiente (b):', currentResults.b.toFixed(6)]);
+                        ws_data.push(['Número de datos (n):', currentResults.n]);
+                        ws_data.push(['Media X (x̄):', currentResults.meanX.toFixed(6)]);
+                        ws_data.push(['Media Y (ȳ):', currentResults.meanY.toFixed(6)]);
+                    } else {
+                        ws_data.push(['Coeficiente de Correlación (R):', currentResults.r.toFixed(6)]);
+                        ws_data.push(['Coeficiente de Determinación (R²):', currentResults.r2.toFixed(6)]);
+                        ws_data.push(['Intercepto (b₀):', currentResults.b0.toFixed(6)]);
+                        ws_data.push(['Coeficiente b₁:', currentResults.b1.toFixed(6)]);
+                        ws_data.push(['Coeficiente b₂:', currentResults.b2.toFixed(6)]);
+                        ws_data.push(['Número de datos (n):', currentResults.n]);
+                        ws_data.push(['Media Y (ȳ):', currentResults.meanY.toFixed(6)]);
+                    }
+                    ws_data.push(['']);
+                    
+                    // Agregar datos
+                    ws_data.push(['DATOS Y CÁLCULOS:']);
+                    if (currentResults.type === 'simple') {
+                        ws_data.push(['N', 'X', 'Y', 'Y Predicho', 'Residuo']);
+                        for (let i = 0; i < currentResults.n; i++) {
+                            const residuo = currentResults.y[i] - currentResults.yPred[i];
+                            ws_data.push([
+                                i + 1,
+                                currentResults.x[i],
+                                currentResults.y[i],
+                                currentResults.yPred[i].toFixed(4),
+                                residuo.toFixed(4)
+                            ]);
+                        }
+                    } else {
+                        ws_data.push(['N', 'X₁', 'X₂', 'Y', 'Y Predicho', 'Residuo']);
+                        for (let i = 0; i < currentResults.n; i++) {
+                            const residuo = currentResults.y[i] - currentResults.yPred[i];
+                            ws_data.push([
+                                i + 1,
+                                currentResults.x1[i],
+                                currentResults.x2[i],
+                                currentResults.y[i],
+                                currentResults.yPred[i].toFixed(4),
+                                residuo.toFixed(4)
+                            ]);
+                        }
+                    }
+                    
+                    // Crear hoja de cálculo
+                    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+                    
+                    // Ajustar anchos de columnas
+                    const wscols = [
+                        {wch: 5},  // N
+                        {wch: 12}, // X / X₁
+                        {wch: 12}, // Y / X₂
+                        {wch: 12}, // Y
+                        {wch: 15}, // Y Predicho
+                        {wch: 12}  // Residuo
+                    ];
+                    if (currentResults.type === 'multiple') {
+                        wscols.push({wch: 12}); // Residuo extra
+                    }
+                    ws['!cols'] = wscols;
+                    
+                    // Agregar hoja al workbook
+                    XLSX.utils.book_append_sheet(wb, ws, "Resultados Regresión");
+                    
+                    // Generar nombre de archivo
+                    const fileName = `regresion_${currentResults.type}_${new Date().toISOString().slice(0,10)}.xlsx`;
+                    
+                    // Escribir y descargar archivo
+                    XLSX.writeFile(wb, fileName);
+                    
+                    hideLoading();
+                    showSuccess('Archivo Excel generado exitosamente');
+                    
+                } catch (error) {
+                    hideLoading();
+                    showError(`Error al generar Excel: ${error.message}`);
+                }
+            };
+
+            const exportToPDF = async () => {
+                if (!currentResults || !currentData) {
+                    showError('No hay resultados para exportar');
+                    return;
+                }
+
+                showLoading('Generando archivo PDF...');
+                
+                try {
+                    // Crear nuevo PDF
+                    const doc = new jsPDF();
+                    const pageWidth = doc.internal.pageSize.width;
+                    let yPosition = 20;
+                    
+                    // Configurar fuente
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(16);
+                    
+                    // Título
+                    doc.text("ANÁLISIS DE REGRESIÓN LINEAL", pageWidth / 2, yPosition, { align: "center" });
+                    yPosition += 10;
+                    
+                    doc.setFontSize(12);
+                    doc.text(`Tipo: ${currentResults.type === 'simple' ? 'Regresión Simple' : 'Regresión Múltiple'}`, 20, yPosition);
+                    yPosition += 10;
+                    
+                    // Fecha
+                    const now = new Date();
+                    doc.text(`Fecha: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, 20, yPosition);
+                    yPosition += 15;
+                    
+                    // Línea separadora
+                    doc.setDrawColor(0);
+                    doc.setLineWidth(0.5);
+                    doc.line(20, yPosition, pageWidth - 20, yPosition);
+                    yPosition += 10;
+                    
+                    // Ecuación
+                    doc.setFontSize(14);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("ECUACIÓN DE REGRESIÓN:", 20, yPosition);
+                    yPosition += 8;
+                    
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(currentResults.equation, 30, yPosition);
+                    yPosition += 15;
+                    
+                    // Resultados principales
+                    doc.setFontSize(14);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("RESULTADOS PRINCIPALES:", 20, yPosition);
+                    yPosition += 8;
+                    
+                    doc.setFontSize(11);
+                    doc.setFont("helvetica", "normal");
+                    
+                    if (currentResults.type === 'simple') {
+                        const results = [
+                            [`Coeficiente de Correlación (r):`, currentResults.r.toFixed(6)],
+                            [`Coeficiente de Determinación (R²):`, currentResults.r2.toFixed(6)],
+                            [`Intercepto (a):`, currentResults.a.toFixed(6)],
+                            [`Pendiente (b):`, currentResults.b.toFixed(6)],
+                            [`Número de datos (n):`, currentResults.n],
+                            [`Media X (x̄):`, currentResults.meanX.toFixed(6)],
+                            [`Media Y (ȳ):`, currentResults.meanY.toFixed(6)]
+                        ];
+                        
+                        results.forEach(([label, value]) => {
+                            doc.text(label, 30, yPosition);
+                            doc.text(value, pageWidth - 40, yPosition, { align: "right" });
+                            yPosition += 7;
+                        });
+                    } else {
+                        const results = [
+                            [`Coeficiente de Correlación (R):`, currentResults.r.toFixed(6)],
+                            [`Coeficiente de Determinación (R²):`, currentResults.r2.toFixed(6)],
+                            [`Intercepto (b₀):`, currentResults.b0.toFixed(6)],
+                            [`Coeficiente b₁:`, currentResults.b1.toFixed(6)],
+                            [`Coeficiente b₂:`, currentResults.b2.toFixed(6)],
+                            [`Número de datos (n):`, currentResults.n],
+                            [`Media Y (ȳ):`, currentResults.meanY.toFixed(6)]
+                        ];
+                        
+                        results.forEach(([label, value]) => {
+                            doc.text(label, 30, yPosition);
+                            doc.text(value, pageWidth - 40, yPosition, { align: "right" });
+                            yPosition += 7;
+                        });
+                    }
+                    
+                    yPosition += 10;
+                    
+                    // Tabla de datos
+                    doc.setFontSize(14);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("DATOS Y CÁLCULOS:", 20, yPosition);
+                    yPosition += 8;
+                    
+                    // Configurar tabla
+                    const startX = 20;
+                    const columnWidths = currentResults.type === 'simple' ? [10, 20, 20, 30, 20] : [10, 20, 20, 20, 30, 20];
+                    const headers = currentResults.type === 'simple' 
+                        ? ['N', 'X', 'Y', 'Y Predicho', 'Residuo']
+                        : ['N', 'X₁', 'X₂', 'Y', 'Y Predicho', 'Residuo'];
+                    
+                    // Dibujar encabezados
+                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "bold");
+                    let currentX = startX;
+                    headers.forEach((header, i) => {
+                        doc.text(header, currentX + columnWidths[i]/2, yPosition, { align: "center" });
+                        currentX += columnWidths[i];
+                    });
+                    
+                    yPosition += 6;
+                    
+                    // Dibujar línea de encabezado
+                    doc.line(startX, yPosition, startX + columnWidths.reduce((a, b) => a + b, 0), yPosition);
+                    yPosition += 4;
+                    
+                    // Dibujar datos
+                    doc.setFont("helvetica", "normal");
+                    const dataRows = currentResults.type === 'simple' ? currentResults.n : currentResults.n;
+                    
+                    for (let i = 0; i < dataRows; i++) {
+                        // Verificar si necesitamos nueva página
+                        if (yPosition > 250) {
+                            doc.addPage();
+                            yPosition = 20;
+                            
+                            // Redibujar encabezados en nueva página
+                            doc.setFontSize(10);
+                            doc.setFont("helvetica", "bold");
+                            currentX = startX;
+                            headers.forEach((header, j) => {
+                                doc.text(header, currentX + columnWidths[j]/2, yPosition, { align: "center" });
+                                currentX += columnWidths[j];
+                            });
+                            yPosition += 6;
+                            doc.line(startX, yPosition, startX + columnWidths.reduce((a, b) => a + b, 0), yPosition);
+                            yPosition += 4;
+                            doc.setFont("helvetica", "normal");
+                        }
+                        
+                        currentX = startX;
+                        
+                        if (currentResults.type === 'simple') {
+                            const residuo = currentResults.y[i] - currentResults.yPred[i];
+                            const rowData = [
+                                (i + 1).toString(),
+                                currentResults.x[i].toString(),
+                                currentResults.y[i].toString(),
+                                currentResults.yPred[i].toFixed(4),
+                                residuo.toFixed(4)
+                            ];
+                            
+                            rowData.forEach((data, j) => {
+                                doc.text(data, currentX + columnWidths[j]/2, yPosition, { align: "center" });
+                                currentX += columnWidths[j];
+                            });
+                        } else {
+                            const residuo = currentResults.y[i] - currentResults.yPred[i];
+                            const rowData = [
+                                (i + 1).toString(),
+                                currentResults.x1[i].toString(),
+                                currentResults.x2[i].toString(),
+                                currentResults.y[i].toString(),
+                                currentResults.yPred[i].toFixed(4),
+                                residuo.toFixed(4)
+                            ];
+                            
+                            rowData.forEach((data, j) => {
+                                doc.text(data, currentX + columnWidths[j]/2, yPosition, { align: "center" });
+                                currentX += columnWidths[j];
+                            });
+                        }
+                        
+                        yPosition += 7;
+                    }
+                    
+                    // Pie de página
+                    const pageCount = doc.internal.getNumberOfPages();
+                    for (let i = 1; i <= pageCount; i++) {
+                        doc.setPage(i);
+                        doc.setFontSize(10);
+                        doc.text(`Página ${i} de ${pageCount}`, pageWidth / 2, 290, { align: "center" });
+                        doc.text("Generado por ISIMath - Herramienta de Análisis Estadístico", pageWidth / 2, 295, { align: "center" });
+                    }
+                    
+                    // Guardar PDF
+                    const fileName = `regresion_${currentResults.type}_${new Date().toISOString().slice(0,10)}.pdf`;
+                    doc.save(fileName);
+                    
+                    hideLoading();
+                    showSuccess('Archivo PDF generado exitosamente');
+                    
+                } catch (error) {
+                    hideLoading();
+                    showError(`Error al generar PDF: ${error.message}`);
+                }
+            };
+
+            // Eventos para carga de archivos
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    showError('El archivo es demasiado grande (máximo 5MB)');
+                    return;
+                }
+                
+                try {
+                    const data = await readFile(file);
+                    uploadedData = data;
+                    columns = data.headers;
+                    
+                    displayFileInfo(file, data);
+                    populateColumnSelectors(data.headers);
+                    hideError();
+                    showSuccess('Archivo cargado correctamente');
+                } catch (error) {
+                    showError(`Error al procesar el archivo: ${error.message}`);
+                }
+            });
+
+            fileUploadLabel.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUploadLabel.style.borderColor = 'var(--primary-light)';
+                fileUploadLabel.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+            });
+
+            fileUploadLabel.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                const isDark = document.body.classList.contains('dark');
+                fileUploadLabel.style.borderColor = isDark ? 'var(--border-dark)' : 'var(--border-light)';
+                fileUploadLabel.style.backgroundColor = isDark ? 'var(--bg-dark)' : 'var(--bg-light)';
+            });
+
+            fileUploadLabel.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                const isDark = document.body.classList.contains('dark');
+                fileUploadLabel.style.borderColor = isDark ? 'var(--border-dark)' : 'var(--border-light)';
+                fileUploadLabel.style.backgroundColor = isDark ? 'var(--bg-dark)' : 'var(--bg-light)';
+                
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    fileInput.files = e.dataTransfer.files;
+                    const event = new Event('change');
+                    fileInput.dispatchEvent(event);
+                }
+            });
+
+            loadDataBtn.addEventListener('click', () => {
+                if (!uploadedData) {
+                    showError('No hay datos cargados');
+                    return;
+                }
+                
+                const selectedX = columnX.value;
+                const selectedY = columnY.value;
+                const selectedX2 = currentType === 'multiple' ? columnX2.value : null;
+                
+                if (!selectedX || !selectedY) {
+                    showError('Seleccion columnas para X e Y');
+                    return;
+                }
+                
+                if (currentType === 'multiple' && !selectedX2) {
+                    showError('Para regresión múltiple, seleccione también X₂');
+                    return;
+                }
+                
+                const xData = uploadedData.data.map(row => row[selectedX]).filter(v => typeof v === 'number');
+                const yData = uploadedData.data.map(row => row[selectedY]).filter(v => typeof v === 'number');
+                
+                if (currentType === 'simple') {
+                    if (xData.length !== yData.length) {
+                        showError('Las columnas seleccionadas tienen diferente cantidad de datos numéricos');
+                        return;
+                    }
+                    
+                    xValuesInput.value = xData.join(', ');
+                    yValuesInput.value = yData.join(', ');
+                } else {
+                    const x2Data = uploadedData.data.map(row => row[selectedX2]).filter(v => typeof v === 'number');
+                    
+                    if (xData.length !== yData.length || xData.length !== x2Data.length) {
+                        showError('Las columnas seleccionadas tienen diferente cantidad de datos numéricos');
+                        return;
+                    }
+                    
+                    x1ValuesInput.value = xData.join(', ');
+                    x2ValuesInput.value = x2Data.join(', ');
+                    yValuesMultInput.value = yData.join(', ');
+                }
+                
+                hideError();
+                showSuccess('Datos cargados exitosamente en los campos');
+            });
+
+            // Eventos para exportación
+            exportExcelBtn.addEventListener('click', exportToExcel);
+            exportPdfBtn.addEventListener('click', exportToPDF);
+
+            calculateBtn.addEventListener('click', () => {
+                hideError();
+                
+                if (currentType === 'simple') {
+                    const x = parseValues(xValuesInput.value);
+                    const y = parseValues(yValuesInput.value);
+
+                    if (x.length < 2 || y.length < 2) {
+                        showError('Se necesitan al menos 2 pares de datos');
+                        return;
+                    }
+
+                    if (x.length !== y.length) {
+                        showError('X e Y deben tener la misma cantidad de datos');
+                        return;
+                    }
+
+                    const results = calculateSimpleRegression(x, y);
+                    displayResults(results);
+                    displaySteps();
+                    drawSimpleGraph(x, y, results);
+                } else {
+                    const x1 = parseValues(x1ValuesInput.value);
+                    const x2 = parseValues(x2ValuesInput.value);
+                    const y = parseValues(yValuesMultInput.value);
+
+                    if (x1.length < 3 || x2.length < 3 || y.length < 3) {
+                        showError('Se necesitan al menos 3 datos para regresión múltiple');
+                        return;
+                    }
+
+                    if (x1.length !== x2.length || x1.length !== y.length) {
+                        showError('X₁, X₂ e Y deben tener la misma cantidad de datos');
+                        return;
+                    }
+
+                    const results = calculateMultipleRegression(x1, x2, y);
+                    displayResults(results);
+                    displaySteps();
+                    drawMultipleGraph(x1, x2, y, results);
+                }
+            });
+
+            clearBtn.addEventListener('click', () => {
+                xValuesInput.value = '';
+                yValuesInput.value = '';
+                x1ValuesInput.value = '';
+                x2ValuesInput.value = '';
+                yValuesMultInput.value = '';
+                resultCard.classList.add('hidden');
+                stepsCard.classList.add('hidden');
+                dataTableContainer.classList.add('hidden');
+                fileInfo.classList.add('hidden');
+                hideError();
+                drawEmptyGraph();
+                uploadedData = null;
+                columns = [];
+                currentResults = null;
+                currentData = null;
+            });
+
+            theoryBtn.addEventListener('click', () => {
+                window.open('https://es.wikipedia.org/wiki/Regresi%C3%B3n_lineal', '_blank');
+            });
+
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark');
+                const isDark = document.body.classList.contains('dark');
+                
+                if (isDark) {
+                    themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+                } else {
+                    themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+                }
+                
+                drawEmptyGraph();
+            });
+
+            drawEmptyGraph();
+        });
+    </script>
+</body>
+</html>
